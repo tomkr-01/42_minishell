@@ -1,18 +1,14 @@
-# c_template
+# Minishell
 
-This is a template for C projects
+As beautiful as a shell
 
-To clone this repository, use
+Summary:
+This project is about creating a simple shell.
+Yes, your own little bash.
+You will learn a lot about processes and file descriptors.
 
-git clone --recurse-submodules https://github.com/tomkr-01/c_template.git
-
-to get both the template as well as the already included libft library.
-
-________________________________________________________________________________
-
-
-Libft is automatically added as a submodule. To remove libft, change to libs/ and use
-
-rm -rf libft/
-
-to delete the libft library. Also, make sure to delete the section about libft in .gitmodules as well as in Makefile!
+Introduction:
+The existence of shells is linked to the very existence of IT.
+At the time, all developers agreed that communicating with a computer using aligned 1/0 switches was seriously irritating.
+It was only logical that they came up with the idea of creating a software to communicate with a computer using interactive lines of commands in a language somewhat close to the human language.
+Thanks to Minishell, you’ll be able to travel through time and come back to problems people faced when Windows didn’t exist.

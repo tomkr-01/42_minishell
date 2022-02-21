@@ -6,16 +6,16 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/02/21 20:30:01 by tkruger          ###   ########.fr        #
+#    Updated: 2022/02/21 20:49:31 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	=	new_project
+NAME	=	minishell
 CC		=	gcc
 CFLAGS	=	-Wall -Wextra -Werror
-INC		=	./inc/new_project.h
+INC		=	./inc/minishell.h
 SRC_PATH =	./src/
-SRCS	=	new_project.c
+SRCS	=	minishell.c
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./lib/libft -lft lib/libft/libft.a
