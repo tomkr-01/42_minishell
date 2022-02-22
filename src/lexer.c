@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 10:56:26 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/22 22:11:22 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/22 22:15:43 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@ t_list	*split_tok(char const *line)
 		{
 			chrs = next_delimiting_char(&line[i]) + 1;
 			i += next_delimiting_char(&line[i]);
-			printf("i: %i, chrs: %zu\n", i, chrs);
-
 		}
 		else if (ft_strchr(OPERATORS, line[i]))
 		{

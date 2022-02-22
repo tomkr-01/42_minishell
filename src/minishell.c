@@ -18,20 +18,7 @@
 int	main(int argc, char **argv)
 {
 	t_list	*tokens;
-	char	*line = "\'\"hi||><<\"\'|  <<\"hel|<>>lo\"\"another one\"'noice!!'test  ||text3||>><<<<>><>< 'text1'";
-
-	printf("%s\n", line);
-
-	tokens = split_tok(line);
-	printf("tokens: %i\n", ft_lstsize(tokens));
-	while (tokens != NULL)
-	{
-		printf("%s}\n", tokens->content);
-		tokens = tokens->next;
-	}
 	
-
+	tokens = split_tok("test");
 	return (0);
 }
-
-// https://brennan.io/2015/01/16/write-a-shell-in-c/
