@@ -12,8 +12,12 @@
 
 #include "../inc/minishell.h"
 
-int	main(void)
+
+int	main(int argc, char **argv)
 {
-	printf("Hello World!\n");
+	
+
 	return (0);
 }
+
+// https://brennan.io/2015/01/16/write-a-shell-in-c/
