@@ -6,18 +6,19 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/21 20:52:16 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/22 16:42:40 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <stddef.h>
 /* ************************************************************************** */
 /* DEFINES																	  */
 /* ************************************************************************** */
 
-
+# define OPERATORS "|<>"
 
 /* ************************************************************************** */
 /* STRUCTS																	  */
@@ -31,6 +32,12 @@
 
 /* minishell.c */
 
-int	main(void);
+int	main(int argc, char **argv);
+
+/* lexer.c */
+
+size_t	count_delimiters(char *line);
+void	*split_tok(char const *line);
+
 
 #endif
