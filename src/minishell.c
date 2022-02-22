@@ -17,12 +17,12 @@
 
 int	main(int argc, char **argv)
 {
-	char	*line = "\'\"hi||><<\"\'|  <<\"hel|<>>lo\"\"another one\"'noice!!'test  ||||>><<<<>><>< 'text1'";
+	t_list	*tokens;
+	char	*line = "\'\"hi||><<\"\'|  <<\"hel|<>>lo\"\"another one\"'noice!!'test  ||text3||>><<<<>><>< 'text1'";
 
 	printf("%s\n", line);
-	printf("count: %zu\n", count_delimiters(line));
 
-	t_list	*tokens = split_tok(line);
+	tokens = split_tok(line);
 	printf("tokens: %i\n", ft_lstsize(tokens));
 	while (tokens != NULL)
 	{

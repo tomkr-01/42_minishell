@@ -6,13 +6,13 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/02/22 11:47:54 by tkruger          ###   ########.fr        #
+#    Updated: 2022/02/22 21:41:44 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	minishell
 CC		=	gcc
-CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	=	-Wall -Wextra -Werror -g
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 SRCS	=	minishell.c lexer.c
