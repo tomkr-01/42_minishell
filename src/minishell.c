@@ -35,8 +35,6 @@ void	environment_init(char **envp)
 }
 
 
-// test push hello
-
 void	environment_print(void)
 {
 	int	i;
