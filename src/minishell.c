@@ -23,8 +23,15 @@ int	main(int argc, char **argv, char **envp)
 	
 	if (argc > 1)
 		return (0);
-	tokens = split_tok("test");
+	// tokens = split_tok("test");
+	tokens = split_tok("\'test hello \'hi|F|SDFSFASF\">><<<><>>\">>>");
+
+	int i = 0;
+	while (tokens != NULL)
+	{
+		printf("%s}\n", tokens->content);
+		tokens = tokens->next;
+	}
 	environment_init(envp);
-	environment_print();
 	return (0);
 }
