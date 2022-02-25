@@ -34,6 +34,9 @@ void	environment_init(char **envp)
 	g_env[i] = NULL;
 }
 
+
+// test push hello
+
 void	environment_print(void)
 {
 	int	i;
@@ -52,6 +55,8 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_list	*tokens;
 	
+	if (argc > 1)
+		return (0);
 	tokens = split_tok("test");
 	environment_init(envp);
 	environment_print();
