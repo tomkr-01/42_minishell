@@ -34,7 +34,6 @@ void	environment_init(char **envp)
 	g_env[i] = NULL;
 }
 
-
 void	environment_print(void)
 {
 	int	i;
