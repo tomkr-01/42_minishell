@@ -6,16 +6,16 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/02/22 21:41:44 by tkruger          ###   ########.fr        #
+#    Updated: 2022/02/25 14:23:28 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	minishell
 CC		=	gcc
-CFLAGS	=	-Wall -Wextra -Werror -g
+CFLAGS	=	-Wall -Wextra -Werror
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
-SRCS	=	minishell.c lexer.c
+SRCS	=	minishell.c lexer.c environment.c
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a

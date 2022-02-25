@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/25 13:44:11 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/25 14:22:55 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,9 @@ int	main(int argc, char **argv, char **envp);
 
 t_list	*split_tok(char const *line);
 
+/* environment.c */
+
+void	environment_init(char **envp);
+void	environment_print(void);
 
 #endif
