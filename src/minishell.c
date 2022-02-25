@@ -33,15 +33,9 @@ void	environment_init(char **envp)
 	}
 	g_env[i] = NULL;
 }
-// hello does this sync?????
-
-
-
-
+// another line added in tom
 
 // this text was added in branch tom
-
-
 
 void	environment_print(void)
 {
