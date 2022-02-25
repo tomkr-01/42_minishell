@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/22 21:39:37 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/25 11:25:38 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 
 /* minishell.c */
 
-int	main(int argc, char **argv);
+int	main(void);
 
 /* lexer.c */
 
