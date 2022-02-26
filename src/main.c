@@ -8,9 +8,9 @@ int	main(int argc, char *argv[], char **envp)
 	while (1)
 	{
 		signal(SIGQUIT, SIG_IGN);
+		/* sighandler for ctrl C -> display the prompt on a new line */
 		signal(SIGINT, control_c);
 		change_attributes(false);
-		/* sighandler for ctrl C -> display the prompt on a new line */
 	}
 	return (0);
 }
