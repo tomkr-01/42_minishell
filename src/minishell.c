@@ -20,10 +20,11 @@ extern char	**g_env;
 int	main(int argc, char **argv, char **envp)
 {
 	t_list	*tokens;
-	
+
 	if (argc > 1)
 		return (0);
-	tokens = split_tok("echo \"this text is redirected to a file!\" > textfile");
+	tokens = lexer("echo \"this text is redirected to a file!\"  > textfile");
+	printf("%s\n", syntax_check(tokens) ? "true" : "false");
 	environment_init(envp);
 	return (0);
 }

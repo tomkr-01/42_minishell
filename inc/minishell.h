@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/27 20:04:53 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/27 23:21:30 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,17 @@
 
 int	main(int argc, char **argv, char **envp);
 
-/* lexer.c */
-
-t_list	*split_tok(char const *line);
-
 /* environment.c */
 
 void	environment_init(char **envp);
 void	environment_print(void);
+
+/* lexer.c */
+
+void	*lexer(char const *line);
+
+/* syntax_check.c */
+
+bool	syntax_check(void *tokens);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 10:56:26 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/27 20:20:28 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/28 00:09:11 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ size_t	quote_token(const char *line, int *i);
 size_t	alphanum_token(const char *line, int *i);
 size_t	operator_token(const char *line, int *i);
 
-t_list	*split_tok(char const *line)
+void	*lexer(char const *line)
 {
 	t_list	*tokens;
 	int		i;
@@ -84,6 +84,7 @@ size_t	alphanum_token(const char *line, int *i)
 	return (chrs);
 }
 
+// creates a token from quotes and throws and error when quotes are unclosed
 size_t	quote_token(const char *line, int *i)
 {
 	size_t	chrs;
