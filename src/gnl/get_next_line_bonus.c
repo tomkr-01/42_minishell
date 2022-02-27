@@ -93,7 +93,7 @@ char	*get_next_line(int fd)
 	int				bytes;
 	char			*buffer;
 	char			*line;
-	static char		*content[OPEN_MAX] = {0};
+	static char		*content[2048];
 
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	bytes = read(fd, buffer, BUFFER_SIZE);
