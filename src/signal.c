@@ -4,7 +4,7 @@ void	control_c(int sig)
 {
 	if (sig == SIGINT)
 	{
-		write(2, "\n", 1);
+		write(STDERR_FILENO, "\n", 1);
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		rl_redisplay();
@@ -18,25 +18,25 @@ void	control_c(int sig)
 	it is a bit representation of the number 64.
 */
 
-int	change_attributes(bool state)
+int	change_attributes(bool print_controls)
 {
 	int					err;
 	struct termios		termios;
 
-	err = tcgetattr(1, &termios);
+	err = tcgetattr(STDOUT_FILENO, &termios);
 	if (err == -1)
 		return (-1);
 	printf("this is the value of c_lflag %u\n", termios.c_lflag);
 	/* ECHO und ECHOCTL on consist of one bit being a 1 and the rest being 0's
 	to turn on option 'on', you use the bitwise or operator, as all the other
 	flags stay the same while the one you want is turned to a 1 */
-	if (state)
+	if (print_controls)
 		termios.c_lflag |= ECHOCTL;
 	/* the ~ operator changes 0's to 1's and 1's to 0's together with the and operator
 	everything that is a 1 will stay a 1 and the bit we want is turned to a 0 */
 	else
 		termios.c_lflag &= ~(ECHOCTL);
-	err = tcsetattr(1, TCSANOW, &termios);
+	err = tcsetattr(STDOUT_FILENO, TCSANOW, &termios);
 	if (err == -1)
 		return (-1);
 	return (0);
