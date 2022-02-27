@@ -23,15 +23,7 @@ int	main(int argc, char **argv, char **envp)
 	
 	if (argc > 1)
 		return (0);
-	// tokens = split_tok("test");
-	tokens = split_tok("\'test hello \'hi|F|SDFSFASF\">><<<><>>\">>>");
-
-	int i = 0;
-	while (tokens != NULL)
-	{
-		printf("%s}\n", tokens->content);
-		tokens = tokens->next;
-	}
+	tokens = split_tok("echo \"this text is redirected to a file!\" > textfile");
 	environment_init(envp);
 	return (0);
 }
