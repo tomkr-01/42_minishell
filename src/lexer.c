@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 10:56:26 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/28 00:09:11 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/28 11:41:18 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ size_t	alphanum_token(const char *line, int *i)
 	return (chrs);
 }
 
-// creates a token from quotes and throws and error when quotes are unclosed
 size_t	quote_token(const char *line, int *i)
 {
 	size_t	chrs;

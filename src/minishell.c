@@ -23,7 +23,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc > 1)
 		return (0);
-	tokens = lexer("echo \"this text is redirected to a file!\"  > textfile");
+	tokens = lexer("echo \"this text is redirected to a file!\" > textfile");
 	printf("%s\n", syntax_check(tokens) ? "true" : "false");
 	environment_init(envp);
 	return (0);
