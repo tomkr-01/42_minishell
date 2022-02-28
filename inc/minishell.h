@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/27 23:21:30 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/02/28 23:42:40 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,17 @@
 /* STRUCTS																	  */
 /* ************************************************************************** */
 
+typedef struct s_cmd
+{
+	char	*executable;
+	char	**arguments;
+	char	**out_redirs;
+	char	**appends;
+	char	*in_redir;
+	char	*delimiter;
+	bool	pipe;
+	t_cmd	*next;
+}	t_cmd;
 
 /* ************************************************************************** */
 /* FUNCTION PROTOTYPES														  */
@@ -47,6 +58,7 @@ void	*lexer(char const *line);
 
 /* syntax_check.c */
 
-bool	syntax_check(void *tokens);
+bool	syntax_check(t_list *tokens);
+bool	is_operator(t_list *token);
 
 #endif
