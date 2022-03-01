@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 22:33:15 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/28 22:45:45 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/01 12:14:37 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	operator_check(t_list *tokens)
 {
 	int	prev_op;
 
-	prev_op = 0;
+	prev_op = 1;
 	if (ft_strncmp(ft_lstlast(tokens)->content, "<", 1) == 0
 		|| ft_strncmp(ft_lstlast(tokens)->content, ">", 1) == 0)
 		exit(ft_putendl_fd("Operator syntax error", STDERR_FILENO));
@@ -75,11 +75,9 @@ void	quote_check(t_list *tokens)
 
 bool	is_operator(t_list *token)
 {
-	if (ft_strncmp(token->content, "|", 2) == 0
-		|| ft_strncmp(token->content, "<", 2) == 0
-		|| ft_strncmp(token->content, ">", 2) == 0
-		|| ft_strncmp(token->content, ">>", 3) == 0
-		|| ft_strncmp(token->content, "<<", 3) == 0)
+	if (ft_strncmp(token->content, "|", 1) == 0
+		|| ft_strncmp(token->content, "<", 1) == 0
+		|| ft_strncmp(token->content, ">", 1) == 0)
 	{
 		return (true);
 	}

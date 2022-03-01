@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/28 23:42:40 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/01 12:10:54 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@
 
 typedef struct s_cmd
 {
-	char	*executable;
-	char	**arguments;
-	char	**out_redirs;
-	char	**appends;
-	char	*in_redir;
-	char	*delimiter;
-	bool	pipe;
-	t_cmd	*next;
+	char			*executable;
+	char			**arguments;
+	char			**out_redirs;
+	char			**appends;
+	char			*in_redir;
+	char			*delimiter;
+	bool			pipe;
+	struct s_cmd	*next;
 }	t_cmd;
 
 /* ************************************************************************** */
