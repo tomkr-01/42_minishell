@@ -6,7 +6,7 @@
 /*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 22:33:15 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/01 11:24:53 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/01 12:19:00 by rjasari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 void	operator_check(t_list *tokens);
 void	quote_check(t_list *tokens);
 
-bool	syntax_check(void *tokens)
+bool	syntax_check(t_list *tokens)
 {
 	operator_check(tokens);
 	quote_check(tokens);
@@ -31,28 +31,27 @@ bool	syntax_check(void *tokens)
 
 void	operator_check(t_list *tokens)
 {
-	bool	prev_tok_redirection;
+	int	prev_op;
 
-	prev_tok_redirection = false;
-	if (ft_strncmp(tokens->content, "|", 1) == 0
-		|| ft_strncmp(ft_lstlast(tokens)->content, "|", 1) == 0
-		|| ft_strncmp(ft_lstlast(tokens)->content, "<", 1) == 0
+	prev_op = 1;
+	if (ft_strncmp(ft_lstlast(tokens)->content, "<", 1) == 0
 		|| ft_strncmp(ft_lstlast(tokens)->content, ">", 1) == 0)
-	{
 		exit(ft_putendl_fd("Operator syntax error", STDERR_FILENO));
-	}
 	while (tokens != NULL)
 	{
-		if (ft_strncmp(tokens->content, "|", 1) == 0
-			|| ft_strncmp(tokens->content, "<", 1) == 0
-			|| ft_strncmp(tokens->content, ">", 1) == 0)
+		if (is_operator(tokens))
 		{
-			if (ft_strlen(tokens->content) > 2 || prev_tok_redirection == true)
+			if (ft_strlen(tokens->content) > 2 || prev_op == 2
+				|| (ft_strncmp(tokens->content, "|", 1) == 0 && prev_op == 1))
+			{
 				exit(ft_putendl_fd("Operator syntax error", STDERR_FILENO));
-			prev_tok_redirection = true;
+			}
+			prev_op = 2;
+			if (ft_strncmp(tokens->content, "|", 1) == 0)
+				prev_op = 1;
 		}
 		else
-			prev_tok_redirection = false;
+			prev_op = 0;
 		tokens = tokens->next;
 	}
 }
@@ -73,4 +72,15 @@ void	quote_check(t_list *tokens)
 		}
 		tokens = tokens->next;
 	}
+}
+
+bool	is_operator(t_list *token)
+{
+	if (ft_strncmp(token->content, "|", 1) == 0
+		|| ft_strncmp(token->content, "<", 1) == 0
+		|| ft_strncmp(token->content, ">", 1) == 0)
+	{
+		return (true);
+	}
+	return (false);
 }

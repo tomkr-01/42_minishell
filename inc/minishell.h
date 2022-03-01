@@ -6,7 +6,7 @@
 /*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/01 12:18:00 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/01 12:18:52 by rjasari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,23 @@
 /* ************************************************************************** */
 
 # define OPERATORS "|<>"
-# define METACHARS OPERATORS"\'\" \t"
+# define METACHARS OPERATORS"\'\" \t\n"
 
 /* ************************************************************************** */
 /* STRUCTS																	  */
 /* ************************************************************************** */
 
+typedef struct s_cmd
+{
+	char			*executable;
+	char			**arguments;
+	char			**out_redirs;
+	char			**appends;
+	char			*in_redir;
+	char			*delimiter;
+	bool			pipe;
+	struct s_cmd	*next;
+}	t_cmd;
 
 /* ************************************************************************** */
 /* FUNCTION PROTOTYPES														  */
@@ -48,7 +59,8 @@ void	*lexer(char const *line);
 
 /* syntax_check.c */
 
-bool	syntax_check(void *tokens);
+bool	syntax_check(t_list *tokens);
+bool	is_operator(t_list *token);
 
 /* signal.c */
 void	control_c(int sig);
