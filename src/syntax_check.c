@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   syntax_check.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 22:33:15 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/28 12:14:57 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/01 11:24:53 by rjasari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+#include <errno.h>
 
 // for list management and error messages
 #include "../libs/libft/includes/libft.h"

@@ -1,5 +1,28 @@
 #include "../inc/minishell.h"
 
+// char	*quote_removal(char *input)
+// {
+// 	int		len;
+// 	int		index;
+// 	int		double_quotes;
+// 	int		single_quotes;
+// 	char	to_remove;
+
+// 	index = 0;
+// 	double_quotes = 0;
+// 	single_quotes = 0;
+// 	while (input[index] != '\0')
+// 	{
+// 		if (input[index] == '"' || input[index] == "'")
+// 			to_remove = input[index];
+// 		index++;
+// 		while (input[index] != to_remove && input[index] != '\0')
+// 			len++;
+// 		// len--;
+// 		index++;
+// 	}
+// }
+
 char	*read_input(void)
 {
 	int		tty_flag;
