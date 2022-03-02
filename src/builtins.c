@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/01 21:12:42 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/02 18:45:41 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	check_builtins(char const **arguments)
 	size_t	i;
 
 	char *builtin_str[] = {
-		"echo", "cd", "pwd", "export", "unset", "env", "exit"
+		"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL
 	};
 	int (*builtin_func[])(char const **) = {
 		&echo_builtin, &cd_builtin, &pwd_builtin, &export_builtin,
@@ -39,9 +39,11 @@ int	check_builtins(char const **arguments)
 	while (builtin_str[i] != NULL)
 	{
 		if (ft_strncmp(arguments[0], builtin_str[i],
-			ft_strlen(builtin_str[i]) == 0))
-			return (*builtin_func[i](&arguments[1]));
+			ft_strlen(builtin_str[i])) == 0)
+			return ((*builtin_func[i])(&arguments[1]));
+		i++;
 	}
+	return (-1000);
 }
 
 int	echo_builtin(char const **arguments)
@@ -57,6 +59,7 @@ int	echo_builtin(char const **arguments)
 		{
 			is_option = false;
 			ft_putstr_fd((char *)arguments[i], STDOUT_FILENO);
+			ft_putstr_fd(" ", STDOUT_FILENO);
 		}
 		i++;
 	}
@@ -106,12 +109,49 @@ int	pwd_builtin(char const **arguments)
 
 int	export_builtin(char const **arguments)
 {
-	return (0);
+	size_t	a_i;
+	size_t	i;
+
+	a_i = 0;
+	while (arguments[a_i] != NULL)
+	{
+		i = 0;
+		while (g_env[i] != NULL && ft_strncmp(g_env[i], arguments[a_i],
+				ft_strchr_int(arguments[a_i], '=')) != 0)
+			i++;
+		if (g_env[i] != NULL)
+		{
+			free(g_env[i]);
+			g_env[i] = ft_strdup(arguments[a_i]);
+		}
+		else
+		{
+			g_env = add_array_element(g_env, arguments[a_i]);
+		}
+		a_i++;
+	}
+	return (EXIT_SUCCESS);
 }
 
 int	unset_builtin(char const **arguments)
 {
-	return (0);
+	size_t	a_i;
+	size_t	i;
+
+	a_i = 0;
+	while (arguments[a_i] != NULL)
+	{
+		i = 0;
+		while (g_env[i] != NULL && ft_strncmp(g_env[i], arguments[a_i],
+				ft_strchr_int(arguments[a_i], '=')) != 0)
+			i++;
+		if (g_env[i] != NULL)
+		{
+			g_env = rm_array_element(g_env, g_env[i]);
+		}
+		a_i++;
+	}
+	return (EXIT_SUCCESS);
 }
 
 int	env_builtin(char const **arguments)
@@ -121,23 +161,18 @@ int	env_builtin(char const **arguments)
 	i = 0;
 	while (g_env[i] != NULL)
 	{
-		if (arguments == NULL)
-			ft_putendl_fd(g_env[i], STDOUT_FILENO);
-		else if (ft_strncmp(g_env[i], arguments[0], ft_strlen(arguments[0])) == 0)
-		{
-			ft_putendl_fd(ft_strchr(g_env[i], '=') + 1, STDOUT_FILENO);
-			return (EXIT_SUCCESS);
-		}
+		if (ft_strncmp(g_env[i], "?", 2) != 0)
+			printf("%s\n", g_env[i]);
 		i++;
 	}
 	if (arguments == NULL)
 		return (EXIT_SUCCESS);
-	ft_putstr_fd("env: ", STDOUT_FILENO);
-	ft_putendl_fd((char *)arguments[0], STDOUT_FILENO);
+	printf("env: %s: No such file or directory\n", arguments[0]);
 	return (127); // not sure about this but bash returns this code when there are arguments that do not fit
 }
 
 int	exit_builtin(char const **arguments)
 {
-	return (0);
+	exit(EXIT_SUCCESS);
+	return (EXIT_SUCCESS);
 }

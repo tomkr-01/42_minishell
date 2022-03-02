@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 22:01:02 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/01 00:02:50 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/02 18:15:01 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,30 +74,4 @@ char	**parser(t_list *tokens)
 		}
 	}
 	new_cmd->next = NULL; // this pointer will point to the next command if there is a pipe or NULL
-}
-
-// this is probably gonna be a utils function eventually
-char	**add_array_element(char **old_arr, char *new_el)
-{
-	char	**new_arr;
-	size_t	arr_size;
-	size_t	i;
-
-	arr_size = ft_arrlen(old_arr);
-	i = 0;
-	new_arr = ft_calloc(arr_size + 1, sizeof(*new_arr));
-	if (new_arr == NULL)
-		exit(ft_putendl_fd("add_array_element(): malloc fail", STDERR_FILENO));
-	while (i < arr_size)
-	{
-		new_arr[i] = old_arr[i];
-		free(old_arr[i]);
-		old_arr[i] = NULL;
-		i++;
-	}
-	free(old_arr);
-	old_arr = NULL;
-	new_arr[i] = ft_strdup(new_el);
-	new_arr[i + 1] = NULL;
-	return (new_arr);
 }

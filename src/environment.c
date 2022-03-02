@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/25 14:20:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/02/28 00:14:34 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/02 15:22:01 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,4 @@ void	environment_init(char **envp)
 		i++;
 	}
 	g_env[i] = NULL;
-}
-
-void	environment_print(void)
-{
-	int	i;
-
-	i = 0;
-	while (g_env[i] != NULL)
-		ft_putendl_fd(g_env[i++], STDOUT_FILENO);
 }

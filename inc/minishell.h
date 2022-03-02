@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/01 19:34:56 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/02 18:17:51 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	main(int argc, char **argv, char **envp);
 /* environment.c */
 
 void	environment_init(char **envp);
-void	environment_print(void);
 
 /* lexer.c */
 
@@ -60,5 +59,10 @@ void	*lexer(char const *line);
 
 bool	syntax_check(t_list *tokens);
 bool	is_operator(t_list *token);
+
+/* utils.c */
+
+char	**add_array_element(char **old_arr, char *new_el);
+char	**rm_array_element(char **old_arr, char	*old_el);
 
 #endif
