@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/02 18:17:51 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/03 01:13:46 by tomkrueger       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ int	main(int argc, char **argv, char **envp);
 /* environment.c */
 
 void	environment_init(char **envp);
+char	*get_var(char *var);
 
 /* lexer.c */
 
@@ -64,5 +65,6 @@ bool	is_operator(t_list *token);
 
 char	**add_array_element(char **old_arr, char *new_el);
 char	**rm_array_element(char **old_arr, char	*old_el);
+void	free_array(char ***arr);
 
 #endif

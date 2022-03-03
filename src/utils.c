@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/02 18:14:36 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/02 18:16:47 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/03 02:07:33 by tomkrueger       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+#include <stdio.h>
+#include <errno.h>
 
 // This f() returns returns a malloced char ** with the added element and frees
 // the old one
@@ -22,7 +25,7 @@ char	**add_array_element(char **old_arr, char *new_el)
 	i = 0;
 	new_arr = ft_calloc(ft_arrlen(old_arr) + 2, sizeof(*new_arr));
 	if (new_arr == NULL)
-		exit(printf("add_array_element(): malloc fail"));
+		exit(ENOMEM);
 	while (old_arr[i] != NULL)
 	{
 		new_arr[i] = old_arr[i];
@@ -62,4 +65,22 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 		free(old_arr);
 	old_arr = NULL;
 	return (new_arr);
+}
+
+void	free_array(char ***arr)
+{
+	char	**parser;
+	size_t	i;
+
+	parser = *arr;
+	i = 0;
+	while (parser[i] != NULL)
+	{
+		free(parser[i]);
+		parser[i] = NULL;
+		i++;
+	}
+	if (parser != NULL)
+		free(parser);
+	parser = NULL;
 }
