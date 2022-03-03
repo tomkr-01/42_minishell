@@ -15,6 +15,13 @@
 
 # include <stdio.h>
 # include <stddef.h>
+# include <signal.h>
+# include <termios.h>
+# include <stdbool.h>
+# include <stdlib.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <unistd.h>
 # include "../libs/libft/includes/libft.h"
 
 /* ************************************************************************** */
