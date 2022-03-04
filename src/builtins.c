@@ -6,32 +6,34 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/04 13:37:47 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/04 20:19:19 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 #include <errno.h>
-#include <stdio.h>
+#include <string.h> // for strerror()
 
 extern char	**g_env;
 
-int		echo_builtin(char const **arguments);
-int		cd_builtin(char const **arguments);
-int		pwd_builtin(char const **arguments);
+int		echo_builtin(char **arguments);
+int		cd_builtin(char **arguments);
+int		pwd_builtin(char **arguments);
 char	*pwd_helper(void);
-int		export_builtin(char const **arguments);
-int		unset_builtin(char const **arguments);
-int		env_builtin(char const **arguments);
-int		exit_builtin(char const **arguments);
+int		export_builtin(char **arguments);
+int		unset_builtin(char **arguments);
+int		env_builtin(char **arguments);
+int		exit_builtin(char **arguments);
 
-int	check_builtins(char const **arguments)
+int	check_builtins(char **arguments)
 {
 	size_t	i;
+	char	*builtin_str[] = {"echo", "cd", "pwd", "export", "unset", "env",
+		"exit", NULL};
+	int		(*builtin_func[])(char **) = {&echo_builtin, &cd_builtin,
+		&pwd_builtin, &export_builtin, &unset_builtin, &env_builtin,
+		&exit_builtin};
 
-	char	*builtin_str[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
-	int		(*builtin_func[])(char const **) = {&echo_builtin, &cd_builtin, &pwd_builtin, &export_builtin,
-		&unset_builtin, &env_builtin, &exit_builtin};
 	i = 0;
 	while (builtin_str[i] != NULL)
 	{
@@ -43,57 +45,61 @@ int	check_builtins(char const **arguments)
 	return (-1000);
 }
 
-int	echo_builtin(char const **arguments)
+int	echo_builtin(char **arguments)
 {
 	size_t	i;
-	bool	is_option;
+	size_t	j;
+	int		new_line;
 
 	i = 0;
-	is_option = true;
+	new_line = 1;
 	while (arguments != NULL && arguments[i] != NULL)
 	{
-		if (ft_strncmp(arguments[i], "-n", 3) != 0 || is_option == false)
+		j = 1;
+		while (arguments[i][0] == '-' && arguments[i][j] == 'n')
+			j++;
+		if (arguments[i][j] == '\0' && new_line > 0)
+			new_line = 2;
+		else
 		{
-			is_option = false;
-			printf("%s ", arguments[i]);
+			if (new_line > 0)
+				new_line *= -1;
+			ft_putstr_fd(arguments[i], STDOUT_FILENO);
+			ft_putchar_fd(' ', STDOUT_FILENO);
 		}
 		i++;
 	}
-	if (ft_strncmp(arguments[0], "-n", 3) != 0)
-		printf("\n");
+	if (new_line == -1)
+		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (EXIT_SUCCESS);
 }
 
-int	cd_builtin(char const **arguments)
+int	cd_builtin(char **arguments)
 {
-	char const	**export_arr;
-	size_t		i;
+	char	**export_pwds;
 
-	if (chdir(arguments[0]))
+	if (arguments[0] == NULL)
+		chdir(get_var("HOME"));
+	else if (chdir(arguments[0]))
 	{
-		printf("%s: No such file or directory\n", arguments[0]);
-		return (ENOENT);
+		put_stderr(SHELL, "cd", arguments[0], strerror(ENOENT));
+		return (1); // somehow the same value as in bash, not 2 as in ENOENT
 	}
-	export_arr = ft_calloc(3, sizeof(*export_arr));
-	if (export_arr == NULL)
+	export_pwds = ft_calloc(3, sizeof(*export_pwds));
+	if (export_pwds == NULL)
 		exit(ENOMEM);
-	export_arr[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
-	export_arr[1] = ft_strjoin_free(ft_strdup("PWD="), pwd_helper());
-	export_arr[2] = NULL;
-	export_builtin(export_arr);
-	free_array((char ***)&export_arr);
+	export_pwds[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
+	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), pwd_helper());
+	export_pwds[2] = NULL;
+	export_builtin(export_pwds);
+	free_array((char ***)&export_pwds);
 	return (EXIT_SUCCESS);
 }
 
-int	pwd_builtin(char const **arguments)
+int	pwd_builtin(char **arguments)
 {
 	char	*pwd;
 
-	if (ft_arrlen((char **)arguments) > 0)
-	{
-		ft_putendl_fd("pwd: too many arguments", STDOUT_FILENO);
-		return (E2BIG);
-	}
 	pwd = pwd_helper();
 	ft_putendl_fd(pwd, STDOUT_FILENO);
 	if (pwd != NULL)
@@ -122,7 +128,7 @@ char	*pwd_helper(void)
 	return (pwd);
 }
 
-int	export_builtin(char const **arguments)
+int	export_builtin(char **arguments)
 {
 	size_t	a_i;
 	size_t	i;
@@ -141,14 +147,14 @@ int	export_builtin(char const **arguments)
 		}
 		else
 		{
-			g_env = add_array_element(g_env, (char *)arguments[a_i]);
+			g_env = add_array_element(g_env, arguments[a_i]);
 		}
 		a_i++;
 	}
 	return (EXIT_SUCCESS);
 }
 
-int	unset_builtin(char const **arguments)
+int	unset_builtin(char **arguments)
 {
 	size_t	a_i;
 	size_t	i;
@@ -159,7 +165,9 @@ int	unset_builtin(char const **arguments)
 		i = 0;
 		while (g_env[i] != NULL && ft_strncmp(g_env[i], arguments[a_i],
 				ft_strchr_int(arguments[a_i], '=')) != 0)
+		{
 			i++;
+		}
 		if (g_env[i] != NULL)
 		{
 			g_env = rm_array_element(g_env, g_env[i]);
@@ -169,7 +177,7 @@ int	unset_builtin(char const **arguments)
 	return (EXIT_SUCCESS);
 }
 
-int	env_builtin(char const **arguments)
+int	env_builtin(char **arguments)
 {
 	size_t	i;
 
@@ -177,39 +185,35 @@ int	env_builtin(char const **arguments)
 	while (g_env[i] != NULL)
 	{
 		if (ft_strncmp(g_env[i], "?", 2) != 0)
-			printf("%s\n", g_env[i]);
+			ft_putendl_fd(g_env[i], STDOUT_FILENO);
 		i++;
 	}
 	if (arguments == NULL)
 		return (EXIT_SUCCESS);
-	// printf("env: %s: No such file or directory\n", arguments[0]);
-	perror("env");
-	return (127); // not sure about this but bash returns this code when there are arguments that do not fit
+	put_stderr(NULL, "env", arguments[0], strerror(ENOENT));
+	return (127);
 }
 
-int	exit_builtin(char const **arguments)
+int	exit_builtin(char **arguments)
 {
-	printf("exit\n");
-	if (ft_arrlen((char **)arguments) > 0 && !ft_isdigit(arguments[0][0]))
+	ft_putendl_fd("exit", STDERR_FILENO);
+	if (ft_arrlen(arguments) > 0 && !ft_isint(arguments[0]))
 	{
-		perror("exit");
-		// exit(255);
-		return (255);
+		put_stderr(SHELL, "exit", arguments[0], "numeric argument required");
+		exit(255);
 	}
-	else if (ft_arrlen((char **)arguments) > 1)
+	else if (ft_arrlen(arguments) > 1)
 	{
-		perror("exit");
+		put_stderr(SHELL, "exit", NULL, "too many arguments");
 		return (EPERM);
 	}
-	else if (ft_arrlen((char **)arguments) == 1)
+	else if (ft_arrlen(arguments) == 1)
 	{
-		// exit(ft_atoi((char *)arguments[0]));
-		return (ft_atoi((char *)arguments[0]));
+		exit(ft_atoi(arguments[0]));
 	}
 	else
 	{
-		// exit(EXIT_SUCCESS);
-		return (EXIT_SUCCESS);
+		exit(EXIT_SUCCESS);
 	}
 	return (EXIT_FAILURE);
 }
