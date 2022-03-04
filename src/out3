@@ -1,16 +1,16 @@
-total 144
--rwxr-xr-x  1 rjasari  2021_heilbronn  21468 Mar  2 14:44 a.out
+total 152
+-rwxr-xr-x  1 rjasari  2021_heilbronn  21508 Mar  2 15:31 a.out
 drwxr-xr-x  3 rjasari  2021_heilbronn    102 Mar  2 12:13 a.out.dSYM
 drwxr-xr-x  2 rjasari  2021_heilbronn     68 Mar  2 09:08 builtins
--rw-r--r--  1 rjasari  2021_heilbronn   5508 Mar  2 14:44 cmd.c
+-rw-r--r--  1 rjasari  2021_heilbronn   5606 Mar  2 15:31 cmd.c
 -rw-r--r--  1 rjasari  2021_heilbronn   1355 Feb 28 11:14 environment.c
 -rw-r--r--  1 rjasari  2021_heilbronn   2135 Mar  2 10:29 get_next_line.c
 -rw-r--r--  1 rjasari  2021_heilbronn   2636 Feb 28 12:26 lexer.c
 -rw-r--r--  1 rjasari  2021_heilbronn   1691 Mar  2 10:26 main.c
 -rw-r--r--  1 rjasari  2021_heilbronn   1272 Feb 28 12:26 minishell.c
--rw-r--r--  1 rjasari  2021_heilbronn      0 Mar  2 14:40 out
--rw-r--r--  1 rjasari  2021_heilbronn   1016 Mar  2 14:43 out2
--rw-r--r--  1 rjasari  2021_heilbronn      0 Mar  2 14:44 out3
+-rw-r--r--  1 rjasari  2021_heilbronn      9 Mar  2 15:31 out
+-rw-r--r--  1 rjasari  2021_heilbronn   1016 Mar  2 15:32 out2
+-rw-r--r--  1 rjasari  2021_heilbronn      0 Mar  2 15:32 out3
 -rw-r--r--  1 rjasari  2021_heilbronn   4166 Mar  1 12:18 parser.c
 -rw-r--r--  1 rjasari  2021_heilbronn   1321 Feb 28 11:24 signal.c
 -rw-r--r--  1 rjasari  2021_heilbronn   2529 Mar  1 12:19 syntax_check.c

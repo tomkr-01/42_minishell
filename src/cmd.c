@@ -176,84 +176,87 @@ char	**add_array_element(char **old_arr, char *new_el)
 
 char	*find_executable(char *command);
 
-void	execution(t_list *token, char **envp)
-{
-	int			pip[2];
-	int			pid;
-	size_t		token_len;
-	char		**command;
-	int			std_fd[2];
+// void	execution(t_list *token, char **envp)
+// {
+// 	int			pip[2];
+// 	int			pid;
+// 	size_t		token_len;
+// 	char		**command;
+// 	int			std_fd[2];
 
-	std_fd[0] = dup(STDIN_FILENO);
-	std_fd[1] = dup(STDOUT_FILENO);
-	command = NULL;
-	while (token != NULL)
-	{
-		// pipe(pip);
-		// token_len = ft_strlen(token->content);
-		// dup2(std_fd[0], 0);
-		// dup2(std_fd[1], 1);
-		while (token != NULL && token->content[0] != '|')
-		{
-			token_len = ft_strlen(token->content);
-			if (ft_strchr(token->content, '<') != NULL)
-			{
-				if (token_len == 1)
-				{
-					token = token->next;
-					open_in(token->content);
-				}
-				else if (token_len == 2)
-				{
-					token = token->next;
-					heredoc(token->content);
-				}
-			}
-			else if (ft_strchr(token->content, '>') != NULL)
-			{
-				if (token_len == 1)
-				{
-					token = token->next;
-					open_out(token->content);
-				}
-				else if (token_len == 2)
-				{
-					token = token->next;
-					open_append(token->content);
-				}
-			}
-			else
-				command = add_array_element(command, token->content);
-			token = token->next;
-		}
-		if (token != NULL && token->content[0] == '|')
-			pipe(pip);
-		if (token != NULL)
-			token = token->next;
-		pid = fork();
-		if (pid == 0)
-		{
-			close(pip[0]);
-			dup2(pip[1], 1);
-			command[0] = find_executable(command[0]);
-			execve(command[0], command, envp);
-			printf("command not found\n");
-		}
-		else if (pid > 0)
-		{
-			close(pip[1]);
-			dup2(pip[0], 0);
-			close(0);
-			dup2(std_fd[0], 0);
-			dup2(std_fd[1], 1);
-			// close(0);
-		}
-		free(command);
-		command = NULL;
-	}
-	while (wait(NULL) != -1)
-		continue ;
-}
+// 	std_fd[0] = dup(STDIN_FILENO);
+// 	std_fd[1] = dup(STDOUT_FILENO);
+// 	command = NULL;
+// 	while (token != NULL)
+// 	{
+// 		// pipe(pip);
+// 		// token_len = ft_strlen(token->content);
+// 		// close(0);
+// 		// dup2(std_fd[0], 0);
+// 		// dup2(std_fd[1], 1);
+// 		while (token != NULL && token->content[0] != '|')
+// 		{
+// 			token_len = ft_strlen(token->content);
+// 			if (ft_strchr(token->content, '<') != NULL)
+// 			{
+// 				if (token_len == 1)
+// 				{
+// 					token = token->next;
+// 					open_in(token->content);
+// 				}
+// 				else if (token_len == 2)
+// 				{
+// 					token = token->next;
+// 					heredoc(token->content);
+// 				}
+// 			}
+// 			else if (ft_strchr(token->content, '>') != NULL)
+// 			{
+// 				if (token_len == 1)
+// 				{
+// 					token = token->next;
+// 					open_out(token->content);
+// 				}
+// 				else if (token_len == 2)
+// 				{
+// 					token = token->next;
+// 					open_append(token->content);
+// 				}
+// 			}
+// 			else
+// 				command = add_array_element(command, token->content);
+// 			token = token->next;
+// 		}
+// 		dup2(std_fd[0], 0);
+// 		dup2(std_fd[1], 1);
+// 		if (token != NULL && token->content[0] == '|')
+// 			pipe(pip);
+// 		if (token != NULL)
+// 			token = token->next;
+// 		pid = fork();
+// 		if (pid == 0)
+// 		{
+// 			close(pip[0]);
+// 			dup2(pip[1], 1);
+// 			command[0] = find_executable(command[0]);
+// 			execve(command[0], command, envp);
+// 			printf("command not found\n");
+// 		}
+// 		else if (pid > 0)
+// 		{
+// 			close(pip[1]);
+// 			dup2(pip[0], 0);
+// 			close(0);
+// 			// close(0);
+// 		}
+// 		free(command);
+// 		command = NULL;
+// 	}
+// 	while (wait(NULL) != -1)
+// 	{
+// 		continue ;
+// 	}
+// }
 
 char	*find_executable(char *command)
 {
@@ -292,18 +295,168 @@ char	*find_executable(char *command)
 	return (command);
 }
 
+/* command table parser */
+
+typedef struct s_redir {
+	int					type;
+	char				*name;
+	struct s_redir		*next;
+}			t_redir;
+
+typedef struct s_table {
+	char				**arguments;
+	t_redir				*redirections;
+	struct s_table		*prev;
+	struct s_table		*next;
+}			t_table;
+
+t_table	*init_row(void)
+{
+	t_table		*row;
+
+	row = (t_table *)malloc(sizeof(t_table));
+	if (row == NULL)
+		return (NULL);
+	row->arguments = NULL;
+	row->redirections = NULL;
+	row->prev = NULL;
+	row->next = NULL;
+	return (row);
+}
+
+t_redir	*new_redirection(int type, char *name)
+{
+	t_redir		*new;
+
+	new = (t_redir *)malloc(sizeof(t_redir));
+	if (new == NULL)
+		return (NULL);
+	new->type = type;
+	new->name = name;
+	new->next = NULL;
+	return (new);
+}
+
+void	append_redir(t_table **lst, t_redir *new)
+{
+	t_table		*tmp;
+
+	tmp = *lst;
+	if (tmp->redirections == NULL)
+	{
+		tmp->redirections = new;
+		return ;
+	}
+	if (new == NULL)
+		return ;
+	while (tmp->redirections->next != NULL)
+		tmp->redirections = tmp->redirections->next;
+	new->next = tmp->redirections->next;
+	tmp->redirections->next = new;
+}
+
+# define IN 1
+# define OUT 2
+# define HEREDOC 4
+# define OUT_APPEND 8
+
+t_redir	*parse_redirections(t_list *token)
+{
+	int		type_flag;
+	t_redir	*new;
+
+	type_flag = 0;
+	if (ft_strncmp(token->content, "<", 1) == 0)
+		type_flag = IN;
+	if (ft_strncmp(token->content, ">", 1) == 0)
+		type_flag = OUT;
+	if (ft_strncmp(token->content, "<<", 2) == 0)
+		type_flag = HEREDOC;
+	if (ft_strncmp(token->content, ">>", 2) == 0)
+		type_flag = OUT_APPEND;
+	token = token->next;
+	new = new_redirection(type_flag, token->content);
+	return (new);
+}
+
+t_table	*parser(t_list *token)
+{
+	t_table		*tables;
+	t_table		*table;
+	t_redir		*new;
+
+	tables = init_row();
+	if (tables == NULL)
+		exit(1);
+	table = tables;
+	while (token != NULL)
+	{
+		if (token->content[0] == '|')
+		{
+			table->next = init_row();
+			table = table->next;
+			table->prev = tables;
+			tables = table;
+		}
+		else if (token->content[0] == '<' || token->content[0] == '>')
+		{
+			new = parse_redirections(token);
+			append_redir(&table, new);
+			token = token->next;
+		}
+		else
+			table->arguments = add_array_element(table->arguments, token->content);
+		token = token->next;
+	}
+	return (table);
+}
+
+void	execution(t_table *table)
+{
+	int		index;
+
+	while (table->prev != NULL)
+		table = table->prev;
+	while (table != NULL)
+	{
+		index = 0;
+		while (table->redirections != NULL)
+		{
+			printf("%d. redirection\n\ttype: %d\n\t%s\n", index + 1, table->redirections->type, table->redirections->name);
+			table->redirections = table->redirections->next;
+			index++;
+		}
+		index = 0;
+		printf("now the command\n");
+		while (table->arguments[index])
+		{
+			printf("%s ", table->arguments[index]);
+			index++;
+		}
+		printf("\n");
+		if (table->next != NULL)
+		{
+			// pipe and then to next element;
+			printf("\nnew row in the table:\n");
+		}
+		table = table->next;
+	}
+}
+
 int	main(int argc, char *argv[], char **envp)
 {
 	char	*exe;
 	char	*command[2];
 	t_list	*tokens;
+	t_table	*table;
 
-	tokens = (t_list *)lexer("ls < cmd.c > out -l |  wc -l");
+	tokens = (t_list *)lexer("ls < cmd.c > out -l | wc -l");
 	if (tokens == NULL)
 		return (0);
 	if (syntax_check(tokens))
 	{
-		execution(tokens, envp);
+		// table = parser(tokens);
+		execution(parser(tokens));
 	}
 	return (0);
 }
