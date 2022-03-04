@@ -6,11 +6,13 @@
 /*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 11:44:57 by rjasari           #+#    #+#             */
-/*   Updated: 2022/03/02 10:29:55 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/04 15:09:26 by rjasari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+# define BUFFER_SIZE 1
 
 static char	*set_ret(int bytes, char **con, char **line)
 {

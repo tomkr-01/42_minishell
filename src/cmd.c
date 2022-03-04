@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include "../inc/minishell.h"
 #include <stdlib.h>
+#include <string.h>
 
 // // to show tom that we have to dup the old content of the array into the new one
 
@@ -178,223 +179,162 @@ char	*find_executable(char *command);
 
 /******************************************/
 
-// void	execution(t_list *token, char **envp)
-// {
-// 	int		ifd;
-// 	int		ofd;
-// 	int		stdinn;
-// 	int		stdouti;
-// 	pid_t	pid;
-// 	int		pip[2];
-// 	char	*wc[3];
-// 	char	*ls[3];
-
-// 	stdinn = dup(0);
-// 	stdouti = dup(1);
-// 	ls[0] = "/bin/ls";
-// 	ls[1] = "-l";
-// 	ls[2] = NULL;
-// 	wc[0] = "/usr/bin/wc";
-// 	wc[1] = "-l";
-// 	wc[2] = NULL;
-// 	ifd = open("cmd.c", O_RDONLY);
-// 	if (ifd < 0)
-// 		printf("error opening in file.\n");
-// 	dup2(ifd, 0);
-// 	ofd = open("out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
-// 	if (ofd < 0)
-// 		printf("error opening out file.\n");
-// 	dup2(ofd, 1);
-// 	pipe(pip);
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		close(pip[0]);
-// 		dup2(pip[1], 1);
-// 		close(pip[1]);
-// 		execve(ls[0], ls, envp);
-// 		printf("command not found.\n");
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		close(pip[1]);
-// 		dup2(pip[0], 0);
-// 		close(pip[0]);
-// 	}
-// 	dup2(stdinn, 0);
-// 	dup2(stdouti, 1);
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		close(pip[0]);
-// 		dup2(pip[1], 1);
-// 		close(pip[1]);
-// 		execve(wc[0], wc, envp);
-// 		printf("command not found.\n");
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		close(pip[1]);
-// 		dup2(pip[0], 0);
-// 		close(pip[0]);
-// 	}
-// 	while (wait(NULL) != -1)
-// 		continue ;
-// }
-
-// void	execution(t_list *token, char **envp)
-// {
-// 	int		ifd;
-// 	int		ofd;
-// 	int		stdinn;
-// 	int		stdouti;
-// 	pid_t	pid;
-// 	int		pip[2];
-// 	char	*wc[3];
-// 	char	*ls[3];
-
-// 	stdinn = dup(0);
-// 	stdouti = dup(1);
-// 	ls[0] = "/bin/ls";
-// 	ls[1] = "-l";
-// 	ls[2] = NULL;
-// 	wc[0] = "/usr/bin/wc";
-// 	wc[1] = "-l";
-// 	wc[2] = NULL;
-// 	ifd = open("cmd.c", O_RDONLY);
-// 	if (ifd < 0)
-// 		printf("error opening in file.\n");
-// 	dup2(ifd, 0);
-// 	ofd = open("out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
-// 	if (ofd < 0)
-// 		printf("error opening out file.\n");
-// 	dup2(ofd, 1);
-// 	pipe(pip);
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		close(pip[0]);
-// 		dup2(pip[1], 1);
-// 		close(pip[1]);
-// 		execve(ls[0], ls, envp);
-// 		printf("command not found.\n");
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		close(pip[1]);
-// 		dup2(pip[0], 0);
-// 		close(pip[0]);
-// 	}
-// 	dup2(stdinn, 0);
-// 	dup2(stdouti, 1);
-// 	ft_putstr_fd("\0", 0);
-// 	// close(0);
-// 	// dup2(stdinn, 0);
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		close(pip[0]);
-// 		dup2(pip[1], 1);
-// 		close(pip[1]);
-// 		execve(wc[0], wc, envp);
-// 		printf("command not found.\n");
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		close(pip[1]);
-// 		dup2(pip[0], 0);
-// 		close(pip[0]);
-// 	}
-// 	while (wait(NULL) != -1)
-// 		continue ;
-// }
-
-/*****************************************/
+/*
+sequential ordering
+a pipe must be performed before any other redirection is.
+ls < infile > outfile -l | wc -l
+	-> must display the output of ls -l into the outfile and print 0 into the stdout
+achieved through redirecting in the child
+*/
 
 void	execution(t_list *token, char **envp)
 {
-	int			pip[2];
-	int			pid;
-	size_t		token_len;
-	char		**command;
-	int			std_fd[2];
+	int		ifd;
+	int		ofd;
+	int		stdinn;
+	int		stdouti;
+	pid_t	pid;
+	int		pip[2];
+	char	*wc[3];
+	char	*ls[3];
 
-	std_fd[0] = dup(STDIN_FILENO);
-	std_fd[1] = dup(STDOUT_FILENO);
-	command = NULL;
-	while (token != NULL)
+	stdinn = dup(0);
+	stdouti = dup(1);
+	ls[0] = "/bin/ls";
+	ls[1] = "-l";
+	ls[2] = NULL;
+	wc[0] = "/usr/bin/wc";
+	wc[1] = "-l";
+	wc[2] = NULL;
+	ifd = open("cmd.c", O_RDONLY);
+	pipe(pip);
+	pid = fork();
+	if (pid == 0)
 	{
-		// pipe(pip);
-		// token_len = ft_strlen(token->content);
-		// close(0);
-		// dup2(std_fd[0], 0);
-		// dup2(std_fd[1], 1);
-		while (token != NULL && token->content[0] != '|')
-		{
-			token_len = ft_strlen(token->content);
-			if (ft_strchr(token->content, '<') != NULL)
-			{
-				printf("this is faulty\n");
-				if (token_len == 1)
-				{
-					token = token->next;
-					open_in(token->content);
-				}
-				else if (token_len == 2)
-				{
-					token = token->next;
-					heredoc(token->content);
-				}
-			}
-			else if (ft_strchr(token->content, '>') != NULL)
-			{
-				printf("this is not faulty\n");
-				if (token_len == 1)
-				{
-					token = token->next;
-					open_out(token->content);
-				}
-				else if (token_len == 2)
-				{
-					token = token->next;
-					open_append(token->content);
-				}
-			}
-			else
-				command = add_array_element(command, token->content);
-			token = token->next;
-		}
-		// close(0);
-		// dup2(std_fd[0], 0);
-		// dup2(std_fd[1], 1);
-		if (token != NULL && token->content[0] == '|')
-			pipe(pip);
-		if (token != NULL)
-			token = token->next;
-		pid = fork();
-		if (pid == 0)
-		{
-			close(pip[0]);
-			dup2(pip[1], 1);
-			command[0] = find_executable(command[0]);
-			// close(0);
-			execve(command[0], command, envp);
-			printf("command not found\n");
-		}
-		else if (pid > 0)
-		{
-			close(pip[1]);
-			dup2(pip[0], 0);
-			// close(0);
-		}
-		free(command);
-		command = NULL;
+		close(pip[0]);
+		dup2(pip[1], 1);
+		close(pip[1]);
+		if (ifd < 0)
+			printf("error opening in file.\n");
+		dup2(ifd, 0);
+		ofd = open("out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
+		if (ofd < 0)
+			printf("error opening out file.\n");
+		dup2(ofd, 1);
+		execve(ls[0], ls, envp);
+		printf("command not found.\n");
+	}
+	else if (pid > 0)
+	{
+		close(pip[1]);
+		dup2(pip[0], 0);
+		close(pip[0]);
+	}
+	// dup2(stdinn, 0);
+	// dup2(stdouti, 1);
+	pid = fork();
+	if (pid == 0)
+	{
+		close(pip[0]);
+		dup2(pip[1], 1);
+		close(pip[1]);
+		execve(wc[0], wc, envp);
+		printf("command not found.\n");
+	}
+	else if (pid > 0)
+	{
+		close(pip[1]);
+		dup2(pip[0], 0);
+		close(pip[0]);
 	}
 	while (wait(NULL) != -1)
-	{
 		continue ;
-	}
 }
+
+/*****************************************/
+
+// void	execution(t_list *token, char **envp)
+// {
+// 	int			pip[2];
+// 	int			pid;
+// 	size_t		token_len;
+// 	char		**command;
+// 	int			std_fd[2];
+
+// 	std_fd[0] = dup(STDIN_FILENO);
+// 	std_fd[1] = dup(STDOUT_FILENO);
+// 	command = NULL;
+// 	while (token != NULL)
+// 	{
+// 		// pipe(pip);
+// 		// token_len = ft_strlen(token->content);
+// 		// close(0);
+// 		// dup2(std_fd[0], 0);
+// 		// dup2(std_fd[1], 1);
+// 		while (token != NULL && token->content[0] != '|')
+// 		{
+// 			token_len = ft_strlen(token->content);
+// 			if (ft_strchr(token->content, '<') != NULL)
+// 			{
+// 				if (token_len == 1)
+// 				{
+// 					token = token->next;
+// 					open_in(token->content);
+// 				}
+// 				else if (token_len == 2)
+// 				{
+// 					token = token->next;
+// 					heredoc(token->content);
+// 				}
+// 			}
+// 			else if (ft_strchr(token->content, '>') != NULL)
+// 			{
+// 				if (token_len == 1)
+// 				{
+// 					token = token->next;
+// 					open_out(token->content);
+// 				}
+// 				else if (token_len == 2)
+// 				{
+// 					token = token->next;
+// 					open_append(token->content);
+// 				}
+// 			}
+// 			else
+// 				command = add_array_element(command, token->content);
+// 			token = token->next;
+// 		}
+// 		// close(0);
+// 		// dup2(std_fd[0], 0);
+// 		// dup2(std_fd[1], 1);
+// 		if (token != NULL && token->content[0] == '|')
+// 			pipe(pip);
+// 		if (token != NULL)
+// 			token = token->next;
+// 		pid = fork();
+// 		if (pid == 0)
+// 		{
+// 			close(pip[0]);
+// 			dup2(pip[1], 1);
+// 			command[0] = find_executable(command[0]);
+// 			// close(0);
+// 			execve(command[0], command, envp);
+// 			printf("command not found\n");
+// 		}
+// 		else if (pid > 0)
+// 		{
+// 			close(pip[1]);
+// 			dup2(pip[0], 0);
+// 			// close(0);
+// 		}
+// 		free(command);
+// 		command = NULL;
+// 	}
+// 	while (wait(NULL) != -1)
+// 	{
+// 		continue ;
+// 	}
+// }
 
 char	*find_executable(char *command)
 {
@@ -588,7 +528,7 @@ int	main(int argc, char *argv[], char **envp)
 	t_list	*tokens;
 	// t_table	*table;
 	// bash writes ls -l into out and displays 0 in the stdout
-	tokens = (t_list *)lexer("ls < cmd.c > out -l | wc -l");
+	tokens = (t_list *)lexer("ls < cmd.c > out -l | wc -l > out2");
 	if (tokens == NULL)
 		return (0);
 	if (syntax_check(tokens))
