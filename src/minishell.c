@@ -27,16 +27,12 @@ int	main(int argc, char **argv, char **envp)
 
 	environment_init(envp);
 	arr = malloc(5 * sizeof(char *));
-	arr[0] = ft_strdup("PWD");
-	arr[1] = ft_strdup("OLDPWD");
+	arr[0] = ft_strdup("exit");
+	arr[1] = ft_strdup("NULL");
 	arr[2] = ft_strdup("cd");
 	arr[3] = ft_strdup("../../Files/Code");
 	arr[4] = NULL;
-	printf("%s: %s\n", (char *)arr[0], get_var((char *)arr[0]));
-	printf("%s: %s\n", (char *)arr[1], get_var((char *)arr[1]));
-	printf("%d\n", check_builtins(&arr[2]));
-	printf("%s: %s\n", (char *)arr[0], get_var((char *)arr[0]));
-	printf("%s: %s\n", (char *)arr[1], get_var((char *)arr[1]));
+	printf("%d\n", check_builtins(arr));
 	// system("leaks minishell");
 	if (argc > 1)
 		return (0);

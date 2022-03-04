@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/03 02:30:31 by tomkrueger       ###   ########.fr       */
+/*   Updated: 2022/03/04 13:37:47 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,16 @@ int		exit_builtin(char const **arguments);
 
 int	check_builtins(char const **arguments)
 {
-	char	**builtin_str;
 	size_t	i;
 
-	builtin_str = ft_split("echo;cd;pwd;export;unset;env;exit", ';');
-	int (*builtin_func[])(char const **) = {
-		&echo_builtin, &cd_builtin, &pwd_builtin, &export_builtin,
-		&unset_builtin, &env_builtin, &exit_builtin,
-	};
+	char	*builtin_str[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	int		(*builtin_func[])(char const **) = {&echo_builtin, &cd_builtin, &pwd_builtin, &export_builtin,
+		&unset_builtin, &env_builtin, &exit_builtin};
 	i = 0;
 	while (builtin_str[i] != NULL)
 	{
 		if (ft_strncmp(arguments[0], builtin_str[i],
-			ft_strlen(builtin_str[i])) == 0)
+				ft_strlen(builtin_str[i])) == 0)
 			return ((*builtin_func[i])(&arguments[1]));
 		i++;
 	}
@@ -185,12 +182,34 @@ int	env_builtin(char const **arguments)
 	}
 	if (arguments == NULL)
 		return (EXIT_SUCCESS);
-	printf("env: %s: No such file or directory\n", arguments[0]);
+	// printf("env: %s: No such file or directory\n", arguments[0]);
+	perror("env");
 	return (127); // not sure about this but bash returns this code when there are arguments that do not fit
 }
 
 int	exit_builtin(char const **arguments)
 {
-	exit(EXIT_SUCCESS);
-	return (EXIT_SUCCESS);
+	printf("exit\n");
+	if (ft_arrlen((char **)arguments) > 0 && !ft_isdigit(arguments[0][0]))
+	{
+		perror("exit");
+		// exit(255);
+		return (255);
+	}
+	else if (ft_arrlen((char **)arguments) > 1)
+	{
+		perror("exit");
+		return (EPERM);
+	}
+	else if (ft_arrlen((char **)arguments) == 1)
+	{
+		// exit(ft_atoi((char *)arguments[0]));
+		return (ft_atoi((char *)arguments[0]));
+	}
+	else
+	{
+		// exit(EXIT_SUCCESS);
+		return (EXIT_SUCCESS);
+	}
+	return (EXIT_FAILURE);
 }

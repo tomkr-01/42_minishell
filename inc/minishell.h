@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/03 01:13:46 by tomkrueger       ###   ########.fr       */
+/*   Updated: 2022/03/03 14:03:11 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 /* DEFINES																	  */
 /* ************************************************************************** */
 
+# define SHELL minishell
 # define OPERATORS "|<>"
 # define METACHARS OPERATORS"\'\" \t\n"
 
