@@ -4,6 +4,7 @@
 #include "../inc/minishell.h"
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 
 // // to show tom that we have to dup the old content of the array into the new one
 
@@ -187,6 +188,10 @@ ls < infile > outfile -l | wc -l
 achieved through redirecting in the child
 */
 
+/* if we are missing the execution rights we 
+must return "minishell: permission denied: ls"
+*/
+
 void	execution(t_list *token, char **envp)
 {
 	int		ifd;
@@ -201,7 +206,7 @@ void	execution(t_list *token, char **envp)
 	stdinn = dup(0);
 	stdouti = dup(1);
 	ls[0] = "/bin/ls";
-	ls[1] = "-l";
+	ls[1] = "-l;";
 	ls[2] = NULL;
 	wc[0] = "/usr/bin/wc";
 	wc[1] = "-l";
@@ -335,6 +340,11 @@ void	execution(t_list *token, char **envp)
 // 		continue ;
 // 	}
 // }
+
+char	*find_environment_variable(char *variable)
+{
+	return (variable);
+}
 
 char	*find_executable(char *command)
 {
