@@ -63,7 +63,10 @@ void	append_redirection(t_table **lst, t_redirection *new)
 	temporary->redirections->next = new;
 }
 
-/* an redirection append function handling the creation too */
+/* an redirection append function handling the creation too 
+inside this function we could add the variable expansion and 
+the quote removal before creating a redirection object that is 
+added to the list */
 // void	append_redirection(t_table **lst, t_list *token, int redir_type)
 // {
 // 	t_redirection	*new_redirection;
@@ -98,8 +101,49 @@ int	find_redirection_type(t_list **token, int *type)
 	return (*type);
 }
 
+/* variable expansion function must be called until there is
+no '$' left. */
+
+static int	count(const char *s, char c)
+{
+	int	i;
+	int	count;
+
+	i = 0;
+	count = 0;
+	while (s[i] != '\0' && s[i] == c)
+		i++;
+	while (s[i])
+	{
+		if (s[i] == c && s[i + 1] != c)
+			count++;
+		i++;
+	}
+	count += 1;
+	return (count);
+}
+
 void	parse_command(t_list **token, t_table **table)
 {
+	char	*expanded_string;
+	/* steps to consider inside the function
+		1. save the unhandled token inside a variable
+		2. call the variable expansion on the variable
+			inside single quotes don't expand
+			no variable replaced with NULL
+			else expanded normally
+		3. remove the quotes
+		4. call the same function as for the split to count
+		the word inside the string
+		5. if bigger than 1 call function;
+			array_append_array(char **first, char **second);
+		   if not than just use add_array_element(char **old_arr, char *new);
+	*/
+	expanded_string = (*token)->content;
+	if (count(expanded_string, ' ') > 1)
+		; // array_append_array;
+	else
+		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
 	return ;
 }
 
