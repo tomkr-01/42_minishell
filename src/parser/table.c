@@ -177,3 +177,7 @@ t_table	*parser(t_list *token)
 	}
 	return (head);
 }
+
+// gcc lexer.c syntax_check.c cmd.c ../libs/libft/libft.a -lreadline
+// gcc lexer.c cmd.c ../libs/libft/libft.a -lreadline
+// gcc lexer.c ast.c ../libs/libft/libft.a -lreadline
