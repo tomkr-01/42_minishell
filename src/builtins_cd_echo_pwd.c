@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 12:53:23 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 13:10:43 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,12 +91,12 @@ int	cd_builtin(char **arguments)
 	}
 	export_pwds = ft_calloc(3, sizeof(*export_pwds));
 	if (export_pwds == NULL)
-		exit(ENOMEM);
+		exit(put_stderr(SHELL, "cd_builtin()", NULL, strerror(ENOMEM)));
 	export_pwds[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
 	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), pwd_helper());
 	export_pwds[2] = NULL;
 	export_builtin(export_pwds);
-	free_array((char ***)&export_pwds);
+	free_array(&export_pwds);
 	return (EXIT_SUCCESS);
 }
 
@@ -120,14 +120,14 @@ char	*pwd_helper(void)
 	i = 1;
 	pwd = ft_calloc(i, sizeof(*pwd));
 	if (pwd == NULL)
-		exit(ENOMEM);
+		exit(put_stderr(SHELL, "pwd_helper()", NULL, strerror(ENOMEM)));
 	while (getcwd(pwd, i) == NULL)
 	{
 		free(pwd);
 		i *= 10;
 		pwd = ft_calloc(i, sizeof(*pwd));
 		if (pwd == NULL)
-			exit(ENOMEM);
+			exit(put_stderr(SHELL, "pwd_helper()", NULL, strerror(ENOMEM)));
 	}
 	return (pwd);
 }
