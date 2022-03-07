@@ -133,6 +133,38 @@ void	ft_free(void **ptr)
 }
 
 
+char	*find_expand_index(char *token)
+{
+	int			index;
+
+	index = 0;
+	while (token[index] != '\0')
+	{
+		if (token[index] == '\'')
+			token = ft_strchr(token, '\'');
+		else if (token[index] == '"')
+			;
+		else if (token[index] == '$')
+			return (token);
+		index++;
+	}
+	return (NULL);
+}
+
+// char	*find_expanding_index(char *token)
+// {
+// 	while (*token)
+// 	{
+// 		if (*token == '\'')
+// 			;
+// 		else if (*token == '"')
+// 			;
+// 		else if (*token == '$')
+// 			return (token);
+// 	}
+// }
+
+
 // int	main(int argc, char *argv[], char **envp)
 // {
 // 	char		*string;
