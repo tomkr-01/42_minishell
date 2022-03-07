@@ -11,28 +11,33 @@
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-#include "../libs/libft/includes/libft.h"
 
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
+extern t_minishell	g_msh;
 
-extern char	**g_env;
 int	builtins(char **arguments);
+int	env_builtin(char **arguments);
+
+char	*pwd_helper();
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_list		*tokens;
+	char		**arr;
 
+	arr = malloc(5 * sizeof(*arr));
+	arr[0] = ft_strdup("export");
+	arr[1] = ft_strdup("newvar=test");
+	arr[2] = ft_strdup("anothervar=anothertext");
+	arr[3] = ft_strdup("thirdone=hello");
+	arr[4] = NULL;
 	environment_init(envp);
-	tokens = lexer("export var=test\"st|ring\"end not part of var anymore");
-	while (tokens != NULL)
-	{
-		printf("%s\n", tokens->content);
-		tokens = tokens->next;
-	}
+	// builtins(&arr[0]);
+	// env_builtin(&arr[4]);
 	builtins(&argv[1]);
-	printf("%s\n", get_var("?"));
+	// env_builtin(&arr[4]);
+	printf("exit_value: %d\n", g_msh.exit_code);
+	free_array(&arr);
+	system("leaks minishell | grep \"total leaked bytes\"");
 	// tokens = lexer("echo \"this text is redirected to a file!\" > textfile");
 	// printf("%s\n", syntax_check(tokens) ? "true" : "false");
 	return (EXIT_SUCCESS);

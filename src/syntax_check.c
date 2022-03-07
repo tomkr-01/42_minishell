@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   syntax_check.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 22:33:15 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/01 12:19:00 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/07 18:58:14 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 void	operator_check(t_list *tokens);
 void	quote_check(t_list *tokens);
+bool	is_operator(t_list *token);
 
 bool	syntax_check(t_list *tokens)
 {
@@ -36,16 +37,16 @@ void	operator_check(t_list *tokens)
 	prev_op = 1;
 	if (ft_strncmp(ft_lstlast(tokens)->content, "<", 1) == 0
 		|| ft_strncmp(ft_lstlast(tokens)->content, ">", 1) == 0)
-		exit(ft_putendl_fd("Operator syntax error", STDERR_FILENO));
+		exit(put_stderr(SHELL, NULL, NULL,
+				"syntax error near unexpected token"));
 	while (tokens != NULL)
 	{
 		if (is_operator(tokens))
 		{
 			if (ft_strlen(tokens->content) > 2 || prev_op == 2
 				|| (ft_strncmp(tokens->content, "|", 1) == 0 && prev_op == 1))
-			{
-				exit(ft_putendl_fd("Operator syntax error", STDERR_FILENO));
-			}
+				exit(put_stderr(SHELL, NULL, NULL,
+						"syntax error near unexpected token"));
 			prev_op = 2;
 			if (ft_strncmp(tokens->content, "|", 1) == 0)
 				prev_op = 1;
@@ -63,12 +64,12 @@ void	quote_check(t_list *tokens)
 		if (ft_strncmp(tokens->content, "\'", 1) == 0
 			&& ft_count_char(tokens->content, '\'') % 2 != 0)
 		{
-			exit(ft_putendl_fd("Quote syntax error", STDERR_FILENO));
+			exit(put_stderr(SHELL, NULL, NULL, "syntax error near quote"));
 		}
 		if (ft_strncmp(tokens->content, "\"", 1) == 0
 			&& ft_count_char(tokens->content, '\"') % 2 != 0)
 		{
-			exit(ft_putendl_fd("Quote syntax error", STDERR_FILENO));
+			exit(put_stderr(SHELL, NULL, NULL, "syntax error near quote"));
 		}
 		tokens = tokens->next;
 	}

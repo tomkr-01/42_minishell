@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 14:02:45 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 18:58:07 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <termios.h>
 # include <stdbool.h>
 # include <stdlib.h>
+# include <errno.h>
+# include <string.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>
@@ -35,6 +37,12 @@
 /* ************************************************************************** */
 /* STRUCTS																	  */
 /* ************************************************************************** */
+
+typedef struct s_minishell
+{
+	char	**env;
+	int		exit_code;
+}	t_minishell;
 
 typedef struct s_cmd
 {
@@ -68,7 +76,6 @@ void	*lexer(char const *line);
 /* syntax_check.c */
 
 bool	syntax_check(t_list *tokens);
-bool	is_operator(t_list *token);
 
 /* utils.c */
 

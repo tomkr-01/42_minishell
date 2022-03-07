@@ -6,21 +6,19 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 10:56:26 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 14:13:22 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 20:07:44 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-#include "../libs/libft/includes/libft.h"
 
 size_t	text_token(const char *line, size_t *i);
-size_t	alphanum_token(const char *line, size_t *i);
 size_t	operator_token(const char *line, size_t *i);
 
 void	*lexer(char const *line)
 {
 	t_list	*tokens;
-	size_t		i;
+	size_t	i;
 	size_t	chrs;
 
 	i = 0;

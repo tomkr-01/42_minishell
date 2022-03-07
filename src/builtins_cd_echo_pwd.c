@@ -6,15 +6,13 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 13:10:43 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 20:07:08 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-#include <errno.h>
-#include <string.h> // for strerror()
 
-extern char	**g_env;
+extern t_minishell	g_msh;
 
 int		cd_builtin(char **arguments);
 int		echo_builtin(char **arguments);
@@ -27,26 +25,45 @@ int		exit_builtin(char **arguments);
 
 int	builtins(char **arguments)
 {
-	int	exit_code;
-
 	if (strcmp(arguments[0], "cd") == 0)
-		exit_code = cd_builtin(&arguments[1]);
+		g_msh.exit_code = cd_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "echo") == 0)
-		exit_code = echo_builtin(&arguments[1]);
+		g_msh.exit_code = echo_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "env") == 0)
-		exit_code = env_builtin(&arguments[1]);
+		g_msh.exit_code = env_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "exit") == 0)
-		exit_code = exit_builtin(&arguments[1]);
+		g_msh.exit_code = exit_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "export") == 0)
-		exit_code = export_builtin(&arguments[1]);
+		g_msh.exit_code = export_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "unset") == 0)
-		exit_code = unset_builtin(&arguments[1]);
+		g_msh.exit_code = unset_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "pwd") == 0)
-		exit_code = pwd_builtin(&arguments[1]);
+		g_msh.exit_code = pwd_builtin(&arguments[1]);
 	else
 		return (0);
-	set_exit_code(exit_code);
 	return (1);
+}
+
+int	cd_builtin(char **arguments)
+{
+	char	**export_pwds;
+
+	if (arguments[0] == NULL)
+		chdir(get_var("HOME"));
+	else if (chdir(arguments[0]))
+	{
+		put_stderr(SHELL, "cd", arguments[0], strerror(ENOENT));
+		return (EXIT_FAILURE);
+	}
+	export_pwds = ft_calloc(3, sizeof(*export_pwds));
+	if (export_pwds == NULL)
+		exit(put_stderr(SHELL, "cd_builtin()", NULL, strerror(ENOMEM)));
+	export_pwds[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
+	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), pwd_helper());
+	export_pwds[2] = NULL;
+	export_builtin(export_pwds);
+	free_array(&export_pwds);
+	return (EXIT_SUCCESS);
 }
 
 int	echo_builtin(char **arguments)
@@ -75,28 +92,6 @@ int	echo_builtin(char **arguments)
 	}
 	if (new_line == -1)
 		ft_putchar_fd('\n', STDOUT_FILENO);
-	return (EXIT_SUCCESS);
-}
-
-int	cd_builtin(char **arguments)
-{
-	char	**export_pwds;
-
-	if (arguments[0] == NULL)
-		chdir(get_var("HOME"));
-	else if (chdir(arguments[0]))
-	{
-		put_stderr(SHELL, "cd", arguments[0], strerror(ENOENT));
-		return (1); // somehow the same value as in bash, not 2 as in ENOENT
-	}
-	export_pwds = ft_calloc(3, sizeof(*export_pwds));
-	if (export_pwds == NULL)
-		exit(put_stderr(SHELL, "cd_builtin()", NULL, strerror(ENOMEM)));
-	export_pwds[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
-	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), pwd_helper());
-	export_pwds[2] = NULL;
-	export_builtin(export_pwds);
-	free_array(&export_pwds);
 	return (EXIT_SUCCESS);
 }
 

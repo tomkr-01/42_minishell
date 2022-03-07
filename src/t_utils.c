@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:25:54 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 13:07:50 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 19:57:50 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,22 +59,23 @@ char	**add_array_element(char **old_arr, char *new_el)
 char	**rm_array_element(char **old_arr, char	*old_el)
 {
 	char	**new_arr;
-	size_t	n;
-	size_t	o;
+	size_t	new;
+	size_t	old;
 
-	n = 0;
-	o = 0;
+	new = 0;
+	old = 0;
+	printf("old_el: %s\n\n", old_el);
 	new_arr = ft_calloc(ft_arrlen(old_arr), sizeof(*new_arr));
 	if (new_arr == NULL)
 		exit(put_stderr("rm_array_element(): malloc fail\n",
 				NULL, NULL, strerror(ENOMEM)));
-	while (old_arr[o] != NULL)
+	while (old_arr[old] != NULL)
 	{
-		if (old_arr[o] == old_el)
-			o++;
-		new_arr[n++] = old_arr[o++];
+		if (old_arr[old] == old_el)
+			old++;
+		new_arr[new++] = old_arr[old++];
 	}
-	new_arr[n] = NULL;
+	new_arr[new] = NULL;
 	if (old_el != NULL)
 		free(old_el);
 	old_el = NULL;
