@@ -6,6 +6,10 @@
 #include "../inc/minishell.h"
 
 # define PIPE "|"
+# define OUT 1
+# define IN 2
+# define APPEND 4
+# define HEREDOC 8
 
 typedef struct s_redirection {
 	int						type;
@@ -90,13 +94,13 @@ added to the list */
 int	find_redirection_type(t_list **token, int *type)
 {
 	if (ft_strcmp((*token)->content, ">") == 0)
-		*type = 1;
+		*type = OUT;
 	else if (ft_strcmp((*token)->content, "<") == 0)
-		*type = 2;
+		*type = IN;
 	else if (ft_strcmp((*token)->content, ">>") == 0)
-		*type = 4;
+		*type = APPEND;
 	else if (ft_strcmp((*token)->content, "<<") == 0)
-		*type = 8;
+		*type = HEREDOC;
 	*token = (*token)->next;
 	return (*type);
 }
@@ -181,3 +185,5 @@ t_table	*parser(t_list *token)
 // gcc lexer.c syntax_check.c cmd.c ../libs/libft/libft.a -lreadline
 // gcc lexer.c cmd.c ../libs/libft/libft.a -lreadline
 // gcc lexer.c ast.c ../libs/libft/libft.a -lreadline
+
+// ../libs/libft/libft.a -I/Users/rjasari/.brew/opt/readline/include -lreadline -L/Users/rjasari/.brew/opt/readline/lib

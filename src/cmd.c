@@ -206,7 +206,7 @@ void	execution(t_list *token, char **envp)
 	stdinn = dup(0);
 	stdouti = dup(1);
 	ls[0] = "/bin/ls";
-	ls[1] = "-l;";
+	ls[1] = "-l";
 	ls[2] = NULL;
 	wc[0] = "/usr/bin/wc";
 	wc[1] = "-l";
@@ -222,7 +222,7 @@ void	execution(t_list *token, char **envp)
 		if (ifd < 0)
 			printf("error opening in file.\n");
 		dup2(ifd, 0);
-		ofd = open("out", O_CREAT | O_TRUNC | O_WRONLY, 0644);
+		ofd = open("", O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (ofd < 0)
 			printf("error opening out file.\n");
 		dup2(ofd, 1);
@@ -340,11 +340,6 @@ void	execution(t_list *token, char **envp)
 // 		continue ;
 // 	}
 // }
-
-char	*find_environment_variable(char *variable)
-{
-	return (variable);
-}
 
 char	*find_executable(char *command)
 {
