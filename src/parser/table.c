@@ -187,3 +187,4 @@ t_table	*parser(t_list *token)
 // gcc lexer.c ast.c ../libs/libft/libft.a -lreadline
 
 // ../libs/libft/libft.a -I/Users/rjasari/.brew/opt/readline/include -lreadline -L/Users/rjasari/.brew/opt/readline/lib
+.
