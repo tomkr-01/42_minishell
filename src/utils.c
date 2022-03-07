@@ -70,15 +70,56 @@ size_t	protected_strlen(char *s)
 	return (index);
 }
 
-char	*expansion(char *token)
+/* int array storing the beginning and ending of quotes? */
+
+bool	can_be_expanded(char *argument)
 {
 	int			index;
+	int			s_quotes;
+	bool		expansion;
+
+	index = 0;
+	s_quotes = 1;
+	expansion = false;
+	while (argument[index] != '\0')
+	{
+		if (argument[index] == "'")
+			s_quotes *= -1;
+		else if (argument[index] == '$' && ft_isalnum(argument[index + 1]) && s_quotes > 0)
+			expansion = true;
+			
+	}
+}
+
+char	*expansion(char *token, char **envp)
+{
+	int			index;
+	int			start;
+	int			var_len;
+	char		*variable;
+	char		to_remove;
 	bool		expand;
 
 	index = 0;
 	expand = true;
 	while (token[index] != '\0')
 	{
-		if ()
+		var_len = 0;
+		if (token[index] == '"' || token[index] == "'")
+			to_remove = token[index];
+		while (token[index] != '\0' && token[index] != to_remove)
+		{
+			if (token[index++] == '$' && to_remove != "'")
+			{
+				start = index;
+				while (token[index] != '\0' && ft_isalnum(token[index]))
+					var_len++;
+				variable = ft_substr(token, start, var_len);
+				variable = ft_getenv(variable, envp);
+				// append the string/character to the string before
+
+			}
+			index;
+		}
 	}
 }

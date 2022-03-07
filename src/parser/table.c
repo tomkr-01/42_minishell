@@ -170,7 +170,7 @@ t_table	*parser(t_list *token)
 			table->next = create_table_row();
 			table = table->next;
 		}
-		if (find_redirection_type(&token, &redir_type) > 0)
+		else if (find_redirection_type(&token, &redir_type) > 0)
 		{
 			new_redirection = create_redirection(redir_type, token->content);
 			append_redirection(&table, new_redirection);
