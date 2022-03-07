@@ -76,19 +76,21 @@ bool	can_be_expanded(char *argument)
 {
 	int			index;
 	int			s_quotes;
-	bool		expansion;
+	// bool		expansion;
 
 	index = 0;
 	s_quotes = 1;
-	expansion = false;
+	// expansion = false;
 	while (argument[index] != '\0')
 	{
 		if (argument[index] == "'")
 			s_quotes *= -1;
+		/* what about underscores */
 		else if (argument[index] == '$' && ft_isalnum(argument[index + 1]) && s_quotes > 0)
-			expansion = true;
-			
+			return (true);
+		index++;
 	}
+	return (false);
 }
 
 char	*expansion(char *token, char **envp)
