@@ -17,15 +17,15 @@
 #include <errno.h>
 
 extern char	**g_env;
-int	check_builtins(char **arguments);
-
+int	builtins(char **arguments);
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_list		*tokens;
 
 	environment_init(envp);
-	printf("%d\n", check_builtins(&argv[1]));
+	builtins(&argv[1]);
+	printf("%s\n", get_var("?"));
 	// tokens = lexer("echo \"this text is redirected to a file!\" > textfile");
 	// printf("%s\n", syntax_check(tokens) ? "true" : "false");
 	return (EXIT_SUCCESS);

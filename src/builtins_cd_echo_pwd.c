@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   builtins_cd_echo_pwd.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/04 20:19:19 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 12:53:23 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 
 extern char	**g_env;
 
-int		echo_builtin(char **arguments);
 int		cd_builtin(char **arguments);
+int		echo_builtin(char **arguments);
 int		pwd_builtin(char **arguments);
 char	*pwd_helper(void);
 int		export_builtin(char **arguments);
@@ -25,24 +25,28 @@ int		unset_builtin(char **arguments);
 int		env_builtin(char **arguments);
 int		exit_builtin(char **arguments);
 
-int	check_builtins(char **arguments)
+int	builtins(char **arguments)
 {
-	size_t	i;
-	char	*builtin_str[] = {"echo", "cd", "pwd", "export", "unset", "env",
-		"exit", NULL};
-	int		(*builtin_func[])(char **) = {&echo_builtin, &cd_builtin,
-		&pwd_builtin, &export_builtin, &unset_builtin, &env_builtin,
-		&exit_builtin};
+	int	exit_code;
 
-	i = 0;
-	while (builtin_str[i] != NULL)
-	{
-		if (ft_strncmp(arguments[0], builtin_str[i],
-				ft_strlen(builtin_str[i])) == 0)
-			return ((*builtin_func[i])(&arguments[1]));
-		i++;
-	}
-	return (-1000);
+	if (strcmp(arguments[0], "cd") == 0)
+		exit_code = cd_builtin(&arguments[1]);
+	else if (strcmp(arguments[0], "echo") == 0)
+		exit_code = echo_builtin(&arguments[1]);
+	else if (strcmp(arguments[0], "env") == 0)
+		exit_code = env_builtin(&arguments[1]);
+	else if (strcmp(arguments[0], "exit") == 0)
+		exit_code = exit_builtin(&arguments[1]);
+	else if (strcmp(arguments[0], "export") == 0)
+		exit_code = export_builtin(&arguments[1]);
+	else if (strcmp(arguments[0], "unset") == 0)
+		exit_code = unset_builtin(&arguments[1]);
+	else if (strcmp(arguments[0], "pwd") == 0)
+		exit_code = pwd_builtin(&arguments[1]);
+	else
+		return (0);
+	set_exit_code(exit_code);
+	return (1);
 }
 
 int	echo_builtin(char **arguments)
@@ -126,94 +130,4 @@ char	*pwd_helper(void)
 			exit(ENOMEM);
 	}
 	return (pwd);
-}
-
-int	export_builtin(char **arguments)
-{
-	size_t	a_i;
-	size_t	i;
-
-	a_i = 0;
-	while (arguments[a_i] != NULL)
-	{
-		i = 0;
-		while (g_env[i] != NULL && ft_strncmp(g_env[i], arguments[a_i],
-				ft_strchr_int(arguments[a_i], '=')) != 0)
-			i++;
-		if (g_env[i] != NULL)
-		{
-			free(g_env[i]);
-			g_env[i] = ft_strdup(arguments[a_i]);
-		}
-		else
-		{
-			g_env = add_array_element(g_env, arguments[a_i]);
-		}
-		a_i++;
-	}
-	return (EXIT_SUCCESS);
-}
-
-int	unset_builtin(char **arguments)
-{
-	size_t	a_i;
-	size_t	i;
-
-	a_i = 0;
-	while (arguments[a_i] != NULL)
-	{
-		i = 0;
-		while (g_env[i] != NULL && ft_strncmp(g_env[i], arguments[a_i],
-				ft_strchr_int(arguments[a_i], '=')) != 0)
-		{
-			i++;
-		}
-		if (g_env[i] != NULL)
-		{
-			g_env = rm_array_element(g_env, g_env[i]);
-		}
-		a_i++;
-	}
-	return (EXIT_SUCCESS);
-}
-
-int	env_builtin(char **arguments)
-{
-	size_t	i;
-
-	i = 0;
-	while (g_env[i] != NULL)
-	{
-		if (ft_strncmp(g_env[i], "?", 2) != 0)
-			ft_putendl_fd(g_env[i], STDOUT_FILENO);
-		i++;
-	}
-	if (arguments == NULL)
-		return (EXIT_SUCCESS);
-	put_stderr(NULL, "env", arguments[0], strerror(ENOENT));
-	return (127);
-}
-
-int	exit_builtin(char **arguments)
-{
-	ft_putendl_fd("exit", STDERR_FILENO);
-	if (ft_arrlen(arguments) > 0 && !ft_isint(arguments[0]))
-	{
-		put_stderr(SHELL, "exit", arguments[0], "numeric argument required");
-		exit(255);
-	}
-	else if (ft_arrlen(arguments) > 1)
-	{
-		put_stderr(SHELL, "exit", NULL, "too many arguments");
-		return (EPERM);
-	}
-	else if (ft_arrlen(arguments) == 1)
-	{
-		exit(ft_atoi(arguments[0]));
-	}
-	else
-	{
-		exit(EXIT_SUCCESS);
-	}
-	return (EXIT_FAILURE);
 }

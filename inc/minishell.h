@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 11:24:30 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 12:51:57 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ bool	is_operator(t_list *token);
 
 /* utils.c */
 
+void	set_exit_code(int code);
 char	**add_array_element(char **old_arr, char *new_el);
 char	**rm_array_element(char **old_arr, char	*old_el);
 void	free_array(char ***arr);

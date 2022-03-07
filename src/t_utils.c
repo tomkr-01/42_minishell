@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   t_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:25:54 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 11:27:43 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 12:56:23 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,21 @@
 #include <stdio.h>
 #include <string.h> // for strerror
 #include <errno.h>
+
+int	export_builtin(char **arguments);
+
+void	set_exit_code(int code)
+{
+	char	**set_code;
+
+	set_code = ft_calloc(2, sizeof(*set_code));
+	if (set_code == NULL)
+		exit(put_stderr(SHELL, "set_exit_code", NULL, "mem allocation failed"));
+	set_code[0] = ft_strjoin_free(ft_strdup("?="), ft_itoa(code));
+	set_code[1] = NULL;
+	export_builtin(set_code);
+	free_array(&set_code);
+}
 
 // This f() returns returns a malloced char ** with the added element and frees
 // the old one
@@ -70,24 +85,6 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 	return (new_arr);
 }
 
-void	free_array(char ***arr)
-{
-	char	**parser;
-	size_t	i;
-
-	parser = *arr;
-	i = 0;
-	while (parser[i] != NULL)
-	{
-		free(parser[i]);
-		parser[i] = NULL;
-		i++;
-	}
-	if (parser != NULL)
-		free(parser);
-	parser = NULL;
-}
-
 int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 {
 	if (shell_name != NULL)
@@ -111,3 +108,4 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 	}
 	ft_putchar_fd('\n', STDERR_FILENO);
 	return (-1);
+}
