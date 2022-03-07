@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/02 18:14:36 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 11:23:23 by tkruger          ###   ########.fr       */
+/*   Created: 2022/03/07 11:25:54 by tkruger           #+#    #+#             */
+/*   Updated: 2022/03/07 11:27:43 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,21 +88,21 @@ void	free_array(char ***arr)
 	parser = NULL;
 }
 
-int	put_stderr(char	*s1, char *s2, char *s3, char *message)
+int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 {
-	if (s1 != NULL)
+	if (shell_name != NULL)
 	{
-		ft_putstr_fd(s1, STDERR_FILENO);
+		ft_putstr_fd(shell_name, STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 	}
-	if (s2 != NULL)
+	if (cmd != NULL)
 	{
-		ft_putstr_fd(s2, STDERR_FILENO);
+		ft_putstr_fd(cmd, STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 	}
-	if (s3 != NULL)
+	if (arg != NULL)
 	{
-		ft_putstr_fd(s3, STDERR_FILENO);
+		ft_putstr_fd(arg, STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 	}
 	if (message != NULL)
