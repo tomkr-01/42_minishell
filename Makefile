@@ -6,11 +6,11 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/04 19:03:20 by tkruger          ###   ########.fr        #
+#    Updated: 2022/03/04 20:21:29 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	=	ms
+NAME	=	minishell
 CC		=	gcc
 CFLAGS	=	-Wall -Wextra -Werror
 INC		=	./inc/minishell.h

@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/02 18:14:36 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/04 20:20:07 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/07 11:23:23 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,4 +111,3 @@ int	put_stderr(char	*s1, char *s2, char *s3, char *message)
 	}
 	ft_putchar_fd('\n', STDERR_FILENO);
 	return (-1);
-}

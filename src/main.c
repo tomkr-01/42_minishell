@@ -1,5 +1,28 @@
 #include "../inc/minishell.h"
 
+// char	*quote_removal(char *input)
+// {
+// 	int		len;
+// 	int		index;
+// 	int		double_quotes;
+// 	int		single_quotes;
+// 	char	to_remove;
+
+// 	index = 0;
+// 	double_quotes = 0;
+// 	single_quotes = 0;
+// 	while (input[index] != '\0')c
+// 	{
+// 		if (input[index] == '"' || input[index] == "'")
+// 			to_remove = input[index];
+// 		index++;
+// 		while (input[index] != to_remove && input[index] != '\0')
+// 			len++;
+// 		// len--;
+// 		index++;
+// 	}
+// }
+
 char	*read_input(void)
 {
 	int		tty_flag;
@@ -39,7 +62,8 @@ int	main(int argc, char *argv[], char **envp)
 				if you run bash 2> out (redirect stderr) the created file is empty
 				maybe check for tty again?
 			*/
-			write(STDERR_FILENO, "exit\n", 5);
+			if (isatty(STDERR_FILENO) == 0)
+				write(STDERR_FILENO, "exit\n", 5);
 			return (-1);
 		}
 	}

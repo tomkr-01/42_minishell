@@ -1,4 +1,7 @@
 #include "../inc/minishell.h"
+#include <signal.h>
+#include <termios.h>
+
 
 void	control_c(int sig)
 {
