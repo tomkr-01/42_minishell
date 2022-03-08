@@ -71,8 +71,13 @@ void	append_redirection(t_table **lst, t_redirection *new)
 inside this function we could add the variable expansion and 
 the quote removal before creating a redirection object that is 
 added to the list */
+
+/* if a filename is extracted and the string contains a whitespace
+we return: minishell: $woco: ambigious redirect */
 // void	append_redirection(t_table **lst, t_list *token, int redir_type)
 // {
+	// create variable to expand variable into, if error message
+	// the token without expansion must be given back
 // 	t_redirection	*new_redirection;
 // 	t_table			*temporary;
 
@@ -187,4 +192,3 @@ t_table	*parser(t_list *token)
 // gcc lexer.c ast.c ../libs/libft/libft.a -lreadline
 
 // ../libs/libft/libft.a -I/Users/rjasari/.brew/opt/readline/include -lreadline -L/Users/rjasari/.brew/opt/readline/lib
-.
