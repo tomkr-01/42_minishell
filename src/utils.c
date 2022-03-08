@@ -42,7 +42,7 @@ char	*ft_getenv(const char *variable, char **envp)
 		{
 			free(environment_variable);
 			environment_variable = NULL;
-			return (envp[index] + variable_len);
+			return (ft_strdup(envp[index] + variable_len));
 		}
 		index++;
 	}
@@ -75,7 +75,7 @@ size_t	protected_strlen(char *s)
 
 int	valid_expansion_character(int c)
 {
-	if (ft_isalnum(c) || c == '-' || c == '_')
+	if (ft_isalnum(c) || c == '_')
 		return (1);
 	return (0);
 }
@@ -108,7 +108,14 @@ char	*str_append_char(char *string, char c)
 	char		*new;
 
 	if (string == NULL)
-		return (ft_strdup(&c));
+	{
+		new = (char *)malloc(2 * sizeof(char));
+		if (new == NULL)
+			return (NULL);
+		new[0] = c;
+		new[1] = '\0';
+		return (new);
+	}
 	index = 0;
 	str_len = ft_strlen(string);
 	new = (char *)malloc((str_len + 2) * sizeof(char));
@@ -132,46 +139,111 @@ void	ft_free(void **ptr)
 	*ptr = NULL;
 }
 
-
-char	*find_expand_index(char *token)
+char	*find_expanding_index(char *token)
 {
-	int			index;
-
-	index = 0;
-	while (token[index] != '\0')
+	while (*token)
 	{
-		if (token[index] == '\'')
-			token = ft_strchr(token, '\'');
-		else if (token[index] == '"')
-			;
-		else if (token[index] == '$')
+		if (*token == '\'')
+		{
+			token = ft_strchr(token + 1, '\'');
+			if (token == NULL)
+				return (NULL);
+		}
+		else if (*token == '"')
+		{
+			while (*++token != '\0' && *token != '"')
+				if (*token == '$')
+					return (token);
+			if (token == NULL)
+				return (NULL);
+		}
+		else if (*token == '$')
 			return (token);
-		index++;
+		token++;
 	}
 	return (NULL);
 }
 
-// char	*find_expanding_index(char *token)
-// {
-// 	while (*token)
-// 	{
-// 		if (*token == '\'')
-// 			;
-// 		else if (*token == '"')
-// 			;
-// 		else if (*token == '$')
-// 			return (token);
-// 	}
-// }
+int	get_parameter(char *string, char **parameter)
+{
+	int		index;
+
+	// we start at 1 because we wanna look at character next to $
+	index = 1;
+	*parameter = NULL;
+	if (string == NULL)
+		return (0);
+	if (string[index] == '\0')
+		return (0);
+	if (string[index] == '?')
+	{
+		*parameter = ft_substr(string, 1, 1);
+		return (1);
+	}
+	if (!ft_isalpha(string[index]) && string[index] != '_')
+		return (0);
+	while (string[index] != '\0')
+	{
+		if (!valid_expansion_character(string[index]))
+			break ;
+		*parameter = str_append_char(*parameter, string[index]);
+		index++;
+	}
+	return (index - 1);
+}
+
+int	expansion(char	*token, char **expanded, char **envp)
+{
+	int		index;
+	char	*temporary;
+	char	*parameter;
+	char	*partial;
+	char	*expanded_param;
+	char	*full_expansion;
+
+	temporary = find_expanding_index(token);
+	if (temporary == NULL)
+		return (0);
+	while (temporary)
+	{
+		parameter = NULL;
+		partial = NULL;
+		expanded_param = NULL;
+		full_expansion = NULL;
+		if (full_expansion != NULL)
+			free(full_expansion);
+		partial = ft_substr(token, 0, temporary - token);
+		index += get_parameter(temporary, &parameter);
+		if (parameter != NULL)
+		{
+			expanded_param = ft_getenv(parameter, envp);
+			full_expansion = ft_strjoin(partial, expanded_param);
+		}
+		else
+		{
+			full_expansion = partial;
+			free(partial);
+		}
+		partial = ft_substr(token, index, ft_strlen(temporary) - (index + 1));
+		full_expansion = ft_strjoin(full_expansion, partial);
+		temporary = ft_strdup(full_expansion);
+		free(parameter);
+		free(partial);
+		free(expanded_param);
+		temporary = find_expanding_index(temporary);
+	}
+	*expanded = full_expansion;
+	return (1);
+}
 
 
-// int	main(int argc, char *argv[], char **envp)
-// {
-// 	char		*string;
-// 	char		*expanded;
+int	main(int argc, char *argv[], char **envp)
+{
+	char		*string;
+	char		*expanded;
 
-// 	string = "$PATH";
-// 	expanded = expansion(string, envp);
-// 	printf("this should be the expanded string: %s\n", expanded);
-// 	return (0);
-// }
+	string = "S$var2";
+	expansion(string, &expanded, envp);
+	printf("this should be the expanded string: %s\n", expanded);
+	return (0);
+}
