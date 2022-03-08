@@ -135,8 +135,27 @@ char	*str_append_char(char *string, char c)
 
 void	ft_free(void **ptr)
 {
+	if (ptr == NULL || *ptr == NULL)
+		return ;
 	free(*ptr);
 	*ptr = NULL;
+}
+
+ft_free_array(void ***to_free)
+{
+	size_t		i;
+
+	if (to_free == NULL || *to_free == NULL)
+		return ;
+	i = 0;
+	while ((*to_free)[i] != NULL)
+	{
+		ft_free((*to_free)[i]);
+		(*to_free)[i] = NULL;
+		i++;
+	}
+	free(*to_free);
+	*to_free = NULL;
 }
 
 char	*find_expanding_index(char *token)
