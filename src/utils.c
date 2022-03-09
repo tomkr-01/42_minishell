@@ -242,13 +242,13 @@ int	main(int argc, char *argv[], char **envp)
 	char		*string;
 	char		*expanded;
 
-	string = "$";
+	string = "$'doesnotexist'";
 	expansion(string, &expanded, envp);
 	printf("this should be the expanded string: %s\n", expanded);
 	return (0);
 }
 
-// inputs that cause bugs:
+// inputs that cause issues:
 // S$USER.tom
 // $USER.tom
 // $USER.
