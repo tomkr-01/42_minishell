@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
+#    By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/07 19:31:18 by tkruger          ###   ########.fr        #
+#    Updated: 2022/03/09 02:45:26 by tomkrueger       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CFLAGS	=	-Wall -Wextra -Werror # -g -fsanitize=address
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 SRCS	=	builtins_cd_echo_pwd.c builtins_export_unset_env_exit.c \
-			environment.c lexer.c toms_function_tester.c syntax_check.c t_utils.c
+			environment.c lexer.c expander.c syntax_check.c t_utils.c
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a

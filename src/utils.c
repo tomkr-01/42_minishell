@@ -229,7 +229,7 @@ int	expansion(char	*token, char **expanded, char **envp)
 		partial = NULL;
 		expanded_param = NULL;
 		full_expansion = NULL;
-		if (full_expansion != NULL)
+		if (full_expansion != NULL) // what is the benefit of this? full_expansion is set to NULL in the previous line
 			free(full_expansion);
 		partial = ft_substr(token, 0, temporary - token);
 		index += get_parameter(temporary, &parameter);
@@ -261,8 +261,16 @@ int	main(int argc, char *argv[], char **envp)
 	char		*string;
 	char		*expanded;
 
-	string = "S$var2";
+	string = "$'doesnotexist'";
 	expansion(string, &expanded, envp);
 	printf("this should be the expanded string: %s\n", expanded);
 	return (0);
 }
+
+// inputs that cause issues:
+// S$USER.tom
+// $USER.tom
+// $USER.
+// $USER-tom
+// $USER@tom
+// $\'USER\'			this just fucking kills it with malloc

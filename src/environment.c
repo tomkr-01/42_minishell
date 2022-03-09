@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/25 14:20:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 18:38:45 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/09 02:33:16 by tomkrueger       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,26 @@ void	environment_init(char **envp)
 	g_msh.env[i] = NULL;
 }
 
-char	*get_var(char *var)
+char	*get_var(const char *variable)
 {
-	size_t	i;
+	int		index;
+	int		var_len;
+	char	*env_var;
 
-	i = 0;
-	if (var == NULL)
-		return (NULL);
-	while (g_msh.env[i] != NULL)
+	index = 0;
+	env_var = ft_strjoin(variable, "=");
+	var_len = ft_strlen(env_var);
+	while (g_msh.env[index])
 	{
-		if (ft_strncmp(g_msh.env[i], var, ft_strlen(var)) == 0)
-			return (ft_strdup(ft_strchr(g_msh.env[i], '=') + 1));
-		i++;
+		if (ft_strncmp(g_msh.env[index], env_var, var_len) == 0)
+		{
+			free(env_var);
+			env_var = NULL;
+			return (ft_strdup(g_msh.env[index] + var_len));
+		}
+		index++;
 	}
+	free(env_var);
+	env_var = NULL;
 	return (NULL);
 }

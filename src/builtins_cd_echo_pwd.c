@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_cd_echo_pwd.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 20:07:08 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/09 02:21:47 by tomkrueger       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	cd_builtin(char **arguments)
 	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), pwd_helper());
 	export_pwds[2] = NULL;
 	export_builtin(export_pwds);
-	free_array(&export_pwds);
+	ft_free_array(&export_pwds);
 	return (EXIT_SUCCESS);
 }
 
