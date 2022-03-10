@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:51:30 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/07 20:07:33 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/10 17:53:23 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	export_builtin(char **arguments)
 		}
 		i = 0;
 		while (g_msh.env[i] != NULL && ft_strncmp(g_msh.env[i], arguments[a_i],
-				ft_strchr_int(arguments[a_i], '=')) != 0)
+				ft_strchr_int(arguments[a_i], '=') + 1) != 0) // changed ft_strchr_int()
 			i++;
 		if (g_msh.env[i] != NULL)
 		{
@@ -55,7 +55,7 @@ int	unset_builtin(char **arguments)
 		while (g_msh.env[i] != NULL)
 		{
 			if (ft_strncmp(g_msh.env[i], arguments[a_i],
-					ft_strchr_int(g_msh.env[i], '=') - 1) == 0)
+					ft_strchr_int(g_msh.env[i], '=')) == 0) // changed ft_strchr_int()
 			{
 				g_msh.env = rm_array_element(g_msh.env, g_msh.env[i]);
 				break ;
