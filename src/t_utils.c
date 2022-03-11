@@ -23,12 +23,13 @@ char	**add_array_element(char **old_arr, char *new_el)
 	new_arr = ft_calloc(ft_arrlen(old_arr) + 2, sizeof(*new_arr));
 	if (new_arr == NULL)
 		exit(put_stderr(SHELL, "rm_array_element()", NULL, strerror(ENOMEM)));
-	while (old_arr[i] != NULL)
+	while (old_arr != NULL && old_arr[i] != NULL)
 	{
 		new_arr[i] = old_arr[i];
 		i++;
 	}
-	free(old_arr);
+	if (old_arr)
+		free(old_arr);
 	old_arr = NULL;
 	new_arr[i] = ft_strdup(new_el);
 	new_arr[i + 1] = NULL;

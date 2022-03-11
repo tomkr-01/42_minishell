@@ -19,6 +19,8 @@ void	environment_init(char **envp)
 	size_t	i;
 
 	i = 0;
+	if (envp == NULL)
+		return ;
 	g_msh.env = ft_calloc((ft_arrlen(envp) + 1), sizeof(*g_msh.env));
 	if (g_msh.env == NULL)
 		exit(put_stderr(SHELL, "environment_init()", NULL, strerror(ENOMEM)));

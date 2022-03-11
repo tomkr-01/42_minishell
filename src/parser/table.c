@@ -3,25 +3,9 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../inc/minishell.h"
+#include "../../inc/minishell.h"
 
-# define PIPE "|"
-# define OUT 1
-# define IN 2
-# define APPEND 4
-# define HEREDOC 8
-
-typedef struct s_redirection {
-	int						type;
-	char					*name;
-	struct s_redirection	*next;
-}			t_redirection;
-
-typedef struct s_table {
-	char					**arguments;
-	t_redirection			*redirections;
-	struct s_table			*next;
-}			t_table;
+t_minishell	g_msh;
 
 t_table	*create_table_row()
 {
@@ -49,24 +33,6 @@ t_redirection	*create_redirection(int type, char *name)
 	return (new_redirection);
 }
 
-void	append_redirection(t_table **lst, t_redirection *new)
-{
-	t_table	*temporary;
-
-	temporary = *lst;
-	if (temporary->redirections == NULL)
-	{
-		temporary->redirections = new;
-		return ;
-	}
-	if (new == NULL)
-		return ;
-	while (temporary->redirections->next != NULL)
-		temporary->redirections = temporary->redirections->next;
-	new->next = temporary->redirections->next;
-	temporary->redirections->next = new;
-}
-
 /* an redirection append function handling the creation too 
 inside this function we could add the variable expansion and 
 the quote removal before creating a redirection object that is 
@@ -74,27 +40,27 @@ added to the list */
 
 /* if a filename is extracted and the string contains a whitespace
 we return: minishell: $woco: ambigious redirect */
-// void	append_redirection(t_table **lst, t_list *token, int redir_type)
-// {
+void	append_redirection(t_table **lst, t_list *token, int redir_type)
+{
 	// create variable to expand variable into, if error message
 	// the token without expansion must be given back
-// 	t_redirection	*new_redirection;
-// 	t_table			*temporary;
+	t_table			*temporary;
+	t_redirection	*new_redirection;
 
-// 	new_redirection = create_redirection(redir_type, token->content);
-// 	temporary = *lst;
-// 	if (temporary->redirections == NULL)
-// 	{
-// 		temporary->redirections = new_redirection;
-// 		return ;
-// 	}
-// 	if (new_redirection == NULL)
-// 		return ;
-// 	while (temporary->redirections->next != NULL)
-// 		temporary->redirections = temporary->redirections->next;
-// 	new_redirection->next = temporary->redirections->next;
-// 	temporary->redirections->next = new_redirection;
-// }
+	temporary = *lst;
+	new_redirection = create_redirection(redir_type, token->content);
+	if (temporary->redirections == NULL)
+	{
+		temporary->redirections = new_redirection;
+		return ;
+	}
+	if (new_redirection == NULL)
+		return ;
+	while (temporary->redirections->next != NULL)
+		temporary->redirections = temporary->redirections->next;
+	new_redirection->next = temporary->redirections->next;
+	temporary->redirections->next = new_redirection;
+}
 
 int	find_redirection_type(t_list **token, int *type)
 {
@@ -106,7 +72,8 @@ int	find_redirection_type(t_list **token, int *type)
 		*type = APPEND;
 	else if (ft_strcmp((*token)->content, "<<") == 0)
 		*type = HEREDOC;
-	*token = (*token)->next;
+	if (*type != 0)
+		*token = (*token)->next;
 	return (*type);
 }
 
@@ -120,6 +87,8 @@ static int	count(const char *s, char c)
 
 	i = 0;
 	count = 0;
+	if (s == NULL)
+		return (0);
 	while (s[i] != '\0' && s[i] == c)
 		i++;
 	while (s[i])
@@ -135,6 +104,7 @@ static int	count(const char *s, char c)
 void	parse_command(t_list **token, t_table **table)
 {
 	char	*expanded_string;
+	char	**argument_list;
 	/* steps to consider inside the function
 		1. save the unhandled token inside a variable
 		2. call the variable expansion on the variable
@@ -148,10 +118,16 @@ void	parse_command(t_list **token, t_table **table)
 			array_append_array(char **first, char **second);
 		   if not than just use add_array_element(char **old_arr, char *new);
 	*/
-	expanded_string = (*token)->content;
-	if (count(expanded_string, ' ') > 1)
-		; // array_append_array;
-	else
+	expanded_string = expander((*token)->content);
+	if (expanded_string == NULL || expanded_string[0] == '\0')
+		;
+	else if (count(expanded_string, ' ') > 1)
+	{	
+		argument_list = ft_split(expanded_string, ' ');
+		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
+		// free argument list
+	}
+	else if (count(expanded_string, ' ') == 1)
 		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
 	return ;
 }
@@ -176,15 +152,37 @@ t_table	*parser(t_list *token)
 			table = table->next;
 		}
 		else if (find_redirection_type(&token, &redir_type) > 0)
-		{
-			new_redirection = create_redirection(redir_type, token->content);
-			append_redirection(&table, new_redirection);
-		}
+			append_redirection(&table, token, redir_type);
 		else
 			parse_command(&token, &table);
 		token = token->next;
 	}
 	return (head);
+}
+
+//////////////////////////////////////////////////////
+
+///////////////////////////////////////////////
+
+int	main(int argc, char *argv[], char **envp)
+{
+	char	*exe;
+	char	*command[2];
+	t_list	*tokens;
+	t_table	*table;
+	environment_init(envp);
+	// with 'cat /dev/urandom | head -5 something is still reading input instead of terminating
+	tokens = (t_list *)lexer("cat /dev/urandom | head -5");
+	if (tokens == NULL)
+		return (0);
+	if (syntax_check(tokens))
+	{
+		table = parser(tokens);
+		// print_execution(table);
+		executioner(table);
+		// execution(tokens, envp);
+	}
+	return (0);
 }
 
 // gcc lexer.c syntax_check.c cmd.c ../libs/libft/libft.a -lreadline

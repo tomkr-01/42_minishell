@@ -80,6 +80,12 @@ char	*expand_varname(char *varname)
 	return (value);
 }
 
+/* we should have a variable instead of the token to be saving the results in
+because
+	1. the token is being overwritten, it doesn't maintain its original value
+	2. we want to be able to free the tokens in the end without any issues
+*/
+
 char	*expander(char *token)
 {
 	char	*expanded;
@@ -101,12 +107,12 @@ char	*expander(char *token)
 	return (expanded);
 }
 
-int	main(int argc, char **argv, char **envp)
-{
-	char	*str = ft_strdup("$'doesnotexist'");
-	environment_init(envp);
-	printf("expander(): %s|\n", expander(str));
-	return (0);
-}
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	char	*str = ft_strdup("$$$$PATHI$");
+// 	environment_init(envp);
+// 	printf("expander(): %s|\n", expander(str));
+// 	return (0);
+// }
 
 // final bug with eg. this: $'doesnotexist'

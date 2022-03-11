@@ -46,6 +46,7 @@ int	main(int argc, char *argv[], char **envp)
 	char	*line;
 
 	// function to get the environment into own variable and check if it fails
+	environment_init(envp);
 	while (1)
 	{
 		signal(SIGQUIT, SIG_IGN);

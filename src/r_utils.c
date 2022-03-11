@@ -12,10 +12,16 @@ char	**array_append_array(char **first, char **second)
 			* sizeof(char *));
 	if (new_array == NULL)
 		return (NULL);
-	while (first[i] != NULL)
+	while (first != NULL && first[i] != NULL)
+	{
 		new_array[i] = ft_strdup(first[i]);
-	while (second[i] != NULL)
+		i++;
+	}
+	while (second != NULL && second[j] != NULL)
+	{
 		new_array[i + j] = ft_strdup(second[j]);
+		j++;
+	}
 	new_array[i + j] = NULL;
 	/* to possibilities
 		but check before if they are NULL
@@ -83,7 +89,7 @@ bool	can_be_expanded(char *argument)
 	// expansion = false;
 	while (argument[index] != '\0')
 	{
-		if (argument[index] == "'")
+		if (argument[index] == '\'')
 			s_quotes *= -1;
 		/* what about underscores */
 		else if (argument[index] == '$' && ft_isalnum(argument[index + 1]) && s_quotes > 0)
@@ -107,11 +113,11 @@ char	*expansion(char *token, char **envp)
 	while (token[index] != '\0')
 	{
 		var_len = 0;
-		if (token[index] == '"' || token[index] == "'")
+		if (token[index] == '"' || token[index] == '\'')
 			to_remove = token[index];
 		while (token[index] != '\0' && token[index] != to_remove)
 		{
-			if (token[index++] == '$' && to_remove != "'")
+			if (token[index++] == '$' && to_remove != '\'')
 			{
 				start = index;
 				while (token[index] != '\0' && ft_isalnum(token[index]))

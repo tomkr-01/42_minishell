@@ -24,6 +24,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
 # include "../libs/libft/includes/libft.h"
 
 /* ************************************************************************** */
@@ -33,6 +35,15 @@
 # define SHELL "minishell"
 # define OPERATORS "|<>"
 # define METACHARS OPERATORS" \t\n"
+
+# define PIPE "|"
+# define OUT 1
+# define IN 2
+# define APPEND 4
+# define HEREDOC 8
+
+# define READ 0
+# define WRITE 1
 
 /* ************************************************************************** */
 /* STRUCTS																	  */
@@ -55,6 +66,18 @@ typedef struct s_cmd
 	bool			pipe;
 	struct s_cmd	*next;
 }	t_cmd;
+
+typedef struct s_redirection {
+	int						type;
+	char					*name;
+	struct s_redirection	*next;
+}			t_redirection;
+
+typedef struct s_table {
+	char					**arguments;
+	t_redirection			*redirections;
+	struct s_table			*next;
+}			t_table;
 
 /* ************************************************************************** */
 /* FUNCTION PROTOTYPES														  */
@@ -87,6 +110,7 @@ bool	syntax_check(t_list *tokens);
 
 /* utils.c */
 
+char	**array_append_array(char **first, char **second);
 void	set_exit_code(int code);
 char	**add_array_element(char **old_arr, char *new_el);
 char	**rm_array_element(char **old_arr, char	*old_el);
@@ -95,5 +119,7 @@ int		put_stderr(char	*s1, char *s2, char *s3, char *message);
 /* signal.c */
 void	control_c(int sig);
 int		change_attributes(bool print_controls);
+char	*find_executable(char *command);
+void	executioner(t_table *table);
 
 #endif

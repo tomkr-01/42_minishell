@@ -1,6 +1,6 @@
 #include "../inc/minishell.h"
 
-char	**array_append_array(char **first, char **second)
+w
 {
 	int		i;
 	int		j;

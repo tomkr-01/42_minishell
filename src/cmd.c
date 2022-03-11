@@ -67,34 +67,6 @@ int	open_append(char *file_name)
 	return (0);
 }
 
-char	**add_array_element(char **old_arr, char *new_el)
-{
-	size_t	i;
-	size_t	arr_size;
-	char	**new_arr;
-
-	i = 0;
-	arr_size = ft_arrlen(old_arr);
-	new_arr = (char **)malloc((arr_size + 2) * sizeof(char *));
-	if (new_arr == NULL)
-	{
-		perror(new_el);
-		exit(0);
-	}
-	while (i < arr_size)
-	{
-		new_arr[i] = ft_strdup(old_arr[i]);
-		// free(old_arr[i]);
-		// old_arr[i] = NULL;
-		i++;
-	}
-	if (old_arr != NULL)
-		free(old_arr);
-	old_arr = NULL;
-	new_arr[i] = ft_strdup(new_el);
-	new_arr[i + 1] = NULL;
-	return (new_arr);
-}
 
 char	*find_executable(char *command);
 
@@ -125,7 +97,7 @@ void	execution(t_list *token, char **envp)
 
 	stdinn = dup(0);
 	stdouti = dup(1);
-	ls[0] = "/bin/ls";
+	ls[0] = "ls";
 	ls[1] = "-l";
 	ls[2] = NULL;
 	wc[0] = "/usr/bin/wc";
@@ -146,7 +118,7 @@ void	execution(t_list *token, char **envp)
 		if (ofd < 0)
 			printf("error opening out file.\n");
 		dup2(ofd, 1);
-		execve(ls[0], ls, envp);
+		execve("/bin/ls", ls, envp);
 		printf("command not found.\n");
 	}
 	else if (pid > 0)
@@ -446,21 +418,21 @@ char	*find_executable(char *command)
 // 	}
 // }
 
-int	main(int argc, char *argv[], char **envp)
-{
-	char	*exe;
-	char	*command[2];
-	t_list	*tokens;
-	// t_table	*table;
-	// bash writes ls -l into out and displays 0 in the stdout
-	tokens = (t_list *)lexer("ls < cmd.c > out -l | wc -l > out2");
-	if (tokens == NULL)
-		return (0);
-	if (syntax_check(tokens))
-	{
-		// table = parser(tokens);
-		// execution(table);
-		execution(tokens, envp);
-	}
-	return (0);
-}
+// int	main(int argc, char *argv[], char **envp)
+// {
+// 	char	*exe;
+// 	char	*command[2];
+// 	t_list	*tokens;
+// 	// t_table	*table;
+// 	// bash writes ls -l into out and displays 0 in the stdout
+// 	tokens = (t_list *)lexer("ls < cmd.c > out -l | wc -l");
+// 	if (tokens == NULL)
+// 		return (0);
+// 	if (syntax_check(tokens))
+// 	{
+// 		// table = parser(tokens);
+// 		// execution(table);
+// 		execution(tokens, envp);
+// 	}
+// 	return (0);
+// }
