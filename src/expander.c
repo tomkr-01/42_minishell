@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 17:04:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/09 15:07:39 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/10 17:51:15 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ size_t	next_exp(char *token)
 	{
 		if (token[pos] == '\'')
 		{
-			pos += ft_strchr_int(&token[pos + 1], '\'');
+			pos += ft_strchr_int(&token[pos + 1], '\'') + 1; // changed ft_strchr_int()
 		}
 		else if (token[pos] == '"')
 		{
@@ -61,7 +61,7 @@ char	*get_varname(char *token)
 	else if (token[1] == '?')
 		return (ft_strdup("?"));
 	else if (token[1] == '\'' || token[1] == '"')
-		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 1));
+		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 2)); // changed ft_strchr_int()
 	while (valid_exp_char(token[i], false))
 	{
 		i++;
