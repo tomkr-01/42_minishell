@@ -1,0 +1,19 @@
+total 164
+-rwxrwxr-x 1 rilind rilind 85176 Mar 14 09:59 a.out
+-rw-rw-r-- 1 rilind rilind  4679 Mar  8 14:02 ast.c
+-rw-rw-r-- 1 rilind rilind  3665 Mar  9 10:54 builtins_cd_echo_pwd.c
+-rw-rw-r-- 1 rilind rilind  2615 Mar  8 14:06 builtins_export_unset_env_exit.c
+-rw-rw-r-- 1 rilind rilind  8824 Mar 12 10:26 cmd.c
+-rw-rw-r-- 1 rilind rilind  1707 Mar 12 10:21 environment.c
+drwxrwxr-x 2 rilind rilind  4096 Mar  8 14:02 executor
+-rw-rw-r-- 1 rilind rilind  3092 Mar 11 21:15 expander.c
+-rw-rw-r-- 1 rilind rilind  2218 Mar  8 14:06 lexer.c
+-rw-rw-r-- 1 rilind rilind  1635 Mar  9 15:34 main.c
+-rw-r--r-- 1 rilind rilind     0 Mar 14 09:59 out
+drwxrwxr-x 2 rilind rilind  4096 Mar 14 09:38 parser
+-rw-rw-r-- 1 rilind rilind  2598 Mar  9 15:02 r_utils.c
+-rw-rw-r-- 1 rilind rilind  1321 Mar  8 14:02 signal.c
+-rw-rw-r-- 1 rilind rilind  2602 Mar  8 14:06 syntax_check.c
+-rw-rw-r-- 1 rilind rilind  1728 Mar  8 14:06 toms_function_tester.c
+-rw-rw-r-- 1 rilind rilind  2664 Mar  9 12:03 t_utils.c
+-rw-rw-r-- 1 rilind rilind  5305 Mar  9 15:43 utils.c

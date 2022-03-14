@@ -103,7 +103,6 @@ void	execution(t_list *token, char **envp)
 	wc[0] = "/usr/bin/wc";
 	wc[1] = "-l";
 	wc[2] = NULL;
-	ifd = open("cmd.c", O_RDONLY);
 	pipe(pip);
 	pid = fork();
 	if (pid == 0)
@@ -111,6 +110,7 @@ void	execution(t_list *token, char **envp)
 		close(pip[0]);
 		dup2(pip[1], 1);
 		close(pip[1]);
+		ifd = open("cmd.c", O_RDONLY);
 		if (ifd < 0)
 			printf("error opening in file.\n");
 		dup2(ifd, 0);
