@@ -41,9 +41,26 @@ char	*read_input(void)
 	return (line);
 }
 
+int	input_processor(char *line, t_table **table)
+{
+	t_list		*tokens;
+	t_table		*table;
+
+	tokens = lexer(line);
+	// if (tokens == NULL)
+	// 	return (-1);
+	free(line);
+	*table = parser(tokens);
+	if (*table == NULL)
+		return (-1);
+	return (0);
+}
+
 int	main(int argc, char *argv[], char **envp)
 {
-	char	*line;
+	int			status;
+	char		*line;
+	t_table		*table;
 
 	// function to get the environment into own variable and check if it fails
 	environment_init(envp);
@@ -65,6 +82,12 @@ int	main(int argc, char *argv[], char **envp)
 			*/
 			if (isatty(STDERR_FILENO) == 0)
 				write(STDERR_FILENO, "exit\n", 5);
+			return (-1);
+		}
+		status = input_processor(line, &table);
+		if (status == -1)
+		{
+			// free stuff 
 			return (-1);
 		}
 	}

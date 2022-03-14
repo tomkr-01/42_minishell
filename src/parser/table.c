@@ -173,7 +173,7 @@ int	main(int argc, char *argv[], char **envp)
 	t_list	*tokens;
 	t_table	*table;
 	environment_init(envp);
-	tokens = (t_list *)lexer("cat < cmd.c");
+	tokens = (t_list *)lexer("shit");
 	if (tokens == NULL)
 		return (0);
 	if (syntax_check(tokens))
