@@ -6,13 +6,14 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 14:06:12 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 14:12:16 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/14 19:31:34 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
 char	*get_pwd(void);
+int		export_builtin(char **arguments);
 
 int	cd_builtin(char **arguments)
 {

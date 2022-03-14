@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 17:04:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/10 17:51:15 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/14 22:12:58 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,16 @@ char	*expand_varname(char *varname)
 		value = ft_itoa(g_msh.exit_code);
 	else if (varname[0] == '\'' || varname[0] == '"')
 		value = ft_strdup(varname);
+	else if (ft_strncmp(get_var((const char *)varname), "\'", 1) == 0)
+	{
+		value = ft_strjoin_free(ft_strdup("\""), get_var((const char *)varname));
+		value = ft_strjoin_free(value, ft_strdup("\""));
+	}
 	else
-		value = get_var((const char *)varname);
+	{
+		value = ft_strjoin_free(ft_strdup("\'"), get_var((const char *)varname));
+		value = ft_strjoin_free(value, ft_strdup("\'"));
+	}
 	free(varname);
 	return (value);
 }
@@ -101,13 +109,13 @@ char	*expander(char *token)
 	while (token != NULL && token[i] != '\0')
 	{
 		expanded = ft_strjoin_free(expanded,
-				ft_substr(token, 0, next_exp(token)));
+			ft_substr(token, 0, next_exp(token)));
 		token = ft_substr_free(token,
-				next_exp(token), ft_strlen(token));
+			next_exp(token), ft_strlen(token));
 		expanded = ft_strjoin_free(expanded,
-				expand_varname(get_varname(token)));
+			expand_varname(get_varname(token)));
 		token = ft_substr_free(token,
-				ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
+			ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
 	}
-	return (expanded);
+	return (quote_remover(expanded));
 }

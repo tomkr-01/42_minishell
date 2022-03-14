@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quote_removal.c                                    :+:      :+:    :+:   */
+/*   quote_remover.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 15:11:04 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 09:33:34 by tomkrueger       ###   ########.fr       */
+/*   Updated: 2022/03/14 22:12:59 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,4 @@ char	*quote_remover(char *token)
 			next_quote(token, quote) + 1, ft_strlen(token));
 	}
 	return (q_removed);
-}
-
-int main(void)
-{
-	char	*str = ft_strdup("this is a string with weird quotes");
-	printf("%s|", quote_remover(str));
-	return (0);
 }
