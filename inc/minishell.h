@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 21:33:49 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/15 14:27:12 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,31 +88,25 @@ typedef struct s_table {
 // int	main(int argc, char **argv, char **envp);
 
 /* environment.c */
-
 void	environment_init(char **envp);
 char	*get_var(const char *variable);
 
 /* builtins*.c */
-
 int		builtins(char **arguments);
 
 /* lexer.c */
-
 void	*lexer(char const *line);
 
 /* expander.c */
-
 char	*expander(char *token);
 
 /* quote_remover.c */
 char	*quote_remover(char *token);
 
 /* syntax_check.c */
-
 bool	syntax_check(t_list *tokens);
 
-/* utils.c */
-
+/* t_utils.c */
 char	**array_append_array(char **first, char **second);
 void	set_exit_code(int code);
 char	**add_array_element(char **old_arr, char *new_el);
