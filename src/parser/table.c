@@ -299,79 +299,111 @@ void	execute_child(t_table **table)
 	// free command
 }
 
-static void	read_stdin_into_pipe(char *delimiter, int **pipe_end)
+void	ft_putstr_fdi(char *s, int fd)
 {
-	char	*str;
-	char	*line;
+	int	index;
 
-	str = ft_strdup("");
-	while (1)
-	{
-		write(2, "> ", 2);
-		line = get_next_line(0);
-		if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
-		{
-			free(line);
-			close(0);
-			break ;
-		}
-		str = ft_strjoin(str, line);
-		free(line);
-	}
-	ft_putstr_fd(str, (*pipe_end)[WRITE]);
-	free(delimiter);
-	exit(1);
+	index = 0;
+	if (s == NULL)
+		return ;
+	while (s[index] != '\0')
+		write(fd, &s[index++], 1);
 }
 
-/* runs the heredoc functions in the child and dups the inputed strings
-into the stdin in parent process */
+// static void	read_stdin_into_pipe(char *delimiter, int *pipe_end)
+// {
+// 	char	*str;
+// 	char	*line;
 
-int	heredoc(char *delim)
+// 	str = ft_strdup("");
+// 	while (1)
+// 	{
+// 		write(2, "> ", 2);
+// 		line = get_next_line(0);
+// 		if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+// 		{
+// 			free(line);
+// 			close(0);
+// 			break ;
+// 		}
+// 		str = ft_strjoin(str, line);
+// 		free(line);
+// 	}
+// 	free(delimiter);
+// 	exit(1);
+// }
+
+// /* runs the heredoc functions in the child and dups the inputed strings
+// into the stdin in parent process */
+
+// int	heredoc(char *delim)
+// {
+// 	int		*pipe_end;
+// 	pid_t	process_id;
+
+// 	pipe_end = malloc(2 * sizeof(int));
+// 	if (pipe_end == 0)
+// 		return (0);
+// 	if (pipe(pipe_end) == -1)
+// 	{
+// 		printf("error with pipe in heredoc\n");
+// 		exit(1);
+// 	}
+// 	process_id = fork();
+// 	if (process_id == -1)
+// 	{
+// 		printf("error with fork in heredoc\n");
+// 		exit(1);
+// 	}
+// 	else if (process_id == 0)
+// 	{
+// 		close(pipe_end[READ]);
+// 		read_stdin_into_pipe(delim, pipe_end);
+// 		close(pipe_end[WRITE]);
+// 		exit(1);
+// 	}
+// 	else if (process_id > 0)
+// 	{
+// 		wait(NULL);
+// 		close(pipe_end[WRITE]);
+// 		dup2(pipe_end[READ], 0);
+// 		close(pipe_end[READ]);
+// 		// free(delim);
+// 	}
+// 	return (0);
+// }
+
+void	heredoc(char *delimiter, char **line)
 {
-	int		*pipe_end;
-	pid_t	process_id;
+	char	*str;
 
-	pipe_end = malloc(2 * sizeof(int));
-	if (pipe_end == 0)
-		return (0);
-	if (pipe(pipe_end) == -1)
+	
+	while (1)
 	{
-		printf("error with pipe in heredoc\n");
-		exit(1);
+		str = get_next_line(0);
+		if (ft_strncmp(str, delimiter, ft_strlen(str) - 1) == 0)
+		{
+			free(str);
+			break ;
+		}
+		*line = ft_strjoin(*line, str);
+		free(str);
 	}
-	process_id = fork();
-	if (process_id == -1)
-	{
-		printf("error with fork in heredoc\n");
-		exit(1);
-	}
-	else if (process_id == 0)
-	{
-		close(pipe_end[READ]);
-		read_stdin_into_pipe(delim, &pipe_end);
-		close(pipe_end[WRITE]);
-		exit(1);
-	}
-	else if (process_id > 0)
-	{
-		wait(NULL);
-		close(pipe_end[WRITE]);
-		dup2(pipe_end[READ], 0);
-		close(pipe_end[READ]);
-		// free(delim);
-	}
-	return (0);
 }
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
+	char		*line;
+
+	line = ft_strdup("");
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
 		{
-			heredoc((*table)->redirections->name);
+			heredoc((*table)->redirections->name, &line);
+			ft_putstr_fdi(line, 1);
 		}
 		// the heredoc takes the string unexpanded as the delimiter
 		// if the delimiter is quoted, parameter expansion is turned off
@@ -427,9 +459,9 @@ void	executioner(t_table *table)
 			return ;
 		if (own_fork(&process_id) == -1)
 			return ;
-		if (process_id == 0)
+		if (process_id > 0)
 			child_process(&table, &pipe_end, &pipe_flag);
-		else if (process_id > 0)
+		else if (process_id == 0)
 			parent_process(&pipe_end, &pipe_flag);
 		table = table->next;
 	}
