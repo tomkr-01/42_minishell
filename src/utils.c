@@ -1,66 +1,67 @@
 #include "../inc/minishell.h"
 
-char	**array_append_array(char **first, char **second)
-{
-	int		i;
-	int		j;
-	char	**new_array;
+// char	**array_append_array(char **first, char **second)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	**new_array;
 
-	i = 0;
-	j = 0;
-	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
-			* sizeof(char *));
-	if (new_array == NULL)
-		return (NULL);
-	while (first[i] != NULL)
-		new_array[i] = ft_strdup(first[i]);
-	while (second[i] != NULL)
-		new_array[i + j] = ft_strdup(second[j]);
-	new_array[i + j] = NULL;
-	/* to possibilities
-		but check before if they are NULL
-		1. free while copying
-		2. call ft_free_split onto the old arrays
-	*/
-	return (new_array);
-}
+// 	i = 0;
+// 	j = 0;
+// 	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
+// 			* sizeof(char *));
+// 	if (new_array == NULL)
+// 		return (NULL);
+// 	while (first[i] != NULL)
+// 		new_array[i] = ft_strdup(first[i]);
+// 	while (second[i] != NULL)
+// 		new_array[i + j] = ft_strdup(second[j]);
+// 	new_array[i + j] = NULL;
+// 	/* to possibilities
+// 		but check before if they are NULL
+// 		1. free while copying
+// 		2. call ft_free_split onto the old arrays
+// 	*/
+// 	return (new_array);
+// }
 
-/* own get_env function */
+// /* own get_env function */
 
-char	*ft_getenv(const char *variable, char **envp)
-{
-	int		index;
-	int		variable_len;
-	char	*environment_variable;
+// char	*ft_getenv(const char *variable, char **envp)
+// {
+// 	int		index;
+// 	int		variable_len;
+// 	char	*environment_variable;
 
-	index = 0;
-	environment_variable = ft_strjoin(variable, "=");
-	variable_len = ft_strlen(environment_variable);
-	while (envp[index])
-	{
-		if (ft_strncmp(envp[index], environment_variable, variable_len) == 0)
-		{
-			free(environment_variable);
-			environment_variable = NULL;
-			return (envp[index] + variable_len);
-		}
-		index++;
-	}
-	free(environment_variable);
-	environment_variable = NULL;
-	return (NULL);
-}
-size_t	protected_strlen(char *s)
-{
-	int		index;
+// 	index = 0;
+// 	environment_variable = ft_strjoin(variable, "=");
+// 	variable_len = ft_strlen(environment_variable);
+// 	while (envp[index])
+// 	{
+// 		if (ft_strncmp(envp[index], environment_variable, variable_len) == 0)
+// 		{
+// 			free(environment_variable);
+// 			environment_variable = NULL;
+// 			return (envp[index] + variable_len);
+// 		}
+// 		index++;
+// 	}
+// 	free(environment_variable);
+// 	environment_variable = NULL;
+// 	return (NULL);
+// }
 
-	index = 0;
-	if (s == NULL)
-		return (0);
-	while (s[index] != '\0')
-		index++;
-	return (index);
-}
+// size_t	protected_strlen(char *s)
+// {
+// 	int		index;
+
+// 	index = 0;
+// 	if (s == NULL)
+// 		return (0);
+// 	while (s[index] != '\0')
+// 		index++;
+// 	return (index);
+// }
 
 /* int array storing the beginning and ending of quotes? */
 
@@ -129,14 +130,31 @@ char	*find_executable(char *command)
 	char	*path;
 	char	*executable;
 	char	*absolute_path;
-	char	*directories;
+	char	**directories;
 
+	if (access(command, F_OK) == 0)
+		return (command);
 	index = 0;
-	path = get_var("PATH");
+	path = "/Users/rjasari/.brew/bin:/Users/rjasari/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Users/rjasari/.brew/bin";
 	directories = ft_split(path, ':');
 	if (directories == NULL)
 		return (NULL);
-	free(path);
+	// free(path);
 	executable = ft_strjoin("/", command);
-	
+	while (directories[index] != NULL)
+	{
+		absolute_path = ft_strjoin(directories[index], executable);
+		if (access(absolute_path, F_OK) == 0)
+		{
+			free(executable);
+			free(directories);
+			free(command);
+			return (absolute_path);
+		}
+		free(absolute_path);
+		index++;
+	}
+	free(executable);
+	free(directories);
+	return (command);
 }

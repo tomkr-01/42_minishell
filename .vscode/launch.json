@@ -5,30 +5,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "gcc-9 - Build and debug active file",
+			"name": "gcc - Build and debug active file",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "/home/rilind/Desktop/42_minishell/src/a.out",
-			"args": [],
+			"program": "/Users/rjasari/Desktop/42_minishell/src/a.out",
+			"args": ["hallo"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],
-			"externalConsole": false,
-			"MIMode": "gdb",
-			"setupCommands": [
-				{
-					"description": "Enable pretty-printing for gdb",
-					"text": "-enable-pretty-printing",
-					"ignoreFailures": true
-				},
-				{
-					"description": "Set Disassembly Flavor to Intel",
-					"text": "-gdb-set disassembly-flavor intel",
-					"ignoreFailures": true
-				}
-			],
-			"preLaunchTask": "C/C++: gcc-9 build active file",
-			"miDebuggerPath": "/usr/bin/gdb"
+			"externalConsole": true,
+			"MIMode": "lldb",
+			"preLaunchTask": "C/C++: gcc build active file"
 		}
 	]
 }
