@@ -211,49 +211,6 @@ int	get_parameter(char *string, char **parameter)
 	return (index - 1);
 }
 
-int	expansion(char	*token, char **expanded, char **envp)
-{
-	int		index;
-	char	*temporary;
-	char	*parameter;
-	char	*partial;
-	char	*expanded_param;
-	char	*full_expansion;
-
-	temporary = find_expanding_index(token);
-	if (temporary == NULL)
-		return (0);
-	while (temporary)
-	{
-		parameter = NULL;
-		partial = NULL;
-		expanded_param = NULL;
-		full_expansion = NULL;
-		if (full_expansion != NULL) // what is the benefit of this? full_expansion is set to NULL in the previous line
-			free(full_expansion);
-		partial = ft_substr(token, 0, temporary - token);
-		index += get_parameter(temporary, &parameter);
-		if (parameter != NULL)
-		{
-			expanded_param = ft_getenv(parameter, envp);
-			full_expansion = ft_strjoin(partial, expanded_param);
-		}
-		else
-		{
-			full_expansion = partial;
-			free(partial);
-		}
-		partial = ft_substr(token, index, ft_strlen(temporary) - (index + 1));
-		full_expansion = ft_strjoin(full_expansion, partial);
-		temporary = ft_strdup(full_expansion);
-		free(parameter);
-		free(partial);
-		free(expanded_param);
-		temporary = find_expanding_index(temporary);
-	}
-	*expanded = full_expansion;
-	return (1);
-}
 
 
 int	main(int argc, char *argv[], char **envp)
@@ -266,11 +223,3 @@ int	main(int argc, char *argv[], char **envp)
 	printf("this should be the expanded string: %s\n", expanded);
 	return (0);
 }
-
-// inputs that cause issues:
-// S$USER.tom
-// $USER.tom
-// $USER.
-// $USER-tom
-// $USER@tom
-// $\'USER\'			this just fucking kills it with malloc
