@@ -1,6 +1,6 @@
 #include "../inc/minishell.h"
 
-w
+char	**array_append_array(char **first, char **second)
 {
 	int		i;
 	int		j;
@@ -42,7 +42,7 @@ char	*ft_getenv(const char *variable, char **envp)
 		{
 			free(environment_variable);
 			environment_variable = NULL;
-			return (ft_strdup(envp[index] + variable_len));
+			return (envp[index] + variable_len);
 		}
 		index++;
 	}
@@ -50,15 +50,6 @@ char	*ft_getenv(const char *variable, char **envp)
 	environment_variable = NULL;
 	return (NULL);
 }
-
-/* variable expansion function */
-
-/* helper function like
-	str_apppend_char
-	str_append_str
-	-> ft_strjoin() can do the job
-*/
-
 size_t	protected_strlen(char *s)
 {
 	int		index;
@@ -75,7 +66,7 @@ size_t	protected_strlen(char *s)
 
 int	valid_expansion_character(int c)
 {
-	if (ft_isalnum(c) || c == '_')
+	if (ft_isalnum(c) || c == '-' || c == '_')
 		return (1);
 	return (0);
 }
@@ -108,14 +99,7 @@ char	*str_append_char(char *string, char c)
 	char		*new;
 
 	if (string == NULL)
-	{
-		new = (char *)malloc(2 * sizeof(char));
-		if (new == NULL)
-			return (NULL);
-		new[0] = c;
-		new[1] = '\0';
-		return (new);
-	}
+		return (ft_strdup(&c));
 	index = 0;
 	str_len = ft_strlen(string);
 	new = (char *)malloc((str_len + 2) * sizeof(char));
@@ -135,91 +119,24 @@ char	*str_append_char(char *string, char c)
 
 void	ft_free(void **ptr)
 {
-	if (ptr == NULL || *ptr == NULL)
-		return ;
 	free(*ptr);
 	*ptr = NULL;
 }
 
-ft_free_array(void ***to_free)
-{
-	size_t		i;
-
-	if (to_free == NULL || *to_free == NULL)
-		return ;
-	i = 0;
-	while ((*to_free)[i] != NULL)
-	{
-		ft_free((*to_free)[i]);
-		(*to_free)[i] = NULL;
-		i++;
-	}
-	free(*to_free);
-	*to_free = NULL;
-}
-
-char	*find_expanding_index(char *token)
-{
-	while (*token)
-	{
-		if (*token == '\'')
-		{
-			token = ft_strchr(token + 1, '\'');
-			if (token == NULL)
-				return (NULL);
-		}
-		else if (*token == '"')
-		{
-			while (*++token != '\0' && *token != '"')
-				if (*token == '$')
-					return (token);
-			if (token == NULL)
-				return (NULL);
-		}
-		else if (*token == '$')
-			return (token);
-		token++;
-	}
-	return (NULL);
-}
-
-int	get_parameter(char *string, char **parameter)
+char	*find_executable(char *command)
 {
 	int		index;
+	char	*path;
+	char	*executable;
+	char	*absolute_path;
+	char	*directories;
 
-	// we start at 1 because we wanna look at character next to $
-	index = 1;
-	*parameter = NULL;
-	if (string == NULL)
-		return (0);
-	if (string[index] == '\0')
-		return (0);
-	if (string[index] == '?')
-	{
-		*parameter = ft_substr(string, 1, 1);
-		return (1);
-	}
-	if (!ft_isalpha(string[index]) && string[index] != '_')
-		return (0);
-	while (string[index] != '\0')
-	{
-		if (!valid_expansion_character(string[index]))
-			break ;
-		*parameter = str_append_char(*parameter, string[index]);
-		index++;
-	}
-	return (index - 1);
-}
-
-
-
-int	main(int argc, char *argv[], char **envp)
-{
-	char		*string;
-	char		*expanded;
-
-	string = "$'doesnotexist'";
-	expansion(string, &expanded, envp);
-	printf("this should be the expanded string: %s\n", expanded);
-	return (0);
+	index = 0;
+	path = get_var("PATH");
+	directories = ft_split(path, ':');
+	if (directories == NULL)
+		return (NULL);
+	free(path);
+	executable = ft_strjoin("/", command);
+	
 }
