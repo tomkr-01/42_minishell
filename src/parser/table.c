@@ -299,48 +299,79 @@ void	execute_child(t_table **table)
 	// free command
 }
 
-void	heredoc(char *delimiter, int *fd)
+static void	read_stdin_into_pipe(char *delimiter, int **pipe_end)
 {
+	char	*str;
 	char	*line;
-	char	*delim;
 
-	*fd = open("tmp", O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	if (*fd < 0)
-	{
-		printf("shit\n");
-		return ;
-	}
-	delim = ft_strjoin(delimiter, "\n");
-	line = NULL;
+	str = ft_strdup("");
 	while (1)
 	{
 		write(2, "> ", 2);
-		line = get_next_line(STDIN_FILENO);
-		if (ft_strncmp(line, delim, ft_strlen(line)) == 0)
+		line = get_next_line(0);
+		if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
 		{
 			free(line);
-			// close(0);
+			close(0);
 			break ;
 		}
-		else
-			ft_putstr_fd(line, *fd);
+		str = ft_strjoin(str, line);
 		free(line);
 	}
+	ft_putstr_fd(str, (*pipe_end)[WRITE]);
+	free(delimiter);
+	exit(1);
+}
+
+/* runs the heredoc functions in the child and dups the inputed strings
+into the stdin in parent process */
+
+int	heredoc(char *delim)
+{
+	int		*pipe_end;
+	pid_t	process_id;
+
+	pipe_end = malloc(2 * sizeof(int));
+	if (pipe_end == 0)
+		return (0);
+	if (pipe(pipe_end) == -1)
+	{
+		printf("error with pipe in heredoc\n");
+		exit(1);
+	}
+	process_id = fork();
+	if (process_id == -1)
+	{
+		printf("error with fork in heredoc\n");
+		exit(1);
+	}
+	else if (process_id == 0)
+	{
+		close(pipe_end[READ]);
+		read_stdin_into_pipe(delim, &pipe_end);
+		close(pipe_end[WRITE]);
+		exit(1);
+	}
+	else if (process_id > 0)
+	{
+		wait(NULL);
+		close(pipe_end[WRITE]);
+		dup2(pipe_end[READ], 0);
+		close(pipe_end[READ]);
+		// free(delim);
+	}
+	return (0);
 }
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
-	int		fd;
-
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
 		{
-			heredoc((*table)->redirections->name, &fd);
-			unlink("tmp");
-			// dup2(fd, STDIN_FILENO);
+			heredoc((*table)->redirections->name);
 		}
 		// the heredoc takes the string unexpanded as the delimiter
 		// if the delimiter is quoted, parameter expansion is turned off

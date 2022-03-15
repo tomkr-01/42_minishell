@@ -6,7 +6,7 @@
 /*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/15 08:54:38 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/15 14:41:10 by rjasari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,31 +90,25 @@ t_minishell	g_msh;
 // int	main(int argc, char **argv, char **envp);
 
 /* environment.c */
-
 void	environment_init(char **envp);
 char	*get_var(const char *variable);
 
 /* builtins*.c */
-
 int		builtins(char **arguments);
 
 /* lexer.c */
-
 void	*lexer(char const *line);
 
 /* expander.c */
-
 char	*expander(char *token);
 
 /* quote_remover.c */
 char	*quote_remover(char *token);
 
 /* syntax_check.c */
-
 bool	syntax_check(t_list *tokens);
 
-/* utils.c */
-
+/* t_utils.c */
 char	**array_append_array(char **first, char **second);
 void	set_exit_code(int code);
 char	**add_array_element(char **old_arr, char *new_el);

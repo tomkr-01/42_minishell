@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 17:04:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 22:12:58 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/15 14:26:21 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ size_t	next_exp(char *token)
 	{
 		if (token[pos] == '\'')
 		{
-			pos += ft_strchr_int(&token[pos + 1], '\'') + 1; // changed ft_strchr_int()
+			pos += ft_strchr_int(&token[pos + 1], '\'') + 1;
 		}
 		else if (token[pos] == '"')
 		{
@@ -61,7 +61,7 @@ char	*get_varname(char *token)
 	else if (token[1] == '?')
 		return (ft_strdup("?"));
 	else if (token[1] == '\'' || token[1] == '"')
-		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 2)); // changed ft_strchr_int()
+		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 2));
 	while (valid_exp_char(token[i], false))
 	{
 		i++;
@@ -77,27 +77,17 @@ char	*expand_varname(char *varname)
 		return (NULL);
 	else if (strcmp(varname, "?") == 0)
 		value = ft_itoa(g_msh.exit_code);
-	else if (varname[0] == '\'' || varname[0] == '"')
+	else if (varname[0] == '\'' || varname[0] == '\"')
 		value = ft_strdup(varname);
-	else if (ft_strncmp(get_var((const char *)varname), "\'", 1) == 0)
-	{
-		value = ft_strjoin_free(ft_strdup("\""), get_var((const char *)varname));
-		value = ft_strjoin_free(value, ft_strdup("\""));
-	}
 	else
 	{
-		value = ft_strjoin_free(ft_strdup("\'"), get_var((const char *)varname));
-		value = ft_strjoin_free(value, ft_strdup("\'"));
+		value = ft_strjoin_free(ft_strdup("\31"),
+				get_var((const char *)varname));
+		value = ft_strjoin_free(value, ft_strdup("\31"));
 	}
 	free(varname);
 	return (value);
 }
-
-/* we should have a variable instead of the token to be saving the results in
-because
-	1. the token is being overwritten, it doesn't maintain its original value
-	2. we want to be able to free the tokens in the end without any issues
-*/
 
 char	*expander(char *token)
 {
@@ -109,13 +99,13 @@ char	*expander(char *token)
 	while (token != NULL && token[i] != '\0')
 	{
 		expanded = ft_strjoin_free(expanded,
-			ft_substr(token, 0, next_exp(token)));
+				ft_substr(token, 0, next_exp(token)));
 		token = ft_substr_free(token,
-			next_exp(token), ft_strlen(token));
+				next_exp(token), ft_strlen(token));
 		expanded = ft_strjoin_free(expanded,
-			expand_varname(get_varname(token)));
+				expand_varname(get_varname(token)));
 		token = ft_substr_free(token,
-			ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
+				ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
 	}
 	return (quote_remover(expanded));
 }
