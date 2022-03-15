@@ -299,43 +299,49 @@ void	execute_child(t_table **table)
 	// free command
 }
 
-void	heredoc(char *delimiter)
+void	heredoc(char *delimiter, int *fd)
 {
-	int		fd;
 	char	*line;
+	char	*delim;
 
-	line = NULL;
-	fd = open("tmp", O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	if (fd < 0)
+	*fd = open("tmp", O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	if (*fd < 0)
 	{
 		printf("shit\n");
 		return ;
 	}
+	delim = ft_strjoin(delimiter, "\n");
+	line = NULL;
 	while (1)
 	{
-		ft_putstr_fd("> ", 2);
+		write(2, "> ", 2);
 		line = get_next_line(STDIN_FILENO);
-		if (ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+		if (ft_strncmp(line, delim, ft_strlen(line)) == 0)
 		{
 			free(line);
-			dup2(fd, STDIN_FILENO);
-			unlink("tmp");
+			// close(0);
 			break ;
 		}
 		else
-			ft_putstr_fd(line, fd);
+			ft_putstr_fd(line, *fd);
 		free(line);
 	}
 }
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
+	int		fd;
+
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
-			heredoc((*table)->redirections->name);
+		{
+			heredoc((*table)->redirections->name, &fd);
+			unlink("tmp");
+			// dup2(fd, STDIN_FILENO);
+		}
 		// the heredoc takes the string unexpanded as the delimiter
 		// if the delimiter is quoted, parameter expansion is turned off
 		// else we need to read one line at a time and somehow dup
@@ -412,7 +418,7 @@ int	main(int argc, char *argv[], char **envp)
 	t_list	*tokens;
 	t_table	*table;
 	environment_init(envp);
-	tokens = (t_list *)lexer("cat << EOF");
+	tokens = (t_list *)lexer("cat << EOF > out");
 	if (tokens == NULL)
 		return (0);
 	if (syntax_check(tokens))
