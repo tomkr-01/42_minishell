@@ -14,7 +14,6 @@
 
 extern t_minishell	g_msh;
 
-int	builtins(char **arguments);
 int	env_builtin(char **arguments);
 
 int	main(int argc, char **argv, char **envp)

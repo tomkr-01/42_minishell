@@ -3,9 +3,9 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../inc/minishell.h"
+#include "../inc/minishell.h"
 
-// t_minishell	g_msh;
+extern t_minishell	g_msh;
 
 t_table	*create_table_row()
 {
@@ -479,25 +479,25 @@ void	executioner(t_table *table)
 
 ///////////////////////////////////////////////
 
-int	main(int argc, char *argv[], char **envp)
-{
-	char	*exe;
-	char	*command[2];
-	t_list	*tokens;
-	t_table	*table;
-	environment_init(envp);
-	tokens = (t_list *)lexer("");
-	if (tokens == NULL)
-		return (0);
-	if (syntax_check(tokens))
-	{
-		table = parser(tokens);
-		// print_execution(table);
-		executioner(table);
-		// execution(tokens, envp);
-	}
-	return (0);
-}
+// int	main(int argc, char *argv[], char **envp)
+// {
+// 	char	*exe;
+// 	char	*command[2];
+// 	t_list	*tokens;
+// 	t_table	*table;
+// 	environment_init(envp);
+// 	tokens = (t_list *)lexer("shit");
+// 	if (tokens == NULL)
+// 		return (0);
+// 	if (syntax_check(tokens))
+// 	{
+// 		table = parser(tokens);
+// 		// print_execution(table);
+// 		executioner(table);
+// 		// execution(tokens, envp);
+// 	}
+// 	return (0);
+// }
 
 // gcc lexer.c syntax_check.c cmd.c ../libs/libft/libft.a -lreadline
 // gcc lexer.c cmd.c ../libs/libft/libft.a -lreadline

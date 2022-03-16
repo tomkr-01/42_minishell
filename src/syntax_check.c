@@ -6,18 +6,12 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 22:33:15 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/10 17:55:30 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/16 13:48:10 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 #include <errno.h>
-
-// for list management and error messages
-#include "../libs/libft/includes/libft.h"
-
-// for STDERR_FILENO
-#include <unistd.h>
 
 void	operator_check(t_list *tokens);
 void	quote_check(t_list *tokens);
@@ -25,8 +19,11 @@ bool	is_operator(t_list *token);
 
 bool	syntax_check(t_list *tokens)
 {
-	operator_check(tokens);
-	quote_check(tokens);
+	if (tokens != NULL)
+	{
+		operator_check(tokens);
+		quote_check(tokens);
+	}
 	return (true);
 }
 

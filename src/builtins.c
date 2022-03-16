@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 12:43:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 21:56:18 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/16 11:44:22 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,21 @@ int		unset_builtin(char **arguments);
 int		env_builtin(char **arguments);
 int		exit_builtin(char **arguments);
 
-int	builtins(char **arguments)
+bool	check_builtins(char **arguments)
+{
+	if (strcmp(arguments[0], "cd") == 0
+		|| strcmp(arguments[0], "echo") == 0
+		|| strcmp(arguments[0], "env") == 0
+		|| strcmp(arguments[0], "exit") == 0
+		|| strcmp(arguments[0], "export") == 0
+		|| strcmp(arguments[0], "unset") == 0
+		|| strcmp(arguments[0], "pwd") == 0)
+		return (true);
+	else
+		return (false);
+}
+
+void	builtins(char **arguments)
 {
 	if (strcmp(arguments[0], "cd") == 0)
 		g_msh.exit_code = cd_builtin(&arguments[1]);
@@ -38,8 +52,4 @@ int	builtins(char **arguments)
 		g_msh.exit_code = unset_builtin(&arguments[1]);
 	else if (strcmp(arguments[0], "pwd") == 0)
 		g_msh.exit_code = pwd_builtin(&arguments[1]);
-	else
-		return (0);
-	return (1);
 }
-

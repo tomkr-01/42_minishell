@@ -1,0 +1,9 @@
+total 88
+-rw-r--r--   1 tkruger  2021_heilbronn   2106 Mar 16 18:54 Makefile
+-rw-r--r--   1 tkruger  2021_heilbronn    704 Feb 21 20:51 README.md
+drwxr-xr-x   3 tkruger  2021_heilbronn    102 Mar 16 18:54 inc
+drwxr-xr-x   3 tkruger  2021_heilbronn    102 Feb 21 20:56 libs
+-rwxr-xr-x   1 tkruger  2021_heilbronn  35892 Mar 16 19:13 minishell
+drwxr-xr-x  24 tkruger  2021_heilbronn    816 Mar 16 19:13 objs
+-rw-r--r--   1 tkruger  2021_heilbronn      0 Mar 16 19:13 out
+drwxr-xr-x  23 tkruger  2021_heilbronn    782 Mar 16 18:55 src
