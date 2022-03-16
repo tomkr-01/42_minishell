@@ -163,8 +163,9 @@ static void	send_null_to_stdin(void)
 	}
 }
 
-char	*read_a_line(bool expand)
+char	*read_a_line(bool expand, char *delimiter)
 {
+	char	*expanded_line;
 	char	*line;
 
 	if (isatty(STDIN_FILENO))
@@ -174,8 +175,13 @@ char	*read_a_line(bool expand)
 	}
 	else
 	{
-		write(2, "> ", 2);
+		// write(2, "> ", 2);
 		line = get_next_line(STDIN_FILENO);
+	}
+	if (expand)
+	{
+		if (ft_strcmp(line, delimiter) != 0)
+			line = expander(line);
 	}
 	return (line);
 }
@@ -199,28 +205,29 @@ bool	is_expansion_enabled(char *delim)
 	return (expand);
 }
 
-char	*heredoc(char *delim)
+char	*heredoc(char *delim, int *initial_stdin)
 {
 	bool	expansion;
 	char	*delimiter;
 	char	*line;
 	char	*here_string;
 
+	// dup2(*initial_stdin, 0);
 	expansion = is_expansion_enabled(delim);
 	delimiter = quote_remover(delim);
-	delimiter = ft_strjoin(delim, "\n");
+	delimiter = ft_strjoin(delimiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
-		line = read_a_line();
-		if (ft_strcmp(line, delimiter) == 0)
+		line = read_a_line(expansion, delimiter);
+		if (ft_strcmp(line, delimiter) == 0 || line == NULL)
 		{
 			free(line);
 			send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, line);
-		free(line);
+		// free(line);
 	}
 	free(delimiter);
 	return (here_string);
@@ -256,7 +263,7 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
+void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
 {
 	char	*here_string;
 
@@ -267,7 +274,7 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
 	{
 		if ((*table)->redirections->type == HEREDOC)
 		{
-			here_string = heredoc((*table)->redirections->name);
+			here_string = heredoc((*table)->redirections->name, initial_stdin);
 			if (read_stdin_into_pipe(here_string) == -1)
 				exit(1);
 		}
@@ -278,9 +285,9 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
 	}
 }
 
-void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
+void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
 {
-	execute_redirections(table, pipe_ends, pipe_flag);
+	execute_redirections(table, pipe_ends, pipe_flag, initial_stdin);
 	execute_child(table);
 }
 
@@ -302,6 +309,18 @@ int	initialize_pipe(int **pipe_ends)
 	return (0);
 }
 
+// void	execute_bin(t_table **table, int **pipe_ends, int *pipe_flag)
+// {
+// 	pid_t		process_id;
+
+// 	if (own_fork(&process_id) == -1)
+// 		return ; // exit free maybe here
+// 	if (process_id > 0)
+// 		child_process(table, pipe_ends, pipe_flag);
+// 	else if (process_id == 0)
+// 		parent_process(pipe_ends, pipe_flag);
+// }
+
 void	executioner(t_table *table)
 {
 	int		pipe_flag;
@@ -318,11 +337,17 @@ void	executioner(t_table *table)
 		pipe_flag = pipe_found(&table, &pipe_end);
 		if (pipe_flag == -1)
 			return ;
+		/* 
+		if (check_builtins)
+			execute builtins
+		else
+			alles drunter hier rein
+		*/
 		if (own_fork(&process_id) == -1)
 			return ;
-		if (process_id > 0)
-			child_process(&table, &pipe_end, &pipe_flag);
-		else if (process_id == 0)
+		if (process_id == 0)
+			child_process(&table, &pipe_end, &pipe_flag, &initial_stdin);
+		else if (process_id > 0)
 			parent_process(&pipe_end, &pipe_flag);
 		table = table->next;
 	}

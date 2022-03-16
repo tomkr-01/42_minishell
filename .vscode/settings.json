@@ -1,9 +1,0 @@
-{
-	"files.associations": {
-		"_malloc.h": "c",
-		"errno.h": "c",
-		"unistd.h": "c",
-		"string.h": "c",
-		"fcntl.h": "c"
-	}
-}
