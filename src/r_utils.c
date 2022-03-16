@@ -5,7 +5,6 @@ char	**array_append_array(char **first, char **second)
 	int		i;
 	int		j;
 	char	**new_array;
-
 	i = 0;
 	j = 0;
 	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
@@ -30,48 +29,75 @@ char	**array_append_array(char **first, char **second)
 	*/
 	return (new_array);
 }
-
-/* own get_env function */
-
-char	*ft_getenv(const char *variable, char **envp)
+char	*str_append_char(char *string, char c)
 {
-	int		index;
-	int		variable_len;
-	char	*environment_variable;
+	int			index;
+	int			str_len;
+	char		*new;
 
-	index = 0;
-	environment_variable = ft_strjoin(variable, "=");
-	variable_len = ft_strlen(environment_variable);
-	while (envp[index])
+	if (string == NULL)
 	{
-		if (ft_strncmp(envp[index], environment_variable, variable_len) == 0)
-		{
-			free(environment_variable);
-			environment_variable = NULL;
-			return (envp[index] + variable_len);
-		}
+		new = (char *)malloc(2 * sizeof(char));
+		if (new == NULL)
+		return (NULL);
+		new[0] = c;
+		new[1] = '\0';
+		return (new);
+	}
+	index = 0;
+	str_len = ft_strlen(string);
+	new = (char *)malloc((str_len + 2) * sizeof(char));
+	if (new == NULL)
+		return (NULL);
+	while (string[index] != '\0')
+	{
+		new[index] = string[index];
 		index++;
 	}
-	free(environment_variable);
-	environment_variable = NULL;
-	return (NULL);
+	new[index] = c;
+	new[++index] = '\0';
+	if (string != NULL)
+		free(string);
+	return (new);
 }
 
-/* variable expansion function */
+void	ft_free(void **ptr)
+{
+	free(*ptr);
+	*ptr = NULL;
+}
 
-/* helper function like
-	str_apppend_char
-	str_append_str
-*/
-
-size_t	protected_strlen(char *s)
+char	*find_executable(char *command)
 {
 	int		index;
+	char	*path;
+	char	*executable;
+	char	*absolute_path;
+	char	**directories;
 
+	if (access(command, F_OK) == 0)
+		return (command);
 	index = 0;
-	if (s == NULL)
-		return (0);
-	while (s[index] != '\0')
+	path = "/Users/rjasari/.brew/bin:/Users/rjasari/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Users/rjasari/.brew/bin";
+	directories = ft_split(path, ':');
+	if (directories == NULL)
+		return (NULL);
+	// free(path);
+	executable = ft_strjoin("/", command);
+	while (directories[index] != NULL)
+	{
+		absolute_path = ft_strjoin(directories[index], executable);
+		if (access(absolute_path, F_OK) == 0)
+		{
+			free(executable);
+			free(directories);
+			free(command);
+			return (absolute_path);
+		}
+		free(absolute_path);
 		index++;
-	return (index);
+	}
+	free(executable);
+	free(directories);
+	return (command);
 }

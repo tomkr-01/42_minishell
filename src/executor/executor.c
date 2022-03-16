@@ -1,6 +1,143 @@
 #include "../../inc/minishell.h"
 #include "../parser/table.c"
 
+void	copy_std_filestreams(int *initial_stdin, int *initial_stdout)
+{
+	*initial_stdin = dup(STDIN_FILENO);
+	*initial_stdout = dup(STDOUT_FILENO);
+}
+
+int	pipe_found(t_table **table, int **pipe_ends)
+{
+	int			status;
+
+	status = 0;
+	if ((*table)->next != NULL)
+	{
+		status = pipe(*pipe_ends);
+		if (status == -1)
+			return (-1);
+		return (1);
+	}
+	return (status);
+}
+
+int	own_fork(pid_t *process_id)
+{
+	*process_id = fork();
+	if (*process_id == -1)
+		return (-1);
+	return (0);
+}
+
+void	prepare_pipe(int **pipe_ends)
+{
+	close((*pipe_ends)[READ]);
+	dup2((*pipe_ends)[WRITE], STDOUT_FILENO);
+	close((*pipe_ends)[WRITE]);
+}
+
+void	clear_table_row(t_table **table)
+{
+	t_redirection	*tmp;
+
+	while ((*table)->redirections != NULL)
+	{
+		tmp = (*table)->redirections->next;
+		// free((*table)->redirections->type);
+		free((*table)->redirections->name);
+		(*table)->redirections->next = NULL;
+		(*table)->redirections = tmp;
+	}
+	free((*table)->redirections);
+	(*table)->redirections = NULL;
+	if ((*table)->arguments != NULL)
+		; // free split
+}
+
+int	is_ambiguous_redirect(t_table **table, char **file)
+{
+	bool	clear_list;
+	char	*filename_token;
+	char	*expanded_string;
+
+	clear_list = false;
+	filename_token = ft_strdup((*table)->redirections->name);
+	expanded_string = expander(filename_token);
+	// this check doesn't work as intended if we have the quotes removed
+	// before it, it still should work but with more instructions than necessary
+	if (ft_strcmp((*table)->redirections->name, expanded_string) != 0)
+	{
+		*file = ft_strtrim(expanded_string, " ");
+		// free expanded string
+		if (*file == NULL || *file[0] == '\0')
+			clear_list = true;
+		if (count(*file, ' ') > 1)
+			clear_list = true;
+		if (clear_list)
+			clear_table_row(table);
+		else
+			return (0);
+		write(2, "minishell: ambiguous redirect\n", 30);
+		return (-1);
+	}
+	else
+		*file = filename_token;
+	return (0);
+}
+
+int	open_files(t_table **table)
+{
+	int			fd;
+	int			status;
+	char		*file;
+
+	file = NULL;
+	status = is_ambiguous_redirect(table, &file);
+	if (status == -1)
+		return (-1);
+	if ((*table)->redirections->type == IN)
+		fd = open(file, O_RDONLY);
+	else if ((*table)->redirections->type == OUT)
+		fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	else if ((*table)->redirections->type == APPEND)
+		fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
+	if (fd < 0)
+	{
+		perror(file);
+		return (-1);
+	}
+	if ((*table)->redirections->type == IN)
+		dup2(fd, STDIN_FILENO);
+	else
+		dup2(fd, STDOUT_FILENO);
+	return (0);
+}
+
+void	execute_child(t_table **table)
+{
+	char			*command;
+	struct stat		*statbuf;
+
+	command = NULL;
+	if ((*table)->arguments != NULL)
+		command = find_executable((*table)->arguments[0]);
+	execve(command, (*table)->arguments, g_msh.env);
+	if (!stat(command, statbuf))
+	{
+		if (!(statbuf->st_mode & 0111))
+			write(2, "minishell: permission denied\n", 29);
+	}
+	// if (access(command, F_OK) == 0)
+	// {
+	// 	if (access(command, X_OK) != 0)
+	// 		write(2, "minishell: permission denied\n", 29);
+	// }
+	else
+		write(2, "minishell: command not found\n", 29);
+	// free command
+}
+
 static void	send_null_to_stdin(void)
 {
 	pid_t	process_id;
@@ -26,7 +163,7 @@ static void	send_null_to_stdin(void)
 	}
 }
 
-char	*read_a_line()
+char	*read_a_line(bool expand)
 {
 	char	*line;
 
@@ -43,12 +180,34 @@ char	*read_a_line()
 	return (line);
 }
 
+bool	is_expansion_enabled(char *delim)
+{
+	bool	expand;
+	char	*delimiter;
+	char	*delim_copy_1;
+	char	*delim_copy_2;
+
+	expand = false;
+	delim_copy_1 = ft_strdup(delim);
+	delim_copy_2 = ft_strdup(delim);
+	delimiter = quote_remover(delim_copy_1);
+	if (ft_strcmp(delimiter, delim_copy_2) != 0)
+		expand = true;
+	free(delim_copy_1);
+	free(delim_copy_2);
+	free(delimiter);
+	return (expand);
+}
+
 char	*heredoc(char *delim)
 {
+	bool	expansion;
 	char	*delimiter;
 	char	*line;
 	char	*here_string;
 
+	expansion = is_expansion_enabled(delim);
+	delimiter = quote_remover(delim);
 	delimiter = ft_strjoin(delim, "\n");
 	here_string = ft_strdup("");
 	while (1)
@@ -97,37 +256,32 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
+void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
 {
-	char		*here_doc;
+	char	*here_string;
 
-	here_doc = NULL;
+	here_string = NULL;
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
 		{
-			here_doc = heredoc((*table)->redirections->name);
-			if (read_stdin_into_pipe(here_doc) == -1)
+			here_string = heredoc((*table)->redirections->name);
+			if (read_stdin_into_pipe(here_string) == -1)
 				exit(1);
 		}
-		// the heredoc takes the string unexpanded as the delimiter
-		// if the delimiter is quoted, parameter expansion is turned off
-		// else we need to read one line at a time and somehow dup
-		// or write it into the stdin
 		else
 			open_files(table);
-		// when opening the files first expand the filename token
-		// and then run the ft_strtrim function on it
-		// if after it we have either a NULL, '\0' or can find a space 
-		// we error for ambigious redirect and then clear the whole table row
 		if ((*table)->redirections != NULL)
 			(*table)->redirections = (*table)->redirections->next;
 	}
+}
+
+void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
+{
+	execute_redirections(table, pipe_ends, pipe_flag);
 	execute_child(table);
-	// checks if we have arguments and executes the file if ok
-	// else checks for execution rights and return error message
 }
 
 void	parent_process(int **pipe_ends, int *pipe_flag)
