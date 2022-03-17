@@ -136,6 +136,7 @@ void	execute_child(t_table **table)
 	else
 		write(2, "minishell: command not found\n", 29);
 	// free command
+	exit(127);
 }
 
 int	read_stdin_into_pipe(char *here_doc)
@@ -199,6 +200,8 @@ void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initia
 
 void	parent_process(int **pipe_ends, int *pipe_flag)
 {
+	// signal(SIGINT, SIG_DFL);
+	// signal(SIGQUIT, SIG_DFL);
 	signal(SIGINT, &execution_signals);
 	signal(SIGQUIT, &execution_signals);
 	if (*pipe_flag == 1)
