@@ -24,15 +24,21 @@ int	input_processor(char *line, t_table **table)
 
 	change_attributes(true);
 	tokens = lexer(line);
-	if (tokens == NULL)
-		return (-1);
+	// if (tokens == NULL)
+	// {
+	// 	printf("return at lexer\n");
+	// 	return (-1);
+	// }
 	free(line);
 	line = NULL;
 	syntax_check(tokens);
 	*table = parser(tokens);
 	ft_lstclear(&tokens, &del_content);
 	if (*table == NULL)
+	{
+		printf("return at token\n");
 		return (-1);
+	}
 	return (0);
 }
 
@@ -50,6 +56,8 @@ int	main(int argc, char *argv[], char **envp)
 		signal(SIGINT, control_c);
 		change_attributes(false);
 		line = read_input();
+		if (line[0] =='\0')
+			printf("line is: %s|\n", line);
 		if (line == NULL)
 		{
 			/* this handles the case for ctrl d sending an EOF to the tty;
@@ -63,9 +71,11 @@ int	main(int argc, char *argv[], char **envp)
 				write(STDERR_FILENO, "exit\n", 5);
 			return (-1);
 		}
-		status = input_processor(line, &table);
-		if (status != -1)
+		else if (line[0] != '\0')
+		{
+			status = input_processor(line, &table);
 			executioner(table);
+		}
 	}
 	return (0);
 }

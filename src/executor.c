@@ -120,6 +120,8 @@ void	execute_child(t_table **table)
 	struct stat		*statbuf;
 
 	command = NULL;
+	// signal(SIGINT, &execution_signals);
+	// signal(SIGQUIT, &execution_signals);
 	if ((*table)->arguments != NULL)
 		command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
@@ -132,9 +134,12 @@ void	execute_child(t_table **table)
 	{
 		if (access(command, X_OK) != 0)
 			write(2, "minishell: permission denied\n", 29);
+		// exit code 126
 	}
 	else
 		write(2, "minishell: command not found\n", 29);
+	// exit code 127
+	exit(EXIT_FAILURE);
 	// free command
 	exit(127);
 }
@@ -155,7 +160,7 @@ int	read_stdin_into_pipe(char *here_doc)
 		close(pipe_ends[READ]);
 		dup2(pipe_ends[WRITE], STDOUT_FILENO);
 		close(pipe_ends[WRITE]);
-		close(0);
+		// close(0);
 		ft_putstr_fd(here_doc, 1);
 		exit(1);
 	}

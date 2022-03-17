@@ -58,6 +58,27 @@ static void	send_null_to_stdin(void)
 	}
 }
 
+// void	heredoc_signals(int sig)
+// {
+// 	if (sig == SIGINT)
+// 	{
+// 		write(STDOUT_FILENO, "EOF\n", 4);
+// 		rl_replace_line("", 0);
+// 	}
+// 	// else if (sig == SIGINT)
+// 	// {
+// 	// 	write(STDERR_FILENO, "\n", 1);
+// 	// 	rl_replace_line("", 0);
+// 	// 	rl_on_new_line();
+// 	// }
+// 	// else if (sig == SIGQUIT)
+// 	// {
+// 	// 	write(STDERR_FILENO, "Quit: 3\n", 8);
+// 	// 	rl_replace_line("", 0);
+// 	// 	rl_on_new_line();
+// 	// }
+// }
+
 void	heredoc_signals(int sig)
 {
 	if (sig == SIGINT)
@@ -102,6 +123,7 @@ char	*heredoc_readline(char **limiter)
 {
 	char	*line;
 	char	*here_string;
+	// signal(SIGINT, &heredoc_signals);
 
 	// call signalhandler here
 	signal(SIGINT, &heredoc_signals);

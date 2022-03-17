@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 14:10:26 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 14:10:41 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/17 13:44:09 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	exit_builtin(char **arguments)
 	if (ft_arrlen(arguments) > 0 && !ft_isint(arguments[0]))
 	{
 		put_stderr(SHELL, "exit", arguments[0], "numeric argument required");
-		exit(255);
+		exit((unsigned char)255);
 	}
 	else if (ft_arrlen(arguments) > 1)
 	{
@@ -27,7 +27,7 @@ int	exit_builtin(char **arguments)
 	}
 	else if (ft_arrlen(arguments) == 1)
 	{
-		exit(ft_atoi(arguments[0]));
+		exit((unsigned char)ft_atoi(arguments[0]));
 	}
 	else
 	{

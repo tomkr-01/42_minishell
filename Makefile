@@ -6,7 +6,7 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/17 13:09:27 by tkruger          ###   ########.fr        #
+#    Updated: 2022/03/17 13:11:13 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,8 +35,8 @@ SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a
-READLINE2 =	-I/Users/rjasari/.brew/opt/readline/include
-READLINE =	-L/Users/rjasari/.brew/opt/readline/lib -lreadline
+READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
+READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
 LIBS	=	$(LIBFT) $(READLINE)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
