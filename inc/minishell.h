@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/17 11:10:16 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/17 12:50:54 by rjasari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,10 @@ void	del_content(void *ptr);
 
 /* signal.c */
 void	control_c(int sig);
+void	execution_signals(int sig);
 int		change_attributes(bool print_controls);
 char	*find_executable(char *command);
 void	executioner(t_table *table);
+int	count(const char *s, char c);
 
 #endif

@@ -16,10 +16,13 @@ char	*read_input(void)
 	return (line);
 }
 
+/* signalhandler for child */
+
 int	input_processor(char *line, t_table **table)
 {
 	t_list		*tokens;
 
+	change_attributes(true);
 	tokens = lexer(line);
 	if (tokens == NULL)
 		return (-1);
@@ -44,7 +47,6 @@ int	main(int argc, char *argv[], char **envp)
 	while (1)
 	{
 		signal(SIGQUIT, SIG_IGN);
-		/* sighandler for ctrl C -> display the prompt on a new line */
 		signal(SIGINT, control_c);
 		change_attributes(false);
 		line = read_input();

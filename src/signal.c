@@ -14,6 +14,24 @@ void	control_c(int sig)
 	}
 }
 
+void	execution_signals(int sig)
+{
+	if (sig == 0)
+		rl_replace_line("", 0);
+	else if (sig == SIGINT)
+	{
+		write(STDERR_FILENO, "\n", 1);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+	}
+	else if (sig == SIGQUIT)
+	{
+		write(STDERR_FILENO, "Quit: 3\n", 8);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+	}
+}
+
 /* main thing to change:
 	1. when typing in a command control c should only display the prompt again without anything
 	2. while running a command the opposite should happen

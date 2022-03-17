@@ -1,5 +1,7 @@
 #include "../inc/minishell.h"
 
+extern t_minishell g_msh;
+
 void	copy_std_filestreams(int *initial_stdin, int *initial_stdout)
 {
 	*initial_stdin = dup(STDIN_FILENO);
@@ -121,16 +123,16 @@ void	execute_child(t_table **table)
 	if ((*table)->arguments != NULL)
 		command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
-	if (!stat(command, statbuf))
-	{
-		if (!(statbuf->st_mode & 0111))
-			write(2, "minishell: permission denied\n", 29);
-	}
-	// if (access(command, F_OK) == 0)
+	// if (!stat(command, statbuf))
 	// {
-	// 	if (access(command, X_OK) != 0)
+	// 	if (!(statbuf->st_mode & 0111))
 	// 		write(2, "minishell: permission denied\n", 29);
 	// }
+	if (access(command, F_OK) == 0)
+	{
+		if (access(command, X_OK) != 0)
+			write(2, "minishell: permission denied\n", 29);
+	}
 	else
 		write(2, "minishell: command not found\n", 29);
 	// free command
@@ -197,6 +199,8 @@ void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initia
 
 void	parent_process(int **pipe_ends, int *pipe_flag)
 {
+	signal(SIGINT, &execution_signals);
+	signal(SIGQUIT, &execution_signals);
 	if (*pipe_flag == 1)
 	{
 		close((*pipe_ends)[WRITE]);
@@ -241,11 +245,12 @@ void	executioner(t_table *table)
 		pipe_flag = pipe_found(&table, &pipe_end);
 		if (pipe_flag == -1)
 			return ;
-		/* 
-		if (check_builtins)
-			execute builtins
-		else
-			alles drunter hier rein
+		/* a builtin is executed in the parent process. a builtin in a pipeline is executed in a child process. a non builtin is always executed in a child process
+		if (is_builtin = true)
+			if (pipe_was_found = true)
+				fork and execute
+			else
+				execute
 		*/
 		if (own_fork(&process_id) == -1)
 			return ;

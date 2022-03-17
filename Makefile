@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
+#    By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/17 11:09:00 by tkruger          ###   ########.fr        #
+#    Updated: 2022/03/17 11:44:32 by rjasari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,8 @@ SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a
-READLINE =	-L/Users/tkruger/.brew/opt/readline/lib -lreadline -I/Users/tkruger/.brew/opt/readline/include
+READLINE2 =	-I/Users/rjasari/.brew/opt/readline/include
+READLINE =	-L/Users/rjasari/.brew/opt/readline/lib -lreadline
 LIBS	=	$(LIBFT) $(READLINE)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
@@ -46,7 +47,7 @@ $(NAME): $(OBJ_PATH) $(OBJS) libmake
 	$(CC) $(CFLAGS) $(LIBS) $(OBJS) -o $(NAME)
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC)
-	$(CC) $(FLAGS) -c $< -o $@
+	$(CC) $(FLAGS) $(READLINE2) -c $< -o $@
 
 $(OBJ_PATH):
 	@mkdir -p $(OBJ_PATH)
