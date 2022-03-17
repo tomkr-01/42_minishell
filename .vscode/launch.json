@@ -5,18 +5,10 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "(lldb) Attach",
-			"type": "cppdbg",
-			"request": "attach",
-			"program": "${workspaceFolder}/src/a.out",
-			"processId": "${command:pickProcess}",
-			"MIMode": "lldb"
-		},
-		{
 			"name": "gcc - Build and debug active file",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "/Users/rjasari/Desktop/42_minishell/src/a.out",
+			"program": "/Users/tkruger/Desktop/minishell/minishell",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",

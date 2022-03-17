@@ -6,7 +6,7 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/15 14:28:00 by tkruger          ###   ########.fr        #
+#    Updated: 2022/03/17 11:09:00 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,22 +17,26 @@ INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 
 # general
-SRCS	=	environment.c t_utils.c
+SRCS	=	main.c signal.c environment.c t_utils.c r_utils.c
 
 # input
 SRCS	+=	lexer.c syntax_check.c expander.c quote_remover.c
+
+# parser
+SRCS	+=	table.c
+
+# executor
+SRCS	+= executor.c
 
 # builtins
 SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
 			builtin_exit.c builtin_export.c builtin_pwd.c builtin_unset.c
 
-# toms_function_tester.c
-# SRCS	+=	toms_function_tester.c
-
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a
-LIBS	=	$(LIBFT)
+READLINE =	-L/Users/tkruger/.brew/opt/readline/lib -lreadline -I/Users/tkruger/.brew/opt/readline/include
+LIBS	=	$(LIBFT) $(READLINE)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
 

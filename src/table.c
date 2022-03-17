@@ -3,9 +3,9 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../inc/minishell.h"
+#include "../inc/minishell.h"
 
-// t_minishell	g_msh;
+extern t_minishell	g_msh;
 
 t_table	*create_table_row()
 {
@@ -171,7 +171,7 @@ int	find_redirection_type(t_list **token, int *type)
 	return (*type);
 }
 
-static int	count(const char *s, char c)
+int	count(const char *s, char c)
 {
 	int	i;
 	int	count;

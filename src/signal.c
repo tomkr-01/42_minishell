@@ -23,13 +23,13 @@ void	control_c(int sig)
 
 int	change_attributes(bool print_controls)
 {
-	int					err;
-	struct termios		termios;
+	int				err;
+	struct termios	termios;
 
 	err = tcgetattr(STDOUT_FILENO, &termios);
 	if (err == -1)
 		return (-1);
-	printf("this is the value of c_lflag %u\n", termios.c_lflag);
+	// printf("this is the value of c_lflag %lu\n", termios.c_lflag);
 	/* ECHO und ECHOCTL on consist of one bit being a 1 and the rest being 0's
 	to turn on option 'on', you use the bitwise or operator, as all the other
 	flags stay the same while the one you want is turned to a 1 */

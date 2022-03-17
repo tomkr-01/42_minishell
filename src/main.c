@@ -2,11 +2,9 @@
 
 char	*read_input(void)
 {
-	int		tty_flag;
 	char	*line;
 
-	tty_flag = isatty(STDIN_FILENO);
-	if (tty_flag == 1)
+	if (isatty(STDIN_FILENO) == 1)
 	{
 		line = readline("$> ");
 		/* don't have to check for newline as readline removes the newline */
@@ -21,13 +19,15 @@ char	*read_input(void)
 int	input_processor(char *line, t_table **table)
 {
 	t_list		*tokens;
-	t_table		*table;
 
 	tokens = lexer(line);
-	// if (tokens == NULL)
-	// 	return (-1);
+	if (tokens == NULL)
+		return (-1);
 	free(line);
+	line = NULL;
+	syntax_check(tokens);
 	*table = parser(tokens);
+	ft_lstclear(&tokens, &del_content);
 	if (*table == NULL)
 		return (-1);
 	return (0);
@@ -67,6 +67,7 @@ int	main(int argc, char *argv[], char **envp)
 			// free stuff 
 			return (-1);
 		}
+		executioner(table);
 	}
 	return (0);
 }

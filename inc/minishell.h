@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/15 14:41:10 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/17 11:10:16 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>
+# include <fcntl.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
 # include "../libs/libft/includes/libft.h"
@@ -55,18 +56,6 @@ typedef struct s_minishell
 	int		exit_code;
 }	t_minishell;
 
-typedef struct s_cmd
-{
-	char			*executable;
-	char			**arguments;
-	char			**out_redirs;
-	char			**appends;
-	char			*in_redir;
-	char			*delimiter;
-	bool			pipe;
-	struct s_cmd	*next;
-}	t_cmd;
-
 typedef struct s_redirection {
 	int						type;
 	char					*name;
@@ -83,23 +72,19 @@ typedef struct s_table {
 /* FUNCTION PROTOTYPES														  */
 /* ************************************************************************** */
 
-t_minishell	g_msh;
-
-/* minishell.c */
-
-// int	main(int argc, char **argv, char **envp);
-
 /* environment.c */
 void	environment_init(char **envp);
 char	*get_var(const char *variable);
 
 /* builtins*.c */
-int		builtins(char **arguments);
+bool	check_builtins(char **arguments);
+void	builtins(char **arguments);
 
 /* lexer.c */
 void	*lexer(char const *line);
 
 /* expander.c */
+int		valid_exp_char(int c, bool first_char);
 char	*expander(char *token);
 
 /* quote_remover.c */
@@ -108,12 +93,18 @@ char	*quote_remover(char *token);
 /* syntax_check.c */
 bool	syntax_check(t_list *tokens);
 
-/* t_utils.c */
+/* table.c */
+t_table	*parser(t_list *token);
+void	executioner(t_table *table);
+
+/* r_utils.c */
 char	**array_append_array(char **first, char **second);
-void	set_exit_code(int code);
+
+/* t_utils.c */
 char	**add_array_element(char **old_arr, char *new_el);
 char	**rm_array_element(char **old_arr, char	*old_el);
 int		put_stderr(char	*s1, char *s2, char *s3, char *message);
+void	del_content(void *ptr);
 
 /* signal.c */
 void	control_c(int sig);

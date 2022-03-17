@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:25:54 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/10 17:55:42 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/16 19:14:20 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,11 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 		ft_putstr_fd(message, STDERR_FILENO);
 	}
 	ft_putchar_fd('\n', STDERR_FILENO);
-	return (-1);
+	return (EXIT_FAILURE);
+}
+
+void	del_content(void *ptr)
+{
+	free(ptr);
+	ptr = NULL;
 }
