@@ -44,7 +44,6 @@ void	clear_table_row(t_table **table)
 	while ((*table)->redirections != NULL)
 	{
 		tmp = (*table)->redirections->next;
-		// free((*table)->redirections->type);
 		free((*table)->redirections->name);
 		(*table)->redirections->next = NULL;
 		(*table)->redirections = tmp;
@@ -138,101 +137,6 @@ void	execute_child(t_table **table)
 	// free command
 }
 
-static void	send_null_to_stdin(void)
-{
-	pid_t	process_id;
-	int		pipe_end[2];
-	char	*line;
-
-	line = NULL;
-	pipe(pipe_end);
-	process_id = fork();
-	if (process_id == 0)
-	{
-		close(pipe_end[READ]);
-		ft_putstr_fd(line, pipe_end[WRITE]);
-		close(pipe_end[WRITE]);
-		exit(1);
-	}
-	else if (process_id > 0)
-	{
-		wait(NULL);
-		close(pipe_end[WRITE]);
-		dup2(pipe_end[READ], 0);
-		close(pipe_end[READ]);
-	}
-}
-
-char	*read_a_line(bool expand, char *delimiter)
-{
-	char	*expanded_line;
-	char	*line;
-
-	if (isatty(STDIN_FILENO))
-	{
-		line = readline("> ");
-		line = ft_strjoin(line, "\n");
-	}
-	else
-	{
-		// write(2, "> ", 2);
-		line = get_next_line(STDIN_FILENO);
-	}
-	if (expand)
-	{
-		if (ft_strcmp(line, delimiter) != 0)
-			line = expander(line);
-	}
-	return (line);
-}
-
-bool	is_expansion_enabled(char *delim)
-{
-	bool	expand;
-	char	*delimiter;
-	char	*delim_copy_1;
-	char	*delim_copy_2;
-
-	expand = false;
-	delim_copy_1 = ft_strdup(delim);
-	delim_copy_2 = ft_strdup(delim);
-	delimiter = quote_remover(delim_copy_1);
-	if (ft_strcmp(delimiter, delim_copy_2) != 0)
-		expand = true;
-	free(delim_copy_1);
-	free(delim_copy_2);
-	free(delimiter);
-	return (expand);
-}
-
-char	*heredoc(char *delim, int *initial_stdin)
-{
-	bool	expansion;
-	char	*delimiter;
-	char	*line;
-	char	*here_string;
-
-	// dup2(*initial_stdin, 0);
-	expansion = is_expansion_enabled(delim);
-	delimiter = quote_remover(delim);
-	delimiter = ft_strjoin(delimiter, "\n");
-	here_string = ft_strdup("");
-	while (1)
-	{
-		line = read_a_line(expansion, delimiter);
-		if (ft_strcmp(line, delimiter) == 0 || line == NULL)
-		{
-			free(line);
-			send_null_to_stdin();
-			break ;
-		}
-		here_string = ft_strjoin(here_string, line);
-		// free(line);
-	}
-	free(delimiter);
-	return (here_string);
-}
-
 int	read_stdin_into_pipe(char *here_doc)
 {
 	int			status;
@@ -274,9 +178,10 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int 
 	{
 		if ((*table)->redirections->type == HEREDOC)
 		{
-			here_string = heredoc((*table)->redirections->name, initial_stdin);
-			if (read_stdin_into_pipe(here_string) == -1)
-				exit(1);
+			// here_string = heredoc((*table)->redirections->name, initial_stdin);
+			// if (read_stdin_into_pipe(here_string) == -1)
+			read_stdin_into_pipe((*table)->redirections->name);
+			// 	exit(1);
 		}
 		else
 			open_files(table);

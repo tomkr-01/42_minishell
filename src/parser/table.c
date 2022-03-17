@@ -33,21 +33,113 @@ t_redirection	*create_redirection(int type, char *name)
 	return (new_redirection);
 }
 
-/* an redirection append function handling the creation too 
-inside this function we could add the variable expansion and 
-the quote removal before creating a redirection object that is 
-added to the list */
+static void	send_null_to_stdin(void)
+{
+	pid_t	process_id;
+	int		pipe_end[2];
+	char	*line;
 
-/* if a filename is extracted and the string contains a whitespace
-we return: minishell: $woco: ambigious redirect */
+	line = NULL;
+	pipe(pipe_end);
+	process_id = fork();
+	if (process_id == 0)
+	{
+		close(pipe_end[READ]);
+		ft_putstr_fd(line, pipe_end[WRITE]);
+		close(pipe_end[WRITE]);
+		exit(1);
+	}
+	else if (process_id > 0)
+	{
+		wait(NULL);
+		close(pipe_end[WRITE]);
+		dup2(pipe_end[READ], 0);
+		close(pipe_end[READ]);
+	}
+}
+
+char	*heredoc_get_next_line(char **limiter)
+{
+	char	*line;
+	char	*here_string;
+
+	// call signalhandler here
+	*limiter = ft_strjoin(*limiter, "\n");
+	here_string = ft_strdup("");
+	while (1)
+	{
+		line = get_next_line(STDIN_FILENO);
+		if (line == NULL || ft_strcmp(line, *limiter) == 0)
+		{
+			// maybe this causes error because you free NULL;
+			free(line);
+			send_null_to_stdin();
+			break ;
+		}
+		here_string = ft_strjoin(here_string, line);
+		free(line);
+	}
+	// maybe free limiter;
+	return (here_string);
+}
+
+char	*heredoc_readline(char **limiter)
+{
+	char	*line;
+	char	*here_string;
+
+	// call signalhandler here
+	*limiter = ft_strjoin(*limiter, "\n");
+	here_string = ft_strdup("");
+	while (1)
+	{
+		line = readline("> ");
+		line = ft_strjoin(line, "\n");
+		if (line == NULL || ft_strcmp(line, *limiter) == 0)
+		{
+			free(line);
+			send_null_to_stdin();
+			break ;
+		}
+		here_string = ft_strjoin(here_string, line);
+		free(line);
+	}
+	return (here_string);
+}
+
+void	heredoc(char **token_content)
+{
+	int			fd;
+	bool		expansion;
+	char		*delimiter_copy;
+	char		*limiter;
+	char		*line;
+	char		*here_string;
+
+	fd = dup(STDIN_FILENO);
+	expansion = false;
+	delimiter_copy = ft_strdup(*token_content);
+	limiter = quote_remover(*token_content);
+	if (ft_strcmp(delimiter_copy, limiter) != 0)
+		expansion = true;
+	if (isatty(STDIN_FILENO))
+		*token_content = heredoc_readline(&limiter);
+	else
+		*token_content = heredoc_get_next_line(&limiter);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	if (expansion)
+		*token_content = expander(*token_content);
+}
+
 void	append_redirection(t_table **lst, t_list *token, int redir_type)
 {
-	// create variable to expand variable into, if error message
-	// the token without expansion must be given back
 	t_table			*temporary;
 	t_redirection	*new_redirection;
 
 	temporary = *lst;
+	if (redir_type == HEREDOC)
+		heredoc(&token->content);
 	new_redirection = create_redirection(redir_type, token->content);
 	if (temporary->redirections == NULL)
 	{
@@ -76,9 +168,6 @@ int	find_redirection_type(t_list **token, int *type)
 		*token = (*token)->next;
 	return (*type);
 }
-
-/* variable expansion function must be called until there is
-no '$' left. */
 
 static int	count(const char *s, char c)
 {
@@ -173,7 +262,7 @@ int	main(int argc, char *argv[], char **envp)
 	t_list	*tokens;
 	t_table	*table;
 	environment_init(envp);
-	tokens = (t_list *)lexer("cat << EOF | cat << EOF");
+	tokens = (t_list *)lexer("cat /dev/urandom | head -5");
 	if (tokens == NULL)
 		return (0);
 	if (syntax_check(tokens))
