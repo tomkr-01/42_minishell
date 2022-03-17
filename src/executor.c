@@ -258,6 +258,10 @@ void	executioner(t_table *table)
 			else
 				execute
 		*/
+		if (check_builtins(table->arguments) && pip)
+		{
+
+		}
 		if (own_fork(&process_id) == -1)
 			return ;
 		if (process_id == 0)
