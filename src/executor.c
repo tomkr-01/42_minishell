@@ -1,5 +1,6 @@
-#include "../../inc/minishell.h"
-#include "../parser/table.c"
+#include "../inc/minishell.h"
+
+extern t_minishell	g_msh;
 
 void	copy_std_filestreams(int *initial_stdin, int *initial_stdout)
 {

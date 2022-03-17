@@ -6,7 +6,7 @@
 #    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/16 17:33:56 by tkruger          ###   ########.fr        #
+#    Updated: 2022/03/17 11:09:00 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,9 @@ SRCS	+=	lexer.c syntax_check.c expander.c quote_remover.c
 
 # parser
 SRCS	+=	table.c
+
+# executor
+SRCS	+= executor.c
 
 # builtins
 SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \

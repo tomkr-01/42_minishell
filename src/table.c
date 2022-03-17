@@ -169,7 +169,7 @@ int	find_redirection_type(t_list **token, int *type)
 	return (*type);
 }
 
-static int	count(const char *s, char c)
+int	count(const char *s, char c)
 {
 	int	i;
 	int	count;

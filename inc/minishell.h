@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/21 20:32:44 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/16 19:38:35 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/17 11:10:16 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>
+# include <fcntl.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
 # include "../libs/libft/includes/libft.h"
@@ -54,18 +55,6 @@ typedef struct s_minishell
 	char	**env;
 	int		exit_code;
 }	t_minishell;
-
-typedef struct s_cmd
-{
-	char			*executable;
-	char			**arguments;
-	char			**out_redirs;
-	char			**appends;
-	char			*in_redir;
-	char			*delimiter;
-	bool			pipe;
-	struct s_cmd	*next;
-}	t_cmd;
 
 typedef struct s_redirection {
 	int						type;
