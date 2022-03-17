@@ -64,12 +64,8 @@ int	main(int argc, char *argv[], char **envp)
 			return (-1);
 		}
 		status = input_processor(line, &table);
-		if (status == -1)
-		{
-			// free stuff 
-			return (-1);
-		}
-		executioner(table);
+		if (status != -1)
+			executioner(table);
 	}
 	return (0);
 }

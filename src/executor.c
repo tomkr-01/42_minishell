@@ -136,6 +136,7 @@ void	execute_child(t_table **table)
 	else
 		write(2, "minishell: command not found\n", 29);
 	// free command
+	exit(127);
 }
 
 int	read_stdin_into_pipe(char *here_doc)
