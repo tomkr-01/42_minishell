@@ -200,8 +200,6 @@ void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initia
 
 void	parent_process(int **pipe_ends, int *pipe_flag)
 {
-	// signal(SIGINT, SIG_DFL);
-	// signal(SIGQUIT, SIG_DFL);
 	signal(SIGINT, &execution_signals);
 	signal(SIGQUIT, &execution_signals);
 	if (*pipe_flag == 1)

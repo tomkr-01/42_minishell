@@ -58,28 +58,43 @@ static void	send_null_to_stdin(void)
 	}
 }
 
+void	heredoc_signals(int sig)
+{
+	if (sig == SIGINT)
+	{
+		close(STDIN_FILENO);
+		// close(STDIN_FILENO);
+		write(2, "\n", 1);
+	}
+}
+
 char	*heredoc_get_next_line(char **limiter)
 {
 	char	*line;
 	char	*here_string;
 
 	// call signalhandler here
+	signal(SIGINT, &heredoc_signals);
 	*limiter = ft_strjoin(*limiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
 		line = get_next_line(STDIN_FILENO);
+		printf("gline %s", line);
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
 			// maybe this causes error because you free NULL;
 			free(line);
-			send_null_to_stdin();
+			// send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, line);
+		if (here_string == NULL)
+			break ;
 		free(line);
 	}
 	// maybe free limiter;
+	// printf("%s\n", here_string);
 	return (here_string);
 }
 
@@ -89,21 +104,26 @@ char	*heredoc_readline(char **limiter)
 	char	*here_string;
 
 	// call signalhandler here
-	*limiter = ft_strjoin(*limiter, "\n");
+	signal(SIGINT, &heredoc_signals);
+	// *limiter = ft_strjoin(*limiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
 		line = readline("> ");
-		line = ft_strjoin(line, "\n");
+		printf("rline %s\n", line);
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
 			free(line);
-			send_null_to_stdin();
+			// send_null_to_stdin();
 			break ;
 		}
+		line = ft_strjoin(line, "\n");
 		here_string = ft_strjoin(here_string, line);
+		if (here_string == NULL)
+			break ;
 		free(line);
 	}
+	// printf("%s\n", here_string);
 	return (here_string);
 }
 
@@ -116,6 +136,7 @@ void	heredoc(char **token_content)
 	char		*line;
 	char		*here_string;
 
+	change_attributes(false);
 	fd = dup(STDIN_FILENO);
 	expansion = false;
 	delimiter_copy = ft_strdup(*token_content);
@@ -128,8 +149,8 @@ void	heredoc(char **token_content)
 		*token_content = heredoc_get_next_line(&limiter);
 	free(delimiter_copy);
 	free(limiter);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
+	// dup2(fd, STDIN_FILENO);
+	// close(fd);
 	if (expansion)
 		*token_content = expander(*token_content);
 }
