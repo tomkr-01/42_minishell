@@ -44,7 +44,6 @@ void	clear_table_row(t_table **table)
 	while ((*table)->redirections != NULL)
 	{
 		tmp = (*table)->redirections->next;
-		// free((*table)->redirections->type);
 		free((*table)->redirections->name);
 		(*table)->redirections->next = NULL;
 		(*table)->redirections = tmp;
@@ -138,94 +137,6 @@ void	execute_child(t_table **table)
 	// free command
 }
 
-static void	send_null_to_stdin(void)
-{
-	pid_t	process_id;
-	int		pipe_end[2];
-	char	*line;
-
-	line = NULL;
-	pipe(pipe_end);
-	process_id = fork();
-	if (process_id == 0)
-	{
-		close(pipe_end[READ]);
-		ft_putstr_fd(line, pipe_end[WRITE]);
-		close(pipe_end[WRITE]);
-		exit(1);
-	}
-	else if (process_id > 0)
-	{
-		wait(NULL);
-		close(pipe_end[WRITE]);
-		dup2(pipe_end[READ], 0);
-		close(pipe_end[READ]);
-	}
-}
-
-char	*read_a_line(bool expand)
-{
-	char	*line;
-
-	if (isatty(STDIN_FILENO))
-	{
-		line = readline("> ");
-		line = ft_strjoin(line, "\n");
-	}
-	else
-	{
-		write(2, "> ", 2);
-		line = get_next_line(STDIN_FILENO);
-	}
-	return (line);
-}
-
-bool	is_expansion_enabled(char *delim)
-{
-	bool	expand;
-	char	*delimiter;
-	char	*delim_copy_1;
-	char	*delim_copy_2;
-
-	expand = false;
-	delim_copy_1 = ft_strdup(delim);
-	delim_copy_2 = ft_strdup(delim);
-	delimiter = quote_remover(delim_copy_1);
-	if (ft_strcmp(delimiter, delim_copy_2) != 0)
-		expand = true;
-	free(delim_copy_1);
-	free(delim_copy_2);
-	free(delimiter);
-	return (expand);
-}
-
-char	*heredoc(char *delim)
-{
-	bool	expansion;
-	char	*delimiter;
-	char	*line;
-	char	*here_string;
-
-	expansion = is_expansion_enabled(delim);
-	delimiter = quote_remover(delim);
-	delimiter = ft_strjoin(delim, "\n");
-	here_string = ft_strdup("");
-	while (1)
-	{
-		line = read_a_line();
-		if (ft_strcmp(line, delimiter) == 0)
-		{
-			free(line);
-			send_null_to_stdin();
-			break ;
-		}
-		here_string = ft_strjoin(here_string, line);
-		free(line);
-	}
-	free(delimiter);
-	return (here_string);
-}
-
 int	read_stdin_into_pipe(char *here_doc)
 {
 	int			status;
@@ -256,7 +167,7 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
+void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
 {
 	char	*here_string;
 
@@ -267,9 +178,10 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
 	{
 		if ((*table)->redirections->type == HEREDOC)
 		{
-			here_string = heredoc((*table)->redirections->name);
-			if (read_stdin_into_pipe(here_string) == -1)
-				exit(1);
+			// here_string = heredoc((*table)->redirections->name, initial_stdin);
+			// if (read_stdin_into_pipe(here_string) == -1)
+			read_stdin_into_pipe((*table)->redirections->name);
+			// 	exit(1);
 		}
 		else
 			open_files(table);
@@ -278,9 +190,9 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag)
 	}
 }
 
-void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
+void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
 {
-	execute_redirections(table, pipe_ends, pipe_flag);
+	execute_redirections(table, pipe_ends, pipe_flag, initial_stdin);
 	execute_child(table);
 }
 
@@ -302,6 +214,18 @@ int	initialize_pipe(int **pipe_ends)
 	return (0);
 }
 
+// void	execute_bin(t_table **table, int **pipe_ends, int *pipe_flag)
+// {
+// 	pid_t		process_id;
+
+// 	if (own_fork(&process_id) == -1)
+// 		return ; // exit free maybe here
+// 	if (process_id > 0)
+// 		child_process(table, pipe_ends, pipe_flag);
+// 	else if (process_id == 0)
+// 		parent_process(pipe_ends, pipe_flag);
+// }
+
 void	executioner(t_table *table)
 {
 	int		pipe_flag;
@@ -318,11 +242,17 @@ void	executioner(t_table *table)
 		pipe_flag = pipe_found(&table, &pipe_end);
 		if (pipe_flag == -1)
 			return ;
+		/* 
+		if (check_builtins)
+			execute builtins
+		else
+			alles drunter hier rein
+		*/
 		if (own_fork(&process_id) == -1)
 			return ;
-		if (process_id > 0)
-			child_process(&table, &pipe_end, &pipe_flag);
-		else if (process_id == 0)
+		if (process_id == 0)
+			child_process(&table, &pipe_end, &pipe_flag, &initial_stdin);
+		else if (process_id > 0)
 			parent_process(&pipe_end, &pipe_flag);
 		table = table->next;
 	}
