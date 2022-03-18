@@ -255,7 +255,10 @@ void	executioner(t_table *table)
 			return ;
 		if (check_builtins(table->arguments) && pipe_flag == 0)
 		{
+			execute_redirections(&table, &pipe_end, &pipe_flag, &initial_stdin);
 			builtins(table->arguments);
+			dup2(initial_stdin, 0);
+			dup2(initial_stdout, 1);
 		}
 		else
 		{
