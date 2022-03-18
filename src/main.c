@@ -52,13 +52,6 @@ int	main(int argc, char *argv[], char **envp)
 		line = read_input();
 		if (line == NULL)
 		{
-			/* this handles the case for ctrl d sending an EOF to the tty;
-			-> line = NULL and therefore we have to quit and print exit on stdout/stderr?
-			*/
-			/* if you run: bash > out it displays exit on the terminal
-				if you run bash 2> out (redirect stderr) the created file is empty
-				maybe check for tty again?
-			*/
 			if (isatty(STDERR_FILENO) == 0)
 				write(STDERR_FILENO, "exit\n", 5);
 			return (-1);

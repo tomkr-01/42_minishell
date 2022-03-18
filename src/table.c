@@ -63,7 +63,6 @@ void	heredoc_signals(int sig)
 	if (sig == SIGINT)
 	{
 		close(STDIN_FILENO);
-		// close(STDIN_FILENO);
 		write(2, "\n", 1);
 	}
 }
@@ -105,20 +104,25 @@ char	*heredoc_readline(char **limiter)
 
 	// call signalhandler here
 	signal(SIGINT, &heredoc_signals);
-	// *limiter = ft_strjoin(*limiter, "\n");
+	*limiter = ft_strjoin(*limiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
 		line = readline("> ");
-		printf("rline %s\n", line);
+		// printf("rline %s\n", line);
+		//  
+		// if (line == NULL)
+		// 	printf("empty line is null\n");
+		// else if (line[0] == '\0')
+		// 	printf("empty line is backslash 0\n");
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
 			free(line);
 			// send_null_to_stdin();
 			break ;
 		}
-		line = ft_strjoin(line, "\n");
-		here_string = ft_strjoin(here_string, line);
+		// line = ft_strjoin(line, "\n");
+		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));
 		if (here_string == NULL)
 			break ;
 		free(line);
@@ -149,8 +153,13 @@ void	heredoc(char **token_content)
 		*token_content = heredoc_get_next_line(&limiter);
 	free(delimiter_copy);
 	free(limiter);
+	if (dup2(fd, STDIN_FILENO) == 0)
+	{
+		token_content = NULL;
+		close(fd);
+	}
 	// dup2(fd, STDIN_FILENO);
-	// close(fd);
+	close(fd);
 	if (expansion)
 		*token_content = expander(*token_content);
 }

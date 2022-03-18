@@ -218,6 +218,8 @@ int	initialize_pipe(int **pipe_ends)
 	return (0);
 }
 
+// was geht so
+
 // void	execute_bin(t_table **table, int **pipe_ends, int *pipe_flag)
 // {
 // 	pid_t		process_id;
