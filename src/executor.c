@@ -184,12 +184,7 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int 
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
-		{
-			// here_string = heredoc((*table)->redirections->name, initial_stdin);
-			// if (read_stdin_into_pipe(here_string) == -1)
 			read_stdin_into_pipe((*table)->redirections->name);
-			// 	exit(1);
-		}
 		else
 			open_files(table);
 		if ((*table)->redirections != NULL)
@@ -222,6 +217,8 @@ int	initialize_pipe(int **pipe_ends)
 		return (-1);
 	return (0);
 }
+
+// was geht so
 
 // void	execute_bin(t_table **table, int **pipe_ends, int *pipe_flag)
 // {

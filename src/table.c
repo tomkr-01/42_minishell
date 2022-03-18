@@ -84,7 +84,6 @@ void	heredoc_signals(int sig)
 	if (sig == SIGINT)
 	{
 		close(STDIN_FILENO);
-		// close(STDIN_FILENO);
 		write(2, "\n", 1);
 	}
 }
@@ -94,28 +93,25 @@ char	*heredoc_get_next_line(char **limiter)
 	char	*line;
 	char	*here_string;
 
-	// call signalhandler here
 	signal(SIGINT, &heredoc_signals);
 	*limiter = ft_strjoin(*limiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
 		line = get_next_line(STDIN_FILENO);
-		printf("gline %s", line);
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
-			// maybe this causes error because you free NULL;
 			free(line);
+			line = NULL;
 			// send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, line);
 		if (here_string == NULL)
 			break ;
-		free(line);
+		free(line);\
+		line = NULL;
 	}
-	// maybe free limiter;
-	// printf("%s\n", here_string);
 	return (here_string);
 }
 
@@ -125,27 +121,25 @@ char	*heredoc_readline(char **limiter)
 	char	*here_string;
 	// signal(SIGINT, &heredoc_signals);
 
-	// call signalhandler here
 	signal(SIGINT, &heredoc_signals);
-	// *limiter = ft_strjoin(*limiter, "\n");
+	here_string = NULL;
 	here_string = ft_strdup("");
 	while (1)
 	{
 		line = readline("> ");
-		printf("rline %s\n", line);
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
 			free(line);
+			line = NULL;
 			// send_null_to_stdin();
 			break ;
 		}
-		line = ft_strjoin(line, "\n");
-		here_string = ft_strjoin(here_string, line);
+		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));;
 		if (here_string == NULL)
 			break ;
 		free(line);
+		line = NULL;
 	}
-	// printf("%s\n", here_string);
 	return (here_string);
 }
 
@@ -155,8 +149,6 @@ void	heredoc(char **token_content)
 	bool		expansion;
 	char		*delimiter_copy;
 	char		*limiter;
-	char		*line;
-	char		*here_string;
 
 	change_attributes(false);
 	fd = dup(STDIN_FILENO);
@@ -169,34 +161,39 @@ void	heredoc(char **token_content)
 		*token_content = heredoc_readline(&limiter);
 	else
 		*token_content = heredoc_get_next_line(&limiter);
-	free(delimiter_copy);
-	free(limiter);
-	// dup2(fd, STDIN_FILENO);
-	// close(fd);
+	if (close(STDIN_FILENO) == -1)
+		*token_content = NULL;
+	dup2(fd, STDIN_FILENO);
+	close(fd);
 	if (expansion)
 		*token_content = expander(*token_content);
 }
 
-void	append_redirection(t_table **lst, t_list *token, int redir_type)
+int	append_redirection(t_table **lst, t_list *token, int redir_type)
 {
 	t_table			*temporary;
 	t_redirection	*new_redirection;
 
 	temporary = *lst;
 	if (redir_type == HEREDOC)
+	{
 		heredoc(&token->content);
+		if (token->content == NULL)
+			return (-1);
+	}
 	new_redirection = create_redirection(redir_type, token->content);
 	if (temporary->redirections == NULL)
 	{
 		temporary->redirections = new_redirection;
-		return ;
+		return (0);
 	}
 	if (new_redirection == NULL)
-		return ;
+		return (-1);
 	while (temporary->redirections->next != NULL)
 		temporary->redirections = temporary->redirections->next;
 	new_redirection->next = temporary->redirections->next;
 	temporary->redirections->next = new_redirection;
+	return (0);
 }
 
 int	find_redirection_type(t_list **token, int *type)
@@ -259,7 +256,6 @@ t_table	*parser(t_list *token)
 	int				redir_type;
 	t_table			*head;
 	t_table			*table;
-	t_redirection	*new_redirection;
 
 	table = create_table_row();
 	if (table == NULL)
@@ -274,7 +270,10 @@ t_table	*parser(t_list *token)
 			table = table->next;
 		}
 		else if (find_redirection_type(&token, &redir_type) > 0)
-			append_redirection(&table, token, redir_type);
+		{
+			if (append_redirection(&table, token, redir_type) == -1)
+				return (NULL);
+		}
 		else
 			parse_command(&token, &table);
 		token = token->next;
