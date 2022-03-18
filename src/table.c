@@ -58,27 +58,6 @@ t_redirection	*create_redirection(int type, char *name)
 // 	}
 // }
 
-// void	heredoc_signals(int sig)
-// {
-// 	if (sig == SIGINT)
-// 	{
-// 		write(STDOUT_FILENO, "EOF\n", 4);
-// 		rl_replace_line("", 0);
-// 	}
-// 	// else if (sig == SIGINT)
-// 	// {
-// 	// 	write(STDERR_FILENO, "\n", 1);
-// 	// 	rl_replace_line("", 0);
-// 	// 	rl_on_new_line();
-// 	// }
-// 	// else if (sig == SIGQUIT)
-// 	// {
-// 	// 	write(STDERR_FILENO, "Quit: 3\n", 8);
-// 	// 	rl_replace_line("", 0);
-// 	// 	rl_on_new_line();
-// 	// }
-// }
-
 void	heredoc_signals(int sig)
 {
 	if (sig == SIGINT)
