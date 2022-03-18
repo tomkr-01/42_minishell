@@ -205,8 +205,6 @@ void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initia
 
 void	parent_process(int **pipe_ends, int *pipe_flag)
 {
-	signal(SIGINT, &execution_signals);
-	signal(SIGQUIT, &execution_signals);
 	if (*pipe_flag == 1)
 	{
 		close((*pipe_ends)[WRITE]);
@@ -271,10 +269,15 @@ void	executioner(t_table *table)
 		}
 		table = table->next;
 	}
+	/* all signals terminate the process
+	waitpid has a way of determining how the processes ended -> with a signal or not
+	you catch the cases and print the responding message like "^\Quit: 3".
+	*/
 	while (wait(NULL) != -1)
 	{
 		dup2(initial_stdout, 1);
 		dup2(initial_stdin, 0);
+		;
 	}
 }
 

@@ -35,7 +35,7 @@ int	input_processor(char *line, t_table **table)
 	*table = parser(tokens);
 	if (*table == NULL)
 	{
-		printf("heredoc is null\n");
+		// printf("heredoc is null\n");
 		return (-1);
 	}
 	ft_lstclear(&tokens, &del_content);
@@ -58,14 +58,15 @@ int	main(__unused int argc, __unused char *argv[], char **envp)
 		line = read_input();
 		if (line == NULL)
 		{
-			if (isatty(STDERR_FILENO) == 0)
+			if (isatty(STDERR_FILENO))
 				write(STDERR_FILENO, "exit\n", 5);
 			return (-1);
 		}
 		else if (line[0] != '\0')
 		{
 			status = input_processor(line, &table);
-			executioner(table);
+			if (status != -1)
+				executioner(table);
 		}
 	}
 	return (0);

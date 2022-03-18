@@ -33,30 +33,30 @@ t_redirection	*create_redirection(int type, char *name)
 	return (new_redirection);
 }
 
-// static void	send_null_to_stdin(void)
-// {
-// 	pid_t	process_id;
-// 	int		pipe_end[2];
-	// char	*line;
+static void	send_null_to_stdin(void)
+{
+	pid_t	process_id;
+	int		pipe_end[2];
+	char	*line;
 
-// 	line = NULL;
-// 	pipe(pipe_end);
-// 	process_id = fork();
-// 	if (process_id == 0)
-// 	{
-// 		close(pipe_end[READ]);
-// 		ft_putstr_fd(line, pipe_end[WRITE]);
-// 		close(pipe_end[WRITE]);
-// 		exit(1);
-// 	}
-// 	else if (process_id > 0)
-// 	{
-// 		wait(NULL);
-// 		close(pipe_end[WRITE]);
-// 		dup2(pipe_end[READ], 0);
-// 		close(pipe_end[READ]);
-// 	}
-// }
+	line = NULL;
+	pipe(pipe_end);
+	process_id = fork();
+	if (process_id == 0)
+	{
+		close(pipe_end[READ]);
+		ft_putstr_fd(line, pipe_end[WRITE]);
+		close(pipe_end[WRITE]);
+		exit(1);
+	}
+	else if (process_id > 0)
+	{
+		wait(NULL);
+		close(pipe_end[WRITE]);
+		dup2(pipe_end[READ], 0);
+		close(pipe_end[READ]);
+	}
+}
 
 void	heredoc_signals(int sig)
 {
@@ -82,7 +82,7 @@ char	*heredoc_get_next_line(char **limiter)
 		{
 			free(line);
 			line = NULL;
-			// send_null_to_stdin();
+			send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, line);
@@ -110,7 +110,7 @@ char	*heredoc_readline(char **limiter)
 		{
 			free(line);
 			line = NULL;
-			// send_null_to_stdin();
+			send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));;
@@ -142,7 +142,9 @@ void	heredoc(char **token_content)
 		*token_content = heredoc_get_next_line(&limiter);
 	if (close(STDIN_FILENO) == -1)
 		*token_content = NULL;
-	dup2(fd, STDIN_FILENO);
+	if (dup2(fd, STDIN_FILENO) == -1)
+		close(fd);
+	// dup2(fd, STDIN_FILENO);
 	close(fd);
 	if (expansion)
 		*token_content = expander(*token_content);
@@ -236,6 +238,9 @@ t_table	*parser(t_list *token)
 	t_table			*head;
 	t_table			*table;
 
+	// if we don't check for the return of the lexer this is the place to check
+	if (token == NULL)
+		return (NULL);
 	table = create_table_row();
 	if (table == NULL)
 		return (NULL);
