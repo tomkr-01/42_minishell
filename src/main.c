@@ -30,9 +30,12 @@ int	input_processor(char *line, t_table **table)
 	line = NULL;
 	syntax_check(tokens);
 	*table = parser(tokens);
-	ft_lstclear(&tokens, &del_content);
 	if (*table == NULL)
+	{
+		printf("heredoc is null\n");
 		return (-1);
+	}
+	ft_lstclear(&tokens, &del_content);
 	return (0);
 }
 

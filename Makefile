@@ -6,13 +6,13 @@
 #    By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/18 08:56:52 by rjasari          ###   ########.fr        #
+#    Updated: 2022/03/18 10:17:58 by rjasari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	minishell
 CC		=	gcc
-CFLAGS	=	-Wall -Wextra -Werror -g # -g -fsanitize=address
+# CFLAGS	=	-Wall -Wextra -Werror -g # -g -fsanitize=address
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 
