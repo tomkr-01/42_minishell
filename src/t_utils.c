@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   t_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:25:54 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/16 19:14:20 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/18 12:18:55 by tomkrueger       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@ char	**add_array_element(char **old_arr, char *new_el)
 		new_arr[i] = old_arr[i];
 		i++;
 	}
-	if (old_arr)
-		free(old_arr);
-	old_arr = NULL;
+	// free(old_arr);
+	// old_arr = NULL;
 	new_arr[i] = ft_strdup(new_el);
 	new_arr[i + 1] = NULL;
 	return (new_arr);

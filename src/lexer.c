@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 10:56:26 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/10 17:54:35 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/18 12:20:28 by tomkrueger       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	*lexer(char const *line)
 
 	i = 0;
 	tokens = NULL;
-	while (line != NULL && i < ft_strlen(line))
+	while (line != NULL && i < (size_t)ft_strlen(line))
 	{
 		chrs = 0;
 		if (ft_strchr(OPERATORS, line[i]))

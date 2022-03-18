@@ -122,6 +122,11 @@ void	execute_child(t_table **table)
 	command = NULL;
 	// signal(SIGINT, &execution_signals);
 	// signal(SIGQUIT, &execution_signals);
+	if (check_builtins((*table)->arguments))
+	{
+		builtins((*table)->arguments);
+		exit(g_msh.exit_code);
+	}
 	if ((*table)->arguments != NULL)
 		command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
@@ -248,23 +253,19 @@ void	executioner(t_table *table)
 		pipe_flag = pipe_found(&table, &pipe_end);
 		if (pipe_flag == -1)
 			return ;
-		/* a builtin is executed in the parent process. a builtin in a pipeline is executed in a child process. a non builtin is always executed in a child process
-		if (is_builtin = true)
-			if (pipe_was_found = true)
-				fork and execute
-			else
-				execute
-		*/
-		if (check_builtins(table->arguments) && pip)
+		if (check_builtins(table->arguments) && pipe_flag == 0)
 		{
-
+			builtins(table->arguments);
 		}
-		if (own_fork(&process_id) == -1)
-			return ;
-		if (process_id == 0)
-			child_process(&table, &pipe_end, &pipe_flag, &initial_stdin);
-		else if (process_id > 0)
-			parent_process(&pipe_end, &pipe_flag);
+		else
+		{
+			if (own_fork(&process_id) == -1)
+				return ;
+			if (process_id == 0)
+				child_process(&table, &pipe_end, &pipe_flag, &initial_stdin);
+			else if (process_id > 0)
+				parent_process(&pipe_end, &pipe_flag);
+		}
 		table = table->next;
 	}
 	while (wait(NULL) != -1)

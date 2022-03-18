@@ -42,7 +42,7 @@ int	input_processor(char *line, t_table **table)
 	return (0);
 }
 
-int	main(int argc, char *argv[], char **envp)
+int	main(__unused int argc, __unused char *argv[], char **envp)
 {
 	int			status;
 	char		*line;
@@ -56,8 +56,6 @@ int	main(int argc, char *argv[], char **envp)
 		signal(SIGINT, control_c);
 		change_attributes(false);
 		line = read_input();
-		if (line[0] =='\0')
-			printf("line is: %s|\n", line);
 		if (line == NULL)
 		{
 			if (isatty(STDERR_FILENO) == 0)
