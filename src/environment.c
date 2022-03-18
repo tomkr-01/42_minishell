@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/25 14:20:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/15 08:54:07 by rjasari          ###   ########.fr       */
+/*   Updated: 2022/03/18 14:15:13 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	environment_init(char **envp)
 		i++;
 	}
 	g_msh.env[i] = NULL;
+	g_msh.exit_code = 0;
 }
 
 char	*get_var(const char *variable)

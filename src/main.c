@@ -38,7 +38,7 @@ int	input_processor(char *line, t_table **table)
 		printf("heredoc is null\n");
 		return (-1);
 	}
-	ft_lstclear(&tokens, &del_content);
+	// ft_lstclear(&tokens, &del_content);
 	return (0);
 }
 

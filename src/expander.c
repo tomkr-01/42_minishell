@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/08 17:04:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/15 14:26:21 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/18 13:35:44 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,9 @@ char	*expand_varname(char *varname)
 	else if (varname[0] == '\'' || varname[0] == '\"')
 		value = ft_strdup(varname);
 	else
-	{
-		value = ft_strjoin_free(ft_strdup("\31"),
-				get_var((const char *)varname));
-		value = ft_strjoin_free(value, ft_strdup("\31"));
-	}
+		value = get_var((const char *)varname);
+	value = ft_strjoin_free(ft_strdup("\31"), value);
+	value = ft_strjoin_free(value, ft_strdup("\31"));
 	free(varname);
 	return (value);
 }

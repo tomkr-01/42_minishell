@@ -3,16 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: rjasari <rjasari@student.42.fr>            +#+  +:+       +#+         #
+#    By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/21 20:28:04 by tkruger           #+#    #+#              #
-#    Updated: 2022/03/18 12:58:39 by rjasari          ###   ########.fr        #
+#    Updated: 2022/03/18 14:10:52 by tkruger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	minishell
 CC		=	gcc
-# CFLAGS	=	-Wall -Wextra -Werror #-g -fsanitize=address
+# CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	+=	-g -fsanitize=address
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 
@@ -36,9 +37,6 @@ OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 # Macbook
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a
-# READLINE2 =	-I/opt/homebrew/opt/readline/include
-# READLINE =	-L/opt/homebrew/opt/readline/lib -lreadline
-#Imac
 READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
 READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
 LIBS	=	$(LIBFT) $(READLINE)

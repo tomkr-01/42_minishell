@@ -276,6 +276,7 @@ void	executioner(t_table *table)
 		dup2(initial_stdout, 1);
 		dup2(initial_stdin, 0);
 	}
+	g_msh.exit_code = 1;
 }
 
 // void	executor(t_table *table)

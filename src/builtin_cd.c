@@ -6,13 +6,12 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 14:06:12 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 19:31:34 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/03/18 14:16:01 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-char	*get_pwd(void);
 int		export_builtin(char **arguments);
 
 int	cd_builtin(char **arguments)
@@ -30,7 +29,7 @@ int	cd_builtin(char **arguments)
 	if (export_pwds == NULL)
 		exit(put_stderr(SHELL, "cd_builtin()", NULL, strerror(ENOMEM)));
 	export_pwds[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
-	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), get_pwd());
+	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), getcwd(NULL, 0));
 	export_pwds[2] = NULL;
 	export_builtin(export_pwds);
 	ft_free_array(&export_pwds);
