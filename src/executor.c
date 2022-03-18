@@ -143,6 +143,7 @@ void	execute_child(t_table **table)
 	}
 	else
 		write(2, "minishell: command not found\n", 29);
+	write(2, command, ft_strlen(command));
 	// exit code 127
 	exit(EXIT_FAILURE);
 	// free command

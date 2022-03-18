@@ -213,6 +213,18 @@ int	count(const char *s, char c)
 	return (count);
 }
 
+void	print_array_of_arrays(char **array)
+{
+	int		index;
+
+	if (array == NULL)
+		return ;
+	index = 0;
+	while (array[index] != NULL)
+		printf("%s\n", array[index++]);
+	return ;
+}
+
 void	parse_command(t_list **token, t_table **table)
 {
 	char	*expanded_string;
@@ -221,14 +233,15 @@ void	parse_command(t_list **token, t_table **table)
 	expanded_string = expander((*token)->content);
 	if (expanded_string == NULL || expanded_string[0] == '\0')
 		;
+	else if (count(expanded_string, ' ') == 1 || ft_strchr(expanded_string, '='))
+		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
 	else if (count(expanded_string, ' ') > 1)
 	{	
 		argument_list = ft_split(expanded_string, ' ');
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
 		// free argument list
 	}
-	else if (count(expanded_string, ' ') == 1)
-		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
+	// print_array_of_arrays((*table)->arguments);
 	return ;
 }
 
