@@ -33,30 +33,30 @@ t_redirection	*create_redirection(int type, char *name)
 	return (new_redirection);
 }
 
-static void	send_null_to_stdin(void)
-{
-	pid_t	process_id;
-	int		pipe_end[2];
-	char	*line;
+// static void	send_null_to_stdin(void)
+// {
+// 	pid_t	process_id;
+// 	int		pipe_end[2];
+// 	char	*line;
 
-	line = NULL;
-	pipe(pipe_end);
-	process_id = fork();
-	if (process_id == 0)
-	{
-		close(pipe_end[READ]);
-		ft_putstr_fd(line, pipe_end[WRITE]);
-		close(pipe_end[WRITE]);
-		exit(1);
-	}
-	else if (process_id > 0)
-	{
-		wait(NULL);
-		close(pipe_end[WRITE]);
-		dup2(pipe_end[READ], 0);
-		close(pipe_end[READ]);
-	}
-}
+// 	line = NULL;
+// 	pipe(pipe_end);
+// 	process_id = fork();
+// 	if (process_id == 0)
+// 	{
+// 		close(pipe_end[READ]);
+// 		ft_putstr_fd(line, pipe_end[WRITE]);
+// 		close(pipe_end[WRITE]);
+// 		exit(1);
+// 	}
+// 	else if (process_id > 0)
+// 	{
+// 		wait(NULL);
+// 		close(pipe_end[WRITE]);
+// 		dup2(pipe_end[READ], 0);
+// 		close(pipe_end[READ]);
+// 	}
+// }
 
 void	heredoc_signals(int sig)
 {
@@ -82,7 +82,7 @@ char	*heredoc_get_next_line(char **limiter)
 		{
 			free(line);
 			line = NULL;
-			send_null_to_stdin();
+			// send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, line);
@@ -110,7 +110,7 @@ char	*heredoc_readline(char **limiter)
 		{
 			free(line);
 			line = NULL;
-			send_null_to_stdin();
+			// send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));;
