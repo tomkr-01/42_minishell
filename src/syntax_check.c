@@ -13,6 +13,8 @@
 #include "../inc/minishell.h"
 #include <errno.h>
 
+// exit code with syntax errors is 2
+
 void	operator_check(t_list *tokens);
 void	quote_check(t_list *tokens);
 bool	is_operator(t_list *token);

@@ -75,7 +75,8 @@ char	*str_append_char(char *string, char c)
 
 void	ft_free(void **ptr)
 {
-	free(*ptr);
+	if (*ptr != NULL)
+		free(*ptr);
 	*ptr = NULL;
 }
 
