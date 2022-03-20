@@ -230,6 +230,17 @@ void	parse_command(t_list **token, t_table **table)
 	char	*expanded_string;
 	char	**argument_list;
 
+	/* example: export woco="wc -l"
+		should be parsed as
+		1. export
+		2. woco=wc -l
+		but right now is parsed as
+		1. export
+		2. woco=wc
+		3. -l
+		solution: if ((*table)->arguments && ft_strcmp((*table)->arguments)
+		or don't split if the command is a builtin
+	*/
 	expanded_string = expander((*token)->content);
 	if (expanded_string == NULL || expanded_string[0] == '\0')
 		;
