@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   environment.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/25 14:20:32 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/18 14:15:13 by tkruger          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/minishell.h"
 
 t_minishell	g_msh;
@@ -46,13 +34,11 @@ char	*get_var(const char *variable)
 	{
 		if (ft_strncmp(g_msh.env[index], env_var, var_len) == 0)
 		{
-			free(env_var);
-			env_var = NULL;
+			ft_free((void **)&env_var);
 			return (ft_strdup(g_msh.env[index] + var_len));
 		}
 		index++;
 	}
-	free(env_var);
-	env_var = NULL;
+	ft_free((void **)&env_var);
 	return (NULL);
 }

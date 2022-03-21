@@ -1,16 +1,20 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   quote_remover.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/09 15:11:04 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/18 13:35:54 by tkruger          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/minishell.h"
+
+// msh:
+// $> export hello=textvar
+// $> echo $hello
+// textvar 
+// $> echo $"hello"
+// "hello" 						faulty!!!
+// $> echo $'hello'
+// 'hello'						faulty!!!
+
+// bash:
+// bash-3.2$ export hello=textvar
+// bash-3.2$ echo $"hello"
+// hello
+// bash-3.2$ echo $'hello'
+// hello
 
 size_t	next_quote(char *token, char quote);
 char	*expansion_char_remover(char *token);
@@ -50,20 +54,17 @@ size_t	next_quote(char	*token, char quote)
 		if (quote == 0 && (token[i] == '\'' || token[i] == '\"')
 			&& ft_count_char(check_str, '\31') % 2 == 0)
 		{
-			free(check_str);
-			check_str = NULL;
+			ft_free((void **)&check_str);
 			return (i);
 		}
 		else if (quote == token[i] && ft_count_char(check_str, '\31') % 2 == 0)
 		{
-			free(check_str);
-			check_str = NULL;
+			ft_free((void **)&check_str);
 			return (i);
 		}
 		i++;
-		free(check_str);
+		ft_free((void **)&check_str);
 	}
-	check_str = NULL;
 	return (i);
 }
 
@@ -75,10 +76,10 @@ char	*expansion_char_remover(char *token)
 
 	i = 0;
 	j = 0;
-	c_removed = ft_calloc(ft_strlen(token), sizeof(*c_removed));
+	c_removed = ft_calloc(ft_strlen(token) + 1, sizeof(*c_removed));
 	if (c_removed == NULL)
-		exit(put_stderr(SHELL, "expansion_char_remover()",
-				NULL, strerror(ENOMEM)));
+		exit(put_stderr(SHELL, "expansion_char_remover()", NULL,
+			strerror(ENOMEM)));
 	while (token[i] != '\0')
 	{
 		if (token[i] == '\31')

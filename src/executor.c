@@ -45,12 +45,12 @@ void	clear_table_row(t_table **table)
 	while ((*table)->redirections != NULL)
 	{
 		tmp = (*table)->redirections->next;
-		free((*table)->redirections->name);
-		(*table)->redirections->next = NULL;
+		ft_free((void **)&(*table)->redirections->name);
+		// (*table)->redirections->next = NULL;
 		(*table)->redirections = tmp;
 	}
-	free((*table)->redirections);
-	(*table)->redirections = NULL;
+	ft_free((void **)&(*table)->redirections);
+	// (*table)->redirections = NULL;
 	if ((*table)->arguments != NULL)
 		; // free split
 }

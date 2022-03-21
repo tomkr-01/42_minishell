@@ -1,8 +1,3 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
 #include "../inc/minishell.h"
 
 extern t_minishell	g_msh;
@@ -80,16 +75,14 @@ char	*heredoc_get_next_line(char **limiter)
 		line = get_next_line(STDIN_FILENO);
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
-			free(line);
-			line = NULL;
+			ft_free((void **)&line);
 			// send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, line);
 		if (here_string == NULL)
 			break ;
-		free(line);\
-		line = NULL;
+		ft_free((void **)&line);
 	}
 	return (here_string);
 }
@@ -108,16 +101,14 @@ char	*heredoc_readline(char **limiter)
 		line = readline("> ");
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
-			free(line);
-			line = NULL;
+			ft_free((void **)&line);
 			// send_null_to_stdin();
 			break ;
 		}
 		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));;
 		if (here_string == NULL)
 			break ;
-		free(line);
-		line = NULL;
+		ft_free((void **)&line);
 	}
 	return (here_string);
 }

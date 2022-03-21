@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   t_utils.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tomkrueger <tomkrueger@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/07 11:25:54 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/18 12:18:55 by tomkrueger       ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/minishell.h"
 
 // This f() returns returns a malloced char ** with the added element and frees
@@ -22,14 +10,13 @@ char	**add_array_element(char **old_arr, char *new_el)
 	i = 0;
 	new_arr = ft_calloc(ft_arrlen(old_arr) + 2, sizeof(*new_arr));
 	if (new_arr == NULL)
-		exit(put_stderr(SHELL, "rm_array_element()", NULL, strerror(ENOMEM)));
+		exit(put_stderr(SHELL, "add_array_element()", NULL, strerror(ENOMEM)));
 	while (old_arr != NULL && old_arr[i] != NULL)
 	{
 		new_arr[i] = old_arr[i];
 		i++;
 	}
-	// free(old_arr);
-	// old_arr = NULL;
+	ft_free((void **)&old_arr);
 	new_arr[i] = ft_strdup(new_el);
 	new_arr[i + 1] = NULL;
 	return (new_arr);
@@ -45,24 +32,19 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 
 	new = 0;
 	old = 0;
-	printf("old_el: %s\n\n", old_el);
 	new_arr = ft_calloc(ft_arrlen(old_arr), sizeof(*new_arr));
 	if (new_arr == NULL)
-		exit(put_stderr("rm_array_element(): malloc fail\n",
-				NULL, NULL, strerror(ENOMEM)));
+		exit(put_stderr(SHELL, "rm_array_element()", NULL, strerror(ENOMEM)));
 	while (old_arr[old] != NULL)
 	{
 		if (old_arr[old] == old_el)
 			old++;
-		new_arr[new++] = old_arr[old++];
+		else
+			new_arr[new++] = old_arr[old++];
 	}
 	new_arr[new] = NULL;
-	if (old_el != NULL)
-		free(old_el);
-	old_el = NULL;
-	if (old_arr != NULL)
-		free(old_arr);
-	old_arr = NULL;
+	ft_free((void **)&old_el);
+	ft_free((void **)&old_arr);
 	return (new_arr);
 }
 
@@ -91,8 +73,8 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 	return (EXIT_FAILURE);
 }
 
+// not needed because the content of the linked list will be free during variable expansion
 void	del_content(void *ptr)
 {
-	free(ptr);
 	ptr = NULL;
 }
