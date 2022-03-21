@@ -138,7 +138,7 @@ void	heredoc(char **token_content)
 	// dup2(fd, STDIN_FILENO);
 	close(fd);
 	if (expansion)
-		*token_content = expander(*token_content);
+		*token_content = expander(*token_content, true);
 }
 
 int	append_redirection(t_table **lst, t_list *token, int redir_type)
@@ -221,29 +221,17 @@ void	parse_command(t_list **token, t_table **table)
 	char	*expanded_string;
 	char	**argument_list;
 
-	/* example: export woco="wc -l"
-		should be parsed as
-		1. export
-		2. woco=wc -l
-		but right now is parsed as
-		1. export
-		2. woco=wc
-		3. -l
-		solution: if ((*table)->arguments && ft_strcmp((*table)->arguments)
-		or don't split if the command is a builtin
-	*/
-	expanded_string = expander((*token)->content);
-	if (expanded_string == NULL || expanded_string[0] == '\0')
-		;
-	else if (count(expanded_string, ' ') == 1 || ft_strchr(expanded_string, '='))
+	argument_list = NULL;
+	expanded_string = expander((*token)->content, true);
+	if (((*table)->arguments != NULL && check_builtins((*table)->arguments))
+			|| count(expanded_string, ' ') == 1)
 		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
 	else if (count(expanded_string, ' ') > 1)
-	{	
+	{
 		argument_list = ft_split(expanded_string, ' ');
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
-		// free argument list
+		ft_free_array(&argument_list);
 	}
-	// print_array_of_arrays((*table)->arguments);
 	return ;
 }
 
@@ -253,9 +241,6 @@ t_table	*parser(t_list *token)
 	t_table			*head;
 	t_table			*table;
 
-	// if we don't check for the return of the lexer this is the place to check
-	if (token == NULL)
-		return (NULL);
 	table = create_table_row();
 	if (table == NULL)
 		return (NULL);
@@ -279,34 +264,3 @@ t_table	*parser(t_list *token)
 	}
 	return (head);
 }
-
-//////////////////////////////////////////////////////
-
-
-// // ///////////////////////////////////////////////
-
-// int	main(int argc, char *argv[], char **envp)
-// {
-// 	char	*exe;
-// 	char	*command[2];
-// 	t_list	*tokens;
-// 	t_table	*table;
-// 	environment_init(envp);
-// 	tokens = (t_list *)lexer("cat << EOF");
-// 	if (tokens == NULL)
-// 		return (0);
-// 	if (syntax_check(tokens))
-// 	{
-// 		table = parser(tokens);
-// 		// print_execution(table);
-// 		executioner(table);
-// 		// execution(tokens, envp);
-// 	}
-// 	return (0);
-// }
-
-// gcc lexer.c syntax_check.c cmd.c ../libs/libft/libft.a -lreadline
-// gcc lexer.c cmd.c ../libs/libft/libft.a -lreadline
-// gcc lexer.c ast.c ../libs/libft/libft.a -lreadline
-
-// ../libs/libft/libft.a -I/Users/rjasari/.brew/opt/readline/include -lreadline -L/Users/rjasari/.brew/opt/readline/lib

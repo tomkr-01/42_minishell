@@ -80,7 +80,7 @@ char	*expansion_char_remover(char *token)
 	if (c_removed == NULL)
 		exit(put_stderr(SHELL, "expansion_char_remover()", NULL,
 			strerror(ENOMEM)));
-	while (token[i] != '\0')
+	while (token != NULL && token[i] != '\0')
 	{
 		if (token[i] == '\31')
 			i++;

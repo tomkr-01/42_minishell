@@ -49,10 +49,10 @@ void	clear_table_row(t_table **table)
 		// (*table)->redirections->next = NULL;
 		(*table)->redirections = tmp;
 	}
-	ft_free((void **)&(*table)->redirections);
+	// ft_free((void **)&(*table)->redirections);
 	// (*table)->redirections = NULL;
 	if ((*table)->arguments != NULL)
-		; // free split
+		ft_free_array(&(*table)->arguments);
 }
 
 int	is_ambiguous_redirect(t_table **table, char **file)
@@ -63,13 +63,11 @@ int	is_ambiguous_redirect(t_table **table, char **file)
 
 	clear_list = false;
 	filename_token = ft_strdup((*table)->redirections->name);
-	expanded_string = expander(filename_token);
-	// this check doesn't work as intended if we have the quotes removed
-	// before it, it still should work but with more instructions than necessary
+	expanded_string = expander(filename_token, false);
 	if (ft_strcmp((*table)->redirections->name, expanded_string) != 0)
 	{
 		*file = ft_strtrim(expanded_string, " ");
-		// free expanded string
+		// ft_free((void **)expanded_string);
 		if (*file == NULL || *file[0] == '\0')
 			clear_list = true;
 		if (count(*file, ' ') > 1)
@@ -79,10 +77,11 @@ int	is_ambiguous_redirect(t_table **table, char **file)
 		else
 			return (0);
 		write(2, "minishell: ambiguous redirect\n", 30);
+		// write(2, (*table)->redirections->name, ft_strlen((*table)->redirections->name));
 		return (-1);
 	}
 	else
-		*file = filename_token;
+		*file = quote_remover(expanded_string);
 	return (0);
 }
 
@@ -116,12 +115,12 @@ int	open_files(t_table **table)
 
 void	execute_child(t_table **table)
 {
+	char			*copy;
 	char			*command;
 	struct stat		*statbuf;
 
 	command = NULL;
-	// signal(SIGINT, &execution_signals);
-	// signal(SIGQUIT, &execution_signals);
+	copy = ft_strdup((*table)->arguments[0]);
 	if (check_builtins((*table)->arguments))
 	{
 		builtins((*table)->arguments);
@@ -130,24 +129,16 @@ void	execute_child(t_table **table)
 	if ((*table)->arguments != NULL)
 		command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
-	// if (!stat(command, statbuf))
-	// {
-	// 	if (!(statbuf->st_mode & 0111))
-	// 		write(2, "minishell: permission denied\n", 29);
-	// }
 	write(2, command, ft_strlen(command));
 	write(2, ": ", 2);
 	if (access(command, F_OK) == 0)
 	{
 		if (access(command, X_OK) != 0)
 			write(2, "minishell: permission denied\n", 29);
-		// exit code 126
+		exit(126);
 	}
 	else
 		write(2, "minishell: command not found\n", 29);
-	// exit code 127
-	exit(EXIT_FAILURE);
-	// free command
 	exit(127);
 }
 
@@ -201,6 +192,8 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int 
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	execute_redirections(table, pipe_ends, pipe_flag, initial_stdin);
 	execute_child(table);
 }
@@ -237,6 +230,21 @@ int	initialize_pipe(int **pipe_ends)
 // 		parent_process(pipe_ends, pipe_flag);
 // }
 
+
+// int	execute_builtins()
+// {
+// 	int			pipe_flag;
+// 	int			*pipe_ends;
+// 	pid_t		process_id;
+
+	
+// }
+
+// void	executor()
+// {
+
+// }
+
 void	executioner(t_table *table)
 {
 	int		pipe_flag;
@@ -266,22 +274,31 @@ void	executioner(t_table *table)
 				return ;
 			if (process_id == 0)
 				child_process(&table, &pipe_end, &pipe_flag, &initial_stdin);
-			else if (process_id > 0)
-				parent_process(&pipe_end, &pipe_flag);
+			parent_process(&pipe_end, &pipe_flag);
 		}
 		table = table->next;
 	}
-	/* all signals terminate the process
-	waitpid has a way of determining how the processes ended -> with a signal or not
-	you catch the cases and print the responding message like "^\Quit: 3".
-	*/
+	int		status = 0;
+	waitpid(process_id, &status, 0);
+	{
+		if (WIFSIGNALED(status))
+		{
+			if (WTERMSIG(status) == 2)
+				ft_putstr_fd("\n", 2);
+			else if (WTERMSIG(status) == 3)
+				ft_putstr_fd("Quit: 3\n", 2);
+			g_msh.exit_code = 128 + WTERMSIG(status);
+		}
+		else if (WIFEXITED(status))
+			g_msh.exit_code = WEXITSTATUS(status);
+		dup2(initial_stdout, 1);
+		dup2(initial_stdin, 0);
+	}
 	while (wait(NULL) != -1)
 	{
 		dup2(initial_stdout, 1);
 		dup2(initial_stdin, 0);
-		;
 	}
-	g_msh.exit_code = 1;
 }
 
 // void	executor(t_table *table)

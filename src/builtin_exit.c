@@ -14,12 +14,8 @@ int	exit_builtin(char **arguments)
 		return (EPERM);
 	}
 	else if (ft_arrlen(arguments) == 1)
-	{
 		exit((unsigned char)ft_atoi(arguments[0]));
-	}
 	else
-	{
 		exit(EXIT_SUCCESS);
-	}
 	return (EXIT_SUCCESS);
 }

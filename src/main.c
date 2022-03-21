@@ -13,7 +13,8 @@ void	handle_input(char *line)
 		return ;
 	// if failing free the tokens
 	// syntax check must be formed into bool with two options or int func
-	syntax_check(tokens);
+	if (!syntax_check(tokens))
+		return ;
 	command_table = parser(tokens);
 	if (command_table == NULL)
 		return ;

@@ -72,7 +72,7 @@ void	*lexer(char const *line);
 
 /* expander.c */
 int		valid_exp_char(int c, bool first_char);
-char	*expander(char *token);
+char	*expander(char *token, bool unquote);
 
 /* quote_remover.c */
 char	*quote_remover(char *token);
@@ -101,5 +101,6 @@ char	*find_executable(char *command);
 void	executioner(t_table *table);
 int		count(const char *s, char c);
 void	ft_free(void **ptr);
+char	*str_append_char(char *string, char c);
 
 #endif

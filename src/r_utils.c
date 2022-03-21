@@ -61,12 +61,12 @@ char	*str_append_char(char *string, char c)
 	return (new);
 }
 
-void	ft_free(void **ptr)
-{
-	if (*ptr != NULL)
-		free(*ptr);
-	*ptr = NULL;
-}
+// void	ft_free(void **ptr)
+// {
+// 	if (*ptr != NULL)
+// 		free(*ptr);
+// 	*ptr = NULL;
+// }
 
 char	*find_executable(char *command)
 {
@@ -75,6 +75,7 @@ char	*find_executable(char *command)
 	char	*executable;
 	char	*absolute_path;
 	char	**directories;
+	struct stat	*statbuf;
 
 	if (access(command, F_OK) == 0)
 		return (command);
@@ -92,7 +93,7 @@ char	*find_executable(char *command)
 		{
 			ft_free((void **)&executable);
 			ft_free((void **)&directories);
-			ft_free((void **)&command);
+			// ft_free((void **)&command);
 			return (absolute_path);
 		}
 		ft_free((void **)&absolute_path);

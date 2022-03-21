@@ -23,7 +23,7 @@ SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
 
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
-LIBFT	=	-L./libs/libft -lft libs/libft/libft.a
+LIBFT	=	-L./libs/libft libs/libft/libft.a
 # iMac
 READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
 READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
@@ -34,9 +34,9 @@ LIBS	=	$(LIBFT) $(READLINE)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
 
-all: $(NAME)
+all: libmake $(NAME)
 
-$(NAME): $(OBJ_PATH) $(OBJS) libmake
+$(NAME): $(OBJ_PATH) $(OBJS)
 	$(CC) $(CFLAGS) $(LIBFT) $(READLINE) $(OBJS) -o $(NAME)
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC) $(L_INC)
@@ -46,15 +46,15 @@ $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
 
 libmake:
-	make -C libs/libft
+	make -C libs/libft/
 
 clean:
 	rm -rf $(OBJ_PATH)
 	rm -f *.o *~
 	rm -rf *.dSYM
-	make -C libs/libft/ clean
+	make clean -C libs/libft/
 
-fclean:
+fclean: clean
 	rm -rf $(NAME)
 	rm -f libs/libft/libft.a
 

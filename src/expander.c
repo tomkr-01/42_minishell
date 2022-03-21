@@ -7,7 +7,7 @@ int		valid_exp_char(int c, bool first_char);
 char	*get_varname(char *token);
 char	*expand_varname(char *varname);
 
-char	*expander(char *token)
+char	*expander(char *token, bool unquote)
 {
 	char	*expanded;
 	size_t	i;
@@ -25,7 +25,9 @@ char	*expander(char *token)
 		token = ft_substr_free(token,
 				ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
 	}
-	return (quote_remover(expanded));
+	if (unquote)
+		return (quote_remover(expanded));
+	return (expanded);
 }
 
 size_t	next_exp(char *token)
@@ -89,14 +91,14 @@ char	*expand_varname(char *varname)
 
 	if (varname == NULL)
 		return (NULL);
-	else if (strcmp(varname, "?") == 0)
+	else if (ft_strcmp(varname, "?") == 0)
 		value = ft_itoa(g_msh.exit_code);
 	else if (varname[0] == '\'' || varname[0] == '\"')
 		value = ft_strdup(varname);
 	else
 		value = get_var((const char *)varname);
-	value = ft_strjoin_free(ft_strdup("\31"), value);
-	value = ft_strjoin_free(value, ft_strdup("\31"));
+	value = ft_strjoin_free(ft_strdup(""), value);
+	value = ft_strjoin_free(value, ft_strdup(""));
 	ft_free((void **)&varname);
 	return (value);
 }
