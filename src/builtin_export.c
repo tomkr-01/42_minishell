@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   builtin_export.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/14 14:08:57 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/16 19:44:33 by tkruger          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/minishell.h"
 
 extern t_minishell	g_msh;
@@ -34,7 +22,6 @@ int	export_builtin(char **arguments)
 			i++;
 		if (g_msh.env[i] != NULL)
 		{
-			free(g_msh.env[i]);
 			g_msh.env[i] = ft_strdup(arguments[a_i]);
 		}
 		else

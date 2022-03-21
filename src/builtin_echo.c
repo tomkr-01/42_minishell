@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   builtin_echo.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/14 14:06:49 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/14 21:55:27 by tkruger          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/minishell.h"
 
 int	echo_builtin(char **arguments)
@@ -25,7 +13,7 @@ int	echo_builtin(char **arguments)
 		j = 1;
 		while (arguments[i][0] == '-' && arguments[i][j] == 'n')
 			j++;
-		if (arguments[i][j] == '\0' && new_line > 0)
+		if (arguments[i][j] == '\0' && new_line > 0 && j > 1)
 			new_line = 2;
 		else
 		{
@@ -36,7 +24,7 @@ int	echo_builtin(char **arguments)
 		}
 		i++;
 	}
-	if (new_line == -1)
+	if (-2 < new_line && new_line < 2)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (EXIT_SUCCESS);
 }

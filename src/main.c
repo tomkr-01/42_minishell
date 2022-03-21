@@ -18,20 +18,17 @@ char	*read_input(void)
 
 /* signalhandler for child */
 
-int	input_processor(char *line, t_table **table)
+bool	input_processor(char *line, t_table **table)
 {
 	t_list		*tokens;
 
 	change_attributes(true);
 	tokens = lexer(line);
-	// if (tokens == NULL)
-	// {
-	// 	printf("return at lexer\n");
-	// 	return (-1);
-	// }
-	free(line);
-	line = NULL;
-	syntax_check(tokens);
+	if (tokens == NULL)
+		return (false);
+	ft_free((void **)&line);
+	if (syntax_check(tokens) == false)
+		return (false);
 	*table = parser(tokens);
 	if (*table == NULL)
 	{
@@ -39,16 +36,14 @@ int	input_processor(char *line, t_table **table)
 		return (-1);
 	}
 	ft_lstclear(&tokens, &del_content);
-	return (0);
+	return (true);
 }
 
 int	main(__unused int argc, __unused char *argv[], char **envp)
 {
-	int			status;
-	char		*line;
-	t_table		*table;
+	char	*line;
+	t_table	*table;
 
-	// function to get the environment into own variable and check if it fails
 	environment_init(envp);
 	while (1)
 	{
@@ -64,9 +59,10 @@ int	main(__unused int argc, __unused char *argv[], char **envp)
 		}
 		else if (line[0] != '\0')
 		{
-			status = input_processor(line, &table);
-			if (status != -1)
+			if (input_processor(line, &table))
 				executioner(table);
+			// free table and set it to NULL otherwise it can accidentally run the insides of table a second time
+			table = NULL;
 		}
 	}
 	return (0);

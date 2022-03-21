@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   r_utils.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/16 11:16:55 by tkruger           #+#    #+#             */
-/*   Updated: 2022/03/16 13:12:14 by tkruger          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/minishell.h"
 
 char	**array_append_array(char **first, char **second)
@@ -69,14 +57,8 @@ char	*str_append_char(char *string, char c)
 	new[index] = c;
 	new[++index] = '\0';
 	if (string != NULL)
-		free(string);
+		ft_free((void **)&string);
 	return (new);
-}
-
-void	ft_free(void **ptr)
-{
-	free(*ptr);
-	*ptr = NULL;
 }
 
 char	*find_executable(char *command)
@@ -101,15 +83,15 @@ char	*find_executable(char *command)
 		absolute_path = ft_strjoin(directories[index], executable);
 		if (access(absolute_path, F_OK) == 0)
 		{
-			free(executable);
-			free(directories);
-			free(command);
+			ft_free((void **)&executable);
+			ft_free((void **)&directories);
+			ft_free((void **)&command);
 			return (absolute_path);
 		}
-		free(absolute_path);
+		ft_free((void **)&absolute_path);
 		index++;
 	}
-	free(executable);
-	free(directories);
+	ft_free((void **)&executable);
+	ft_free((void **)&directories);
 	return (command);
 }
