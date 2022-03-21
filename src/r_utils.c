@@ -61,6 +61,13 @@ char	*str_append_char(char *string, char c)
 	return (new);
 }
 
+void	ft_free(void **ptr)
+{
+	if (*ptr != NULL)
+		free(*ptr);
+	*ptr = NULL;
+}
+
 char	*find_executable(char *command)
 {
 	int		index;

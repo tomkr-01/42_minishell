@@ -37,27 +37,25 @@ LIBS	=	$(LIBFT) $(READLINE)
 all: $(NAME)
 
 $(NAME): $(OBJ_PATH) $(OBJS) libmake
-	$(CC) $(CFLAGS) $(LIBS) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) $(LIBFT) $(READLINE) $(OBJS) -o $(NAME)
 
-$(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC)
-	$(CC) $(CFLAGS) $(READLINE2) -c $< -o $@
+$(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC) $(L_INC)
+	$(CC) $(CFLAGS) $(LIBFT) -c $< -o $@
 
 $(OBJ_PATH):
-	@mkdir -p $(OBJ_PATH)
+	mkdir -p $(OBJ_PATH)
 
 libmake:
-	@make -C libs/libft/
+	make -C libs/libft
 
 clean:
-	@rm -rf $(OBJ_PATH)
-	@rm -f *.o *~
-	@rm -rf *.dSYM
-	@make -C libs/libft/ clean
-	@echo "\033[1;32m.o files removed!\033[0m"
+	rm -rf $(OBJ_PATH)
+	rm -f *.o *~
+	rm -rf *.dSYM
+	make -C libs/libft/ clean
 
-fclean: clean
-	@rm -f $(NAME)
-	@rm -f libs/libft/libft.a
-	@echo "\033[1;32mbinary files removed!\033[0m" 
+fclean:
+	rm -rf $(NAME)
+	rm -f libs/libft/libft.a
 
 re: fclean all

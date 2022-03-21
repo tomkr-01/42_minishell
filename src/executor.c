@@ -135,6 +135,8 @@ void	execute_child(t_table **table)
 	// 	if (!(statbuf->st_mode & 0111))
 	// 		write(2, "minishell: permission denied\n", 29);
 	// }
+	write(2, command, ft_strlen(command));
+	write(2, ": ", 2);
 	if (access(command, F_OK) == 0)
 	{
 		if (access(command, X_OK) != 0)
@@ -143,7 +145,6 @@ void	execute_child(t_table **table)
 	}
 	else
 		write(2, "minishell: command not found\n", 29);
-	write(2, command, ft_strlen(command));
 	// exit code 127
 	exit(EXIT_FAILURE);
 	// free command

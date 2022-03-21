@@ -1,5 +1,27 @@
 #include "../inc/minishell.h"
 
+void	handle_input(char *line)
+{
+	t_list		*tokens;
+	t_table		*command_table;
+
+	tokens = NULL;
+	command_table = NULL;
+	// lexer frees the line
+	tokens = lexer(line);
+	if (tokens == NULL)
+		return ;
+	// if failing free the tokens
+	// syntax check must be formed into bool with two options or int func
+	syntax_check(tokens);
+	command_table = parser(tokens);
+	if (command_table == NULL)
+		return ;
+	executioner(command_table);
+	ft_lstclear(&tokens, &del_content);
+	// clear the command table
+}
+
 char	*read_input(void)
 {
 	char	*line;
@@ -7,7 +29,6 @@ char	*read_input(void)
 	if (isatty(STDIN_FILENO) == 1)
 	{
 		line = readline("$> ");
-		/* don't have to check for newline as readline removes the newline */
 		if (line != NULL && line[0] != '\0')
 			add_history(line);
 	}
@@ -16,33 +37,9 @@ char	*read_input(void)
 	return (line);
 }
 
-/* signalhandler for child */
-
-bool	input_processor(char *line, t_table **table)
-{
-	t_list		*tokens;
-
-	change_attributes(true);
-	tokens = lexer(line);
-	if (tokens == NULL)
-		return (false);
-	ft_free((void **)&line);
-	if (syntax_check(tokens) == false)
-		return (false);
-	*table = parser(tokens);
-	if (*table == NULL)
-	{
-		// printf("heredoc is null\n");
-		return (-1);
-	}
-	ft_lstclear(&tokens, &del_content);
-	return (true);
-}
-
-int	main(__unused int argc, __unused char *argv[], char **envp)
+int	main(int argc, char *argv[], char **envp)
 {
 	char	*line;
-	t_table	*table;
 
 	environment_init(envp);
 	while (1)
@@ -55,15 +52,10 @@ int	main(__unused int argc, __unused char *argv[], char **envp)
 		{
 			if (isatty(STDERR_FILENO))
 				write(STDERR_FILENO, "exit\n", 5);
+			change_attributes(true);
 			return (-1);
 		}
-		else if (line[0] != '\0')
-		{
-			if (input_processor(line, &table))
-				executioner(table);
-			// free table and set it to NULL otherwise it can accidentally run the insides of table a second time
-			table = NULL;
-		}
+		handle_input(line);
 	}
 	return (0);
 }
