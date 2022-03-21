@@ -23,12 +23,13 @@ SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
 
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
-# Macbook
 LIBFT	=	-L./libs/libft -lft libs/libft/libft.a
-# READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
-# READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
-READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
-READLINE2	=	-I/opt/homebrew/opt/readline/include
+# iMac
+READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
+READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
+# Macbook
+# READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
+# READLINE2	=	-I/opt/homebrew/opt/readline/include
 LIBS	=	$(LIBFT) $(READLINE)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
