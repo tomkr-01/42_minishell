@@ -39,6 +39,7 @@ char	*quote_remover(char *token)
 		token = ft_substr_free(token,
 				next_quote(token, quote) + 1, ft_strlen(token));
 	}
+	printf("q_removed: %s|\n", q_removed);
 	return (expansion_char_remover(q_removed));
 }
 
@@ -52,12 +53,12 @@ size_t	next_quote(char	*token, char quote)
 	{
 		check_str = ft_substr(token, 0, i + 1);
 		if (quote == 0 && (token[i] == '\'' || token[i] == '\"')
-			&& ft_count_char(check_str, '\31') % 2 == 0)
+			&& ft_count_char(check_str, '~') % 2 == 0)
 		{
 			ft_free((void **)&check_str);
 			return (i);
 		}
-		else if (quote == token[i] && ft_count_char(check_str, '\31') % 2 == 0)
+		else if (quote == token[i] && ft_count_char(check_str, '~') % 2 == 0)
 		{
 			ft_free((void **)&check_str);
 			return (i);
@@ -82,11 +83,12 @@ char	*expansion_char_remover(char *token)
 			strerror(ENOMEM)));
 	while (token != NULL && token[i] != '\0')
 	{
-		if (token[i] == '\31')
+		if (token[i] == '~')
 			i++;
 		else
 			c_removed[j++] = token[i++];
 	}
 	c_removed[j] = '\0';
+	printf("c_removed: %s|\n", c_removed);
 	return (c_removed);
 }

@@ -37,8 +37,11 @@ bool	invalid_identifier(char *variable)
 
 	i = 0;
 	if (ft_strchr(variable, '=') == NULL)
+	{
+		put_stderr(SHELL, "export_builtin", variable, "not a valid identifier");
 		return (true);
-	while (variable[i] != '=')
+	}
+	while (variable[i] != '=' || i == 0)
 	{
 		if (valid_exp_char(variable[i], false) == false)
 		{
