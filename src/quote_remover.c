@@ -39,7 +39,7 @@ char	*quote_remover(char *token)
 		token = ft_substr_free(token,
 				next_quote(token, quote) + 1, ft_strlen(token));
 	}
-	printf("q_removed: %s|\n", q_removed);
+	// printf("q_removed: %s|\n", q_removed);
 	return (expansion_char_remover(q_removed));
 }
 
@@ -89,6 +89,6 @@ char	*expansion_char_remover(char *token)
 			c_removed[j++] = token[i++];
 	}
 	c_removed[j] = '\0';
-	printf("c_removed: %s|\n", c_removed);
+	// printf("c_removed: %s|\n", c_removed);
 	return (c_removed);
 }
