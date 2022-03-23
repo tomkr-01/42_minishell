@@ -172,13 +172,8 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
+void	execute_redirections(t_table **table)
 {
-	char	*here_string;
-
-	here_string = NULL;
-	if (*pipe_flag == 1)
-		prepare_pipe(pipe_ends);
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
@@ -190,11 +185,13 @@ void	execute_redirections(t_table **table, int **pipe_ends, int *pipe_flag, int 
 	}
 }
 
-void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, int *initial_stdin)
+void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	execute_redirections(table, pipe_ends, pipe_flag, initial_stdin);
+	if (*pipe_flag == 1)
+		prepare_pipe(pipe_ends);
+	execute_redirections(table);
 	execute_child(table);
 }
 
@@ -216,33 +213,26 @@ int	initialize_pipe(int **pipe_ends)
 	return (0);
 }
 
-// was geht so
-
-// void	execute_bin(t_table **table, int **pipe_ends, int *pipe_flag)
+// void	simple_command(t_table *table)
 // {
-// 	pid_t		process_id;
+// 	int		initial_stdin;
+// 	int		initial_stdout;
 
-// 	if (own_fork(&process_id) == -1)
-// 		return ; // exit free maybe here
-// 	if (process_id > 0)
-// 		child_process(table, pipe_ends, pipe_flag);
-// 	else if (process_id == 0)
-// 		parent_process(pipe_ends, pipe_flag);
+// 	copy_std_filestreams(&initial_stdin, &initial_stdout);
+// 	execute_redirections(&table);
+// 	if (table->arguments == NULL)
+// 	{
+// 		dup2(initial_stdin, STDIN_FILENO);
+// 		dup2(initial_stdout, STDOUT_FILENO);
+// 	}
 // }
 
-
-// int	execute_builtins()
+// void	executor(t_table *table)
 // {
-// 	int			pipe_flag;
-// 	int			*pipe_ends;
-// 	pid_t		process_id;
-
-	
-// }
-
-// void	executor()
-// {
-
+// 	if (table == NULL)
+// 		return ;
+// 	if (table->next == NULL)
+// 		simple_command();
 // }
 
 void	executioner(t_table *table)
@@ -263,7 +253,7 @@ void	executioner(t_table *table)
 			return ;
 		if (check_builtins(table->arguments) && pipe_flag == 0)
 		{
-			execute_redirections(&table, &pipe_end, &pipe_flag, &initial_stdin);
+			execute_redirections(&table);
 			builtins(table->arguments);
 			dup2(initial_stdin, 0);
 			dup2(initial_stdout, 1);
@@ -273,8 +263,9 @@ void	executioner(t_table *table)
 			if (own_fork(&process_id) == -1)
 				return ;
 			if (process_id == 0)
-				child_process(&table, &pipe_end, &pipe_flag, &initial_stdin);
-			parent_process(&pipe_end, &pipe_flag);
+				child_process(&table, &pipe_end, &pipe_flag);
+			else if (process_id > 0)
+				parent_process(&pipe_end, &pipe_flag);
 		}
 		table = table->next;
 	}

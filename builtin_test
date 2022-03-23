@@ -1,5 +1,3 @@
-echo $USER'$USER'text oui oui     oui  oui $USER oui      $USER ''		| error due to empty single quotes ''
-echo $USER '' $USER $USER '' $USER '' $USER -n $USER					| error due to empty single quotes ''
 echo "$USER""Users/$USER/file""'$USER'"'$USER'							| outputs -> rjasariUsers/rjasari/file'$USER'rjasari		\ should -> rjasariUsers/rjasari/file'rjasari'$USER
 echo '$USER'"$USER"'$USER'												| outputs -> $USERrjasarirjasari							\ should -> $USERrjasari$USER
 echo " $USER  "'$PWD'													| outputs -> rjasari /Users/rjasari/Desktop/42_minishell	\ should -> rjasari $PWD

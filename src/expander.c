@@ -79,9 +79,7 @@ char	*get_varname(char *token)
 	else if (token[1] == '\'' || token[1] == '"')
 		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 2));
 	while (valid_exp_char(token[i], false))
-	{
 		i++;
-	}
 	return (ft_substr(token, 1, i - 1));
 }
 
