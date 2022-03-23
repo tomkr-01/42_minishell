@@ -1,21 +1,5 @@
 #include "../inc/minishell.h"
 
-// msh:
-// $> export hello=textvar
-// $> echo $hello
-// textvar 
-// $> echo $"hello"
-// "hello" 						faulty!!!
-// $> echo $'hello'
-// 'hello'						faulty!!!
-
-// bash:
-// bash-3.2$ export hello=textvar
-// bash-3.2$ echo $"hello"
-// hello
-// bash-3.2$ echo $'hello'
-// hello
-
 size_t	next_quote(char *token, char quote);
 char	*expansion_char_remover(char *token);
 
@@ -39,7 +23,6 @@ char	*quote_remover(char *token)
 		token = ft_substr_free(token,
 				next_quote(token, quote) + 1, ft_strlen(token));
 	}
-	// printf("q_removed: %s|\n", q_removed);
 	return (expansion_char_remover(q_removed));
 }
 
@@ -89,6 +72,5 @@ char	*expansion_char_remover(char *token)
 			c_removed[j++] = token[i++];
 	}
 	c_removed[j] = '\0';
-	// printf("c_removed: %s|\n", c_removed);
 	return (c_removed);
 }
