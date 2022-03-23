@@ -71,13 +71,13 @@ void	clear_table_row(t_table **table)
 	{
 		tmp = (*table)->redirections->next;
 		ft_free((void **)&(*table)->redirections->name);
-		// (*table)->redirections->next = NULL;
 		(*table)->redirections = tmp;
 	}
-	// ft_free((void **)&(*table)->redirections);
-	// (*table)->redirections = NULL;
-	// 
-	// if ((*table)->arguments != NULL)
+	if ((*table)->arguments != NULL)
+	{
+		free((*table)->arguments);
+		(*table)->arguments = NULL;
+	}
 }
 
 int	is_ambiguous_redirect(t_table **table, char **file)
@@ -119,6 +119,8 @@ int	open_files(t_table **table)
 	file = NULL;
 	status = is_ambiguous_redirect(table, &file);
 	if (status == -1)
+		ft_free((void **)&file);
+	if (status == -1)
 		return (-1);
 	if ((*table)->redirections->type == IN)
 		fd = open(file, O_RDONLY);
@@ -135,6 +137,7 @@ int	open_files(t_table **table)
 		dup2(fd, STDIN_FILENO);
 	else
 		dup2(fd, STDOUT_FILENO);
+	ft_free((void **)&file);
 	return (0);
 }
 
@@ -290,15 +293,17 @@ static void	send_null_to_stdin(void)
 }
 
 /* signals catching not working for simple command */
+
 void	simple_command(t_table *table)
 {
 	int		initial_stdin;
 	int		initial_stdout;
 	pid_t	process_id;
 	
+	filestream_operations(&initial_stdin, &initial_stdout, 1);
+	execute_redirections(&table);
 	if (check_builtins(table->arguments))
 	{
-		execute_redirections(&table);
 		builtins(table->arguments);
 		filestream_operations(&initial_stdin, &initial_stdout, 2);
 		return ;
@@ -308,13 +313,36 @@ void	simple_command(t_table *table)
 		if (own_fork(&process_id) == -1)
 			return ;
 		if (process_id == 0)
-		{
-			execute_redirections(&table);
 			execute_child(&table);
-		}
 	}
 	wait_for_last(process_id, initial_stdin, initial_stdout);
 }
+
+// void	simple_command(t_table *table)
+// {
+// 	int		initial_stdin;
+// 	int		initial_stdout;
+// 	pid_t	process_id;
+	
+// 	if (check_builtins(table->arguments))
+// 	{
+// 		execute_redirections(&table);
+// 		builtins(table->arguments);
+// 		filestream_operations(&initial_stdin, &initial_stdout, 2);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		if (own_fork(&process_id) == -1)
+// 			return ;
+// 		if (process_id == 0)
+// 		{
+// 			execute_redirections(&table);
+// 			execute_child(&table);
+// 		}
+// 	}
+// 	wait_for_last(process_id, initial_stdin, initial_stdout);
+// }
 
 int	print_execution(t_table *table)
 {
