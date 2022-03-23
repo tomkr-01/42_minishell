@@ -28,31 +28,6 @@ t_redirection	*create_redirection(int type, char *name)
 	return (new_redirection);
 }
 
-// static void	send_null_to_stdin(void)
-// {
-// 	pid_t	process_id;
-// 	int		pipe_end[2];
-// 	char	*line;
-
-// 	line = NULL;
-// 	pipe(pipe_end);
-// 	process_id = fork();
-// 	if (process_id == 0)
-// 	{
-// 		close(pipe_end[READ]);
-// 		ft_putstr_fd(line, pipe_end[WRITE]);
-// 		close(pipe_end[WRITE]);
-// 		exit(1);
-// 	}
-// 	else if (process_id > 0)
-// 	{
-// 		wait(NULL);
-// 		close(pipe_end[WRITE]);
-// 		dup2(pipe_end[READ], 0);
-// 		close(pipe_end[READ]);
-// 	}
-// }
-
 void	heredoc_signals(int sig)
 {
 	if (sig == SIGINT)
@@ -141,12 +116,12 @@ void	heredoc(char **token_content)
 		*token_content = expander(*token_content, true);
 }
 
-int	append_redirection(t_table **lst, t_list *token, int redir_type)
+int	append_redirection(t_redirection **lst, t_list *token, int redir_type)
 {
-	t_table			*temporary;
+	t_redirection	*tmp;
 	t_redirection	*new_redirection;
 
-	temporary = *lst;
+	tmp = *lst;
 	if (redir_type == HEREDOC)
 	{
 		heredoc(&token->content);
@@ -154,17 +129,44 @@ int	append_redirection(t_table **lst, t_list *token, int redir_type)
 			return (-1);
 	}
 	new_redirection = create_redirection(redir_type, token->content);
-	if (temporary->redirections == NULL)
+	if (tmp == NULL)
 	{
-		temporary->redirections = new_redirection;
+		tmp = new_redirection;
 		return (0);
 	}
 	if (new_redirection == NULL)
 		return (-1);
-	while (temporary->redirections->next != NULL)
-		temporary->redirections = temporary->redirections->next;
-	new_redirection->next = temporary->redirections->next;
-	temporary->redirections->next = new_redirection;
+	while (tmp->next != NULL)
+		tmp = tmp->next;
+	new_redirection->next = tmp->next;
+	tmp->next = new_redirection;
+	return (0);
+}
+
+int	append_redirection(t_table **lst, t_list *token, int redir_type)
+{
+	t_table			*tmp;
+	t_redirection	*new_redirection;
+
+	tmp = *lst;
+	if (redir_type == HEREDOC)
+	{
+		heredoc(&token->content);
+		if (token->content == NULL)
+			return (-1);
+	}
+	new_redirection = create_redirection(redir_type, token->content);
+	if (tmp->redirections == NULL)
+	{
+		tmp->redirections = new_redirection;
+		return (0);
+	}
+	if (new_redirection == NULL)
+		return (-1);
+	while (tmp->redirections->next != NULL)
+		tmp->redirections = tmp->redirections->next;
+	new_redirection->next = tmp->redirections->next;
+	tmp->redirections->next = new_redirection;
 	return (0);
 }
 
@@ -235,6 +237,24 @@ void	parse_command(t_list **token, t_table **table)
 	return ;
 }
 
+int	print_table(t_table **head)
+{
+	t_table		*start;
+
+	printf("printing after parsing:\n");
+	start = *head;
+	while (start != NULL)
+	{
+		while (start->redirections != NULL)
+		{
+			printf("%s\n", start->redirections->name);
+			start->redirections = start->redirections->next;
+		}
+		start = start->next;
+	}
+	return (0);
+}
+
 t_table	*parser(t_list *token)
 {
 	int				redir_type;
@@ -262,5 +282,6 @@ t_table	*parser(t_list *token)
 			parse_command(&token, &table);
 		token = token->next;
 	}
+	// print_table(&head);
 	return (head);
 }

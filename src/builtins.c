@@ -12,6 +12,8 @@ int		exit_builtin(char **arguments);
 
 bool	check_builtins(char **arguments)
 {
+	if (arguments == NULL)
+		return (false);
 	if (ft_strcmp(arguments[0], "cd") == 0
 		|| ft_strcmp(arguments[0], "echo") == 0
 		|| ft_strcmp(arguments[0], "env") == 0

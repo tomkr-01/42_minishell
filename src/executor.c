@@ -2,10 +2,18 @@
 
 extern t_minishell g_msh;
 
-void	copy_std_filestreams(int *initial_stdin, int *initial_stdout)
+void	filestream_operations(int *initial_stdin, int *initial_stdout, int mode)
 {
-	*initial_stdin = dup(STDIN_FILENO);
-	*initial_stdout = dup(STDOUT_FILENO);
+	if (mode == 1)
+	{
+		*initial_stdin = dup(STDIN_FILENO);
+		*initial_stdout = dup(STDOUT_FILENO);
+	}
+	else if (mode == 2)
+	{
+		dup2(*initial_stdin, STDIN_FILENO);
+		dup2(*initial_stdout, STDOUT_FILENO);
+	}
 }
 
 int	pipe_found(t_table **table, int **pipe_ends)
@@ -27,7 +35,10 @@ int	own_fork(pid_t *process_id)
 {
 	*process_id = fork();
 	if (*process_id == -1)
+	{
+		perror("fork");
 		return (-1);
+	}
 	return (0);
 }
 
@@ -36,6 +47,20 @@ void	prepare_pipe(int **pipe_ends)
 	close((*pipe_ends)[READ]);
 	dup2((*pipe_ends)[WRITE], STDOUT_FILENO);
 	close((*pipe_ends)[WRITE]);
+}
+
+void	ft_free_split(char **array)
+{
+	int	i;
+
+	i = 0;
+	while (array && array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+	array = NULL;
 }
 
 void	clear_table_row(t_table **table)
@@ -51,8 +76,8 @@ void	clear_table_row(t_table **table)
 	}
 	// ft_free((void **)&(*table)->redirections);
 	// (*table)->redirections = NULL;
-	if ((*table)->arguments != NULL)
-		ft_free_array(&(*table)->arguments);
+	// 
+	// if ((*table)->arguments != NULL)
 }
 
 int	is_ambiguous_redirect(t_table **table, char **file)
@@ -117,9 +142,13 @@ void	execute_child(t_table **table)
 {
 	char			*copy;
 	char			*command;
-	struct stat		*statbuf;
 
 	command = NULL;
+	if ((*table)->arguments == NULL)
+		exit(0);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	change_attributes(true);
 	copy = ft_strdup((*table)->arguments[0]);
 	if (check_builtins((*table)->arguments))
 	{
@@ -158,7 +187,6 @@ int	read_stdin_into_pipe(char *here_doc)
 		close(pipe_ends[READ]);
 		dup2(pipe_ends[WRITE], STDOUT_FILENO);
 		close(pipe_ends[WRITE]);
-		// close(0);
 		ft_putstr_fd(here_doc, 1);
 		exit(1);
 	}
@@ -187,8 +215,6 @@ void	execute_redirections(t_table **table)
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
 	execute_redirections(table);
@@ -213,30 +239,102 @@ int	initialize_pipe(int **pipe_ends)
 	return (0);
 }
 
-// void	simple_command(t_table *table)
-// {
-// 	int		initial_stdin;
-// 	int		initial_stdout;
+void	wait_for_last(int pid, int initial_stdin, int initial_stdout)
+{
+	int		status;
 
-// 	copy_std_filestreams(&initial_stdin, &initial_stdout);
-// 	execute_redirections(&table);
-// 	if (table->arguments == NULL)
-// 	{
-// 		dup2(initial_stdin, STDIN_FILENO);
-// 		dup2(initial_stdout, STDOUT_FILENO);
-// 	}
-// }
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+			ft_putstr_fd("\n", 2);
+		else if (WTERMSIG(status) == SIGQUIT)
+			ft_putstr_fd("Quit: 3\n", 2);
+		g_msh.exit_code = 128 + WTERMSIG(status);
+	}
+	else if (WIFEXITED(status))
+		g_msh.exit_code = WEXITSTATUS(status);
+	filestream_operations(&initial_stdin, &initial_stdout, 2);
+}
 
-// void	executor(t_table *table)
-// {
-// 	if (table == NULL)
-// 		return ;
-// 	if (table->next == NULL)
-// 		simple_command();
-// }
+void	wait_for_all(int pid, int initial_stdin, int initial_stdout)
+{
+	wait_for_last(pid, initial_stdin, initial_stdout);
+	while (wait(NULL) != -1)
+		filestream_operations(&initial_stdin, &initial_stdout, 2);
+}
+
+static void	send_null_to_stdin(void)
+{
+	pid_t	process_id;
+	int		pipe_end[2];
+	char	*line;
+
+	line = NULL;
+	pipe(pipe_end);
+	process_id = fork();
+	if (process_id == 0)
+	{
+		close(pipe_end[READ]);
+		ft_putstr_fd(line, pipe_end[WRITE]);
+		close(pipe_end[WRITE]);
+		exit(1);
+	}
+	else if (process_id > 0)
+	{
+		wait(NULL);
+		close(pipe_end[WRITE]);
+		dup2(pipe_end[READ], 0);
+		close(pipe_end[READ]);
+	}
+}
+
+/* signals catching not working for simple command */
+void	simple_command(t_table *table)
+{
+	int		initial_stdin;
+	int		initial_stdout;
+	pid_t	process_id;
+	
+	if (check_builtins(table->arguments))
+	{
+		execute_redirections(&table);
+		builtins(table->arguments);
+		filestream_operations(&initial_stdin, &initial_stdout, 2);
+		return ;
+	}
+	else
+	{
+		if (own_fork(&process_id) == -1)
+			return ;
+		if (process_id == 0)
+		{
+			execute_redirections(&table);
+			execute_child(&table);
+		}
+	}
+	wait_for_last(process_id, initial_stdin, initial_stdout);
+}
+
+int	print_execution(t_table *table)
+{
+	if (table == NULL)
+		return (-1);
+	while (table != NULL)
+	{
+		while (table->redirections != NULL)
+		{
+			printf("%d: %s\n", table->redirections->type, table->redirections->name);
+			table->redirections = table->redirections->next;
+		}
+		table = table->next;
+	}
+	return (1);
+}
 
 void	executioner(t_table *table)
 {
+	// print_execution(table);
 	int		pipe_flag;
 	int		initial_stdin;
 	int		initial_stdout;
@@ -245,52 +343,86 @@ void	executioner(t_table *table)
 
 	if (initialize_pipe(&pipe_end) == -1)
 		return ;
-	copy_std_filestreams(&initial_stdin, &initial_stdout);
-	while (table != NULL)
+	filestream_operations(&initial_stdin, &initial_stdout, 1);
+	if (table == NULL)
+		return ;
+	if (table->next == NULL)
+		simple_command(table);
+	else
 	{
-		pipe_flag = pipe_found(&table, &pipe_end);
-		if (pipe_flag == -1)
-			return ;
-		if (check_builtins(table->arguments) && pipe_flag == 0)
+		while (table != NULL)
 		{
-			execute_redirections(&table);
-			builtins(table->arguments);
-			dup2(initial_stdin, 0);
-			dup2(initial_stdout, 1);
-		}
-		else
-		{
+			pipe_flag = pipe_found(&table, &pipe_end);
+			if (pipe_flag == -1)
+				return ;
 			if (own_fork(&process_id) == -1)
 				return ;
 			if (process_id == 0)
 				child_process(&table, &pipe_end, &pipe_flag);
 			else if (process_id > 0)
 				parent_process(&pipe_end, &pipe_flag);
+			table = table->next;
 		}
-		table = table->next;
-	}
-	int		status = 0;
-	waitpid(process_id, &status, 0);
-	{
-		if (WIFSIGNALED(status))
-		{
-			if (WTERMSIG(status) == 2)
-				ft_putstr_fd("\n", 2);
-			else if (WTERMSIG(status) == 3)
-				ft_putstr_fd("Quit: 3\n", 2);
-			g_msh.exit_code = 128 + WTERMSIG(status);
-		}
-		else if (WIFEXITED(status))
-			g_msh.exit_code = WEXITSTATUS(status);
-		dup2(initial_stdout, 1);
-		dup2(initial_stdin, 0);
-	}
-	while (wait(NULL) != -1)
-	{
-		dup2(initial_stdout, 1);
-		dup2(initial_stdin, 0);
+		wait_for_all(process_id, initial_stdin, initial_stdout);
 	}
 }
+
+// void	executioner(t_table *table)
+// {
+// 	int		pipe_flag;
+// 	int		initial_stdin;
+// 	int		initial_stdout;
+// 	int		*pipe_end;
+// 	pid_t	process_id;
+
+// 	if (initialize_pipe(&pipe_end) == -1)
+// 		return ;
+// 	filestream_operations(&initial_stdin, &initial_stdout, 1);
+// 	while (table != NULL)
+// 	{
+// 		pipe_flag = pipe_found(&table, &pipe_end);
+// 		if (pipe_flag == -1)
+// 			return ;
+// 		if (check_builtins(table->arguments) && pipe_flag == 0)
+// 		{
+// 			execute_redirections(&table);
+// 			builtins(table->arguments);
+// 			dup2(initial_stdin, 0);
+// 			dup2(initial_stdout, 1);
+// 		}
+// 		else
+// 		{
+// 			if (own_fork(&process_id) == -1)
+// 				return ;
+// 			if (process_id == 0)
+// 				child_process(&table, &pipe_end, &pipe_flag);
+// 			else if (process_id > 0)
+// 				parent_process(&pipe_end, &pipe_flag);
+// 		}
+// 		table = table->next;
+// 	}
+// 	int		status = 0;
+// 	waitpid(process_id, &status, 0);
+// 	{
+// 		if (WIFSIGNALED(status))
+// 		{
+// 			if (WTERMSIG(status) == 2)
+// 				ft_putstr_fd("\n", 2);
+// 			else if (WTERMSIG(status) == 3)
+// 				ft_putstr_fd("Quit: 3\n", 2);
+// 			g_msh.exit_code = 128 + WTERMSIG(status);
+// 		}
+// 		else if (WIFEXITED(status))
+// 			g_msh.exit_code = WEXITSTATUS(status);
+// 		dup2(initial_stdout, 1);
+// 		dup2(initial_stdin, 0);
+// 	}
+// 	while (wait(NULL) != -1)
+// 	{
+// 		dup2(initial_stdout, 1);
+// 		dup2(initial_stdin, 0);
+// 	}
+// }
 
 // void	executor(t_table *table)
 // {
