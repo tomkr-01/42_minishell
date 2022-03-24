@@ -27,7 +27,7 @@ char	*expander(char *token, bool unquote)
 		i += ft_strlen_free(get_varname(&token[next_exp(token, i, false)]));
 	}
 	char * q_removed = quote_remover(expanded);
-	print_int_codes(q_removed);
+	// print_int_codes(q_removed);
 	return (q_removed);
 }
 
@@ -107,7 +107,7 @@ size_t	next_exp(char *token, size_t pos, bool print)
 
 int	valid_exp_char(int c, bool first_char)
 {
-	if (ft_isalpha(c) || c == '_' || (first_char == true && (ft_isdigit(c) || c == '?' || c == '\'' || c == '"')))
+	if (ft_isalpha(c) || c == '_' || (first_char == true && (c == '?' || c == '\'' || c == '"')) || (first_char == false && ft_isdigit(c)))
 		return (1);
 	return (0);
 }
