@@ -2,7 +2,8 @@
 
 int	exit_builtin(char **arguments)
 {
-	ft_putendl_fd("exit", STDERR_FILENO);
+	if (isatty(STDOUT_FILENO))
+		ft_putendl_fd("exit", STDERR_FILENO);
 	if (ft_arrlen(arguments) > 0 && !ft_isint(arguments[0]))
 	{
 		put_stderr(SHELL, "exit", arguments[0], "numeric argument required");

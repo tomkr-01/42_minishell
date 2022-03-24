@@ -77,13 +77,13 @@ char	*find_executable(char *command)
 	char	**directories;
 	struct stat	*statbuf;
 
-	if (access(command, F_OK) == 0)
-	{
-		if (ft_strncmp(command, "./", 2) != 0)
-			return (NULL);
-		else
-			return (command);
-	}
+	// if (access(command, F_OK) == 0)
+	// {
+	// 	if (ft_strncmp(command, "./", 2) != 0)
+	// 		return (NULL);
+	// 	else
+	// 		return (command);
+	// }
 	index = 0;
 	path = "/Users/rjasari/.brew/bin:/Users/rjasari/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Users/rjasari/.brew/bin";
 	directories = ft_split(path, ':');

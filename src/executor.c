@@ -100,7 +100,7 @@ void	clear_table_row(t_table **table)
 	}
 }
 
-int	is_ambiguous_redirect(t_table **table, char **file)
+int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 {
 	bool	clear_list;
 	char	*filename_token;
@@ -124,6 +124,7 @@ int	is_ambiguous_redirect(t_table **table, char **file)
 		write(2, "minishell: ambiguous redirect\n", 30);
 		// write(2, (*table)->redirections->name, ft_strlen((*table)->redirections->name));
 		ft_free((void **)file);
+		*status = 1;
 		return (-1);
 	}
 	else
@@ -131,14 +132,14 @@ int	is_ambiguous_redirect(t_table **table, char **file)
 	return (0);
 }
 
-int	open_files(t_table **table)
+int	open_files(t_table **table, int *is_ambiguous)
 {
 	int			fd;
 	int			status;
 	char		*file;
 
 	file = NULL;
-	status = is_ambiguous_redirect(table, &file);
+	status = is_ambiguous_redirect(table, &file, is_ambiguous);
 	if (status == -1)
 		return (-1);
 	if ((*table)->redirections->type == IN)
@@ -160,14 +161,13 @@ int	open_files(t_table **table)
 	return (0);
 }
 
-void	execute_child(t_table **table)
+void	execute_child(t_table **table, int *status)
 {
 	char			*copy;
 	char			*command;
 
-	command = NULL;
 	if ((*table)->arguments == NULL)
-		exit(0);
+		exit(*status);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	change_attributes(true);
@@ -222,14 +222,14 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-void	execute_redirections(t_table **table)
+void	execute_redirections(t_table **table, int *status)
 {
 	while ((*table)->redirections != NULL)
 	{
 		if ((*table)->redirections->type == HEREDOC)
 			read_stdin_into_pipe((*table)->redirections->name);
 		else
-			open_files(table);
+			open_files(table, status);
 		if ((*table)->redirections != NULL)
 			(*table)->redirections = (*table)->redirections->next;
 	}
@@ -237,10 +237,13 @@ void	execute_redirections(t_table **table)
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
+	int		status;
+
+	status = 0;
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
-	execute_redirections(table);
-	execute_child(table);
+	execute_redirections(table, &status);
+	execute_child(table, &status);
 }
 
 void	parent_process(int **pipe_ends, int *pipe_flag)
@@ -315,12 +318,14 @@ static void	send_null_to_stdin(void)
 
 void	simple_command(t_table *table)
 {
+	int		status;
 	int		initial_stdin;
 	int		initial_stdout;
 	pid_t	process_id;
 	
+	status = 0;
 	filestream_operations(&initial_stdin, &initial_stdout, 1);
-	execute_redirections(&table);
+	execute_redirections(&table, &status);
 	if (check_builtins(table->arguments))
 	{
 		builtins(table->arguments);
@@ -332,7 +337,7 @@ void	simple_command(t_table *table)
 		if (own_fork(&process_id) == -1)
 			return ;
 		if (process_id == 0)
-			execute_child(&table);
+			execute_child(&table, &status);
 	}
 	wait_for_last(process_id, initial_stdin, initial_stdout);
 }

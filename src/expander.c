@@ -10,8 +10,12 @@ char	*expand_varname(char *varname);
 char	*expander(char *token, bool unquote)
 {
 	char	*expanded;
+	char	*one;
+	char	*two;
 	size_t	i;
 
+	one = NULL;
+	two = NULL;
 	expanded = NULL;
 	i = 0;
 	while (token != NULL && token[i] != '\0')
@@ -25,6 +29,8 @@ char	*expander(char *token, bool unquote)
 		token = ft_substr_free(token,
 				ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
 	}
+	one = ft_strdup(expanded);
+	// printf("with quotes: %s | %d\n", one, ft_strlen(one));
 	if (unquote)
 		return (quote_remover(expanded));
 	return (expanded);
@@ -61,10 +67,33 @@ size_t	next_exp(char *token)
 
 int	valid_exp_char(int c, bool first_char)
 {
-	if (ft_isalnum(c) || c == '_'
-		|| (first_char == true && (c == '?' || c == '\'' || c == '"')))
-		return (1);
-	return (0);
+	if (first_char == true)
+	{
+		if (ft_isalnum(c) || c == '_' || c == '?' || c == '\'' || c == '"')
+			return (1);
+		else
+			return (0);
+	}
+	else
+	{
+		if (ft_isalnum(c) || c == '_'
+			|| (first_char == true && (c == '?' || c == '\'' || c == '"')))
+			return (1);
+		return (0);
+	}
+}
+
+char	*ft_chrdup(char c)
+{
+	char	*duplicate;
+
+	duplicate = NULL;
+	duplicate = (char *)malloc(2 * sizeof(char));
+	if (duplicate == NULL)
+		return (NULL);
+	duplicate[0] = c;
+	duplicate[1] = '\0';
+	return (duplicate);
 }
 
 char	*get_varname(char *token)
@@ -76,6 +105,8 @@ char	*get_varname(char *token)
 		return (NULL);
 	else if (token[1] == '?')
 		return (ft_strdup("?"));
+	else if (ft_isdigit(token[1]))
+		return (ft_chrdup(token[1]));
 	else if (token[1] == '\'' || token[1] == '"')
 		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 2));
 	while (valid_exp_char(token[i], false))
@@ -100,3 +131,16 @@ char	*expand_varname(char *varname)
 	ft_free((void **)&varname);
 	return (value);
 }
+
+// int	main(int argc, char *argv[])
+// {
+// 	char	*str;
+// 	char	*expanded;
+
+// 	if (argc < 2)
+// 		return (-1);
+// 	str = ft_strdup(argv[1]);
+// 	expanded = expander(str, true);
+// 	printf("expanded: %s\n", expanded);
+// 	return (0);
+// }
