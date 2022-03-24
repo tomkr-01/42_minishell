@@ -1,10 +1,5 @@
 {
 	"files.associations": {
-		"readline.h": "c",
-		"termios.h": "c",
-		"signal.h": "c",
-		"_pthread_types.h": "c",
-		"wait.h": "c",
-		"stdlib.h": "c"
+		"libft.h": "c"
 	}
 }

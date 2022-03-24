@@ -79,7 +79,7 @@ char	*expansion_char_remover(char *token)
 	c_removed = ft_calloc(ft_strlen(token) + 1, sizeof(*c_removed));
 	if (c_removed == NULL)
 		exit(put_stderr(SHELL, "expansion_char_remover()", NULL,
-			strerror(ENOMEM)));
+			"hallo"));
 	while (token != NULL && token[i] != '\0')
 	{
 		if (token[i] == '\31')

@@ -63,6 +63,24 @@ void	ft_free_split(char **array)
 	array = NULL;
 }
 
+void	ft_free_array2(char **arr)
+{
+	size_t	i;
+
+	if (arr == NULL)
+		return ;
+	i = 0;
+	while (arr[i] != NULL)
+	{
+		free(arr[i]);
+		arr[i] = NULL;
+		i++;
+	}
+	if (arr != NULL)
+		free(arr);
+	arr = NULL;
+}
+
 void	clear_table_row(t_table **table)
 {
 	t_redirection	*tmp;
@@ -73,6 +91,8 @@ void	clear_table_row(t_table **table)
 		ft_free((void **)&(*table)->redirections->name);
 		(*table)->redirections = tmp;
 	}
+	// if ((*table)->arguments != NULL)
+	// 	ft_free_array2((*table)->arguments);
 	if ((*table)->arguments != NULL)
 	{
 		free((*table)->arguments);
@@ -103,6 +123,7 @@ int	is_ambiguous_redirect(t_table **table, char **file)
 			return (0);
 		write(2, "minishell: ambiguous redirect\n", 30);
 		// write(2, (*table)->redirections->name, ft_strlen((*table)->redirections->name));
+		ft_free((void **)file);
 		return (-1);
 	}
 	else
@@ -118,8 +139,6 @@ int	open_files(t_table **table)
 
 	file = NULL;
 	status = is_ambiguous_redirect(table, &file);
-	if (status == -1)
-		ft_free((void **)&file);
 	if (status == -1)
 		return (-1);
 	if ((*table)->redirections->type == IN)
@@ -360,40 +379,77 @@ int	print_execution(t_table *table)
 	return (1);
 }
 
-void	executioner(t_table *table)
+void	execute_pipeline(t_table *table)
 {
-	// print_execution(table);
-	int		pipe_flag;
 	int		initial_stdin;
 	int		initial_stdout;
-	int		*pipe_end;
+	int		pipe_flag;
+	int		*pipe_ends;
 	pid_t	process_id;
 
-	if (initialize_pipe(&pipe_end) == -1)
+	if (initialize_pipe(&pipe_ends) == -1)
 		return ;
 	filestream_operations(&initial_stdin, &initial_stdout, 1);
+	while (table != NULL)
+	{
+		pipe_flag = pipe_found(&table, &pipe_ends);
+		if (pipe_flag == -1)
+			return ;
+		if (own_fork(&process_id) == -1)
+			return ;
+		if (process_id == 0)
+			child_process(&table, &pipe_ends, &pipe_flag);
+		else if (process_id > 0)
+			parent_process(&pipe_ends, &pipe_flag);
+		table = table->next;
+	}
+	wait_for_all(process_id, initial_stdin, initial_stdout);
+}
+
+void	executioner(t_table *table)
+{
 	if (table == NULL)
 		return ;
 	if (table->next == NULL)
 		simple_command(table);
 	else
-	{
-		while (table != NULL)
-		{
-			pipe_flag = pipe_found(&table, &pipe_end);
-			if (pipe_flag == -1)
-				return ;
-			if (own_fork(&process_id) == -1)
-				return ;
-			if (process_id == 0)
-				child_process(&table, &pipe_end, &pipe_flag);
-			else if (process_id > 0)
-				parent_process(&pipe_end, &pipe_flag);
-			table = table->next;
-		}
-		wait_for_all(process_id, initial_stdin, initial_stdout);
-	}
+		execute_pipeline(table);
 }
+
+// void	executioner(t_table *table)
+// {
+// 	// print_execution(table);
+// 	int		pipe_flag;
+// 	int		initial_stdin;
+// 	int		initial_stdout;
+// 	int		*pipe_end;
+// 	pid_t	process_id;
+
+// 	if (initialize_pipe(&pipe_end) == -1)
+// 		return ;
+// 	filestream_operations(&initial_stdin, &initial_stdout, 1);
+// 	if (table == NULL)
+// 		return ;
+// 	if (table->next == NULL)
+// 		simple_command(table);
+// 	else
+// 	{
+// 		while (table != NULL)
+// 		{
+// 			pipe_flag = pipe_found(&table, &pipe_end);
+// 			if (pipe_flag == -1)
+// 				return ;
+// 			if (own_fork(&process_id) == -1)
+// 				return ;
+// 			if (process_id == 0)
+// 				child_process(&table, &pipe_end, &pipe_flag);
+// 			else if (process_id > 0)
+// 				parent_process(&pipe_end, &pipe_flag);
+// 			table = table->next;
+// 		}
+// 		wait_for_all(process_id, initial_stdin, initial_stdout);
+// 	}
+// }
 
 // void	executioner(t_table *table)
 // {
