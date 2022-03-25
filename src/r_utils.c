@@ -77,6 +77,18 @@ char	*find_executable(char *command)
 	char	**directories;
 	struct stat	*statbuf;
 
+	// didn't work previously because statbuf wasn't allocated, either this way or on the stack
+	statbuf = (struct stat *)malloc(sizeof(struct stat));
+	if (statbuf == NULL)
+		return (NULL);
+	if (stat(command, statbuf) == 0)
+	{
+		if (statbuf->st_mode & S_IFDIR)
+		{
+			printf("this is a directory: %s\n", command);
+			return (NULL);
+		}
+	}
 	// if (access(command, F_OK) == 0)
 	// {
 	// 	if (ft_strncmp(command, "./", 2) != 0)
@@ -85,7 +97,7 @@ char	*find_executable(char *command)
 	// 		return (command);
 	// }
 	index = 0;
-	path = getenv("PATH");
+	path = get_var("PATH");
 	directories = ft_split(path, ':');
 	if (directories == NULL)
 		return (NULL);
