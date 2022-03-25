@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "/Users/rjasari/Desktop/42_minishell/src/a.out",
-			"args": ["echo \"$USER\"\"Users/$USER/file\"\"'$USER'\"'$USER'"],
+			"args": ["PATH=hallo", "PATH=no"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],

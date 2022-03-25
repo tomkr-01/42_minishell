@@ -85,7 +85,7 @@ char	*find_executable(char *command)
 	// 		return (command);
 	// }
 	index = 0;
-	path = "/Users/rjasari/.brew/bin:/Users/rjasari/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Users/rjasari/.brew/bin";
+	path = getenv("PATH");
 	directories = ft_split(path, ':');
 	if (directories == NULL)
 		return (NULL);

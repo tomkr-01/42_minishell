@@ -67,20 +67,10 @@ size_t	next_exp(char *token)
 
 int	valid_exp_char(int c, bool first_char)
 {
-	if (first_char == true)
-	{
-		if (ft_isalnum(c) || c == '_' || c == '?' || c == '\'' || c == '"')
-			return (1);
-		else
-			return (0);
-	}
-	else
-	{
-		if (ft_isalnum(c) || c == '_'
-			|| (first_char == true && (c == '?' || c == '\'' || c == '"')))
-			return (1);
-		return (0);
-	}
+	if (ft_isalnum(c) || c == '_'
+		|| (first_char == true && (c == '?' || c == '\'' || c == '"')))
+		return (1);
+	return (0);
 }
 
 char	*ft_chrdup(char c)
