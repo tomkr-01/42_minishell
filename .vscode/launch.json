@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "/Users/rjasari/Desktop/42_minishell/src/a.out",
-			"args": ["PATH=hallo", "PATH=no"],
+			"args": ["PATH"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],

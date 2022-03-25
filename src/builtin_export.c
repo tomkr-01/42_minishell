@@ -23,7 +23,8 @@ int	is_valid_identifier(char *argument, int *id_len)
 {
 	while (argument[*id_len] != '=')
 	{
-		if (!ft_isalnum(argument[*id_len]))
+		// can be replaced by valid_exp_char with first char option turned off
+		if (!ft_isalnum(argument[*id_len]) && argument[*id_len] != '_')
 			return (1);
 		*id_len += 1;
 	}
