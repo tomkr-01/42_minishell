@@ -83,9 +83,14 @@ char	*find_executable(char *command)
 		return (NULL);
 	if (stat(command, statbuf) == 0)
 	{
-		if (statbuf->st_mode & S_IFDIR)
+		if (S_ISDIR(statbuf->st_mode))
 		{
 			printf("this is a directory: %s\n", command);
+			return (NULL);
+		}
+		else if (statbuf->st_mode & ~(0111))
+		{
+			printf("permission denied\n");
 			return (NULL);
 		}
 	}

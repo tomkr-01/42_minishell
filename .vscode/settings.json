@@ -1,5 +1,15 @@
 {
 	"files.associations": {
-		"libft.h": "c"
+		"libft.h": "c",
+		"stat.h": "c",
+		"cdefs.h": "c",
+		"_types.h": "c",
+		"availability.h": "c",
+		"_timespec.h": "c",
+		"_blkcnt_t.h": "c",
+		"_blksize_t.h": "c",
+		"_dev_t.h": "c",
+		"_mode_t.h": "c",
+		"_off_t.h": "c"
 	}
 }
