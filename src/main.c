@@ -30,6 +30,8 @@ char	*read_input(void)
 	if (isatty(STDIN_FILENO) == 1)
 	{
 		line = readline("$> ");
+		// line = get_next_line(0);
+		// line = ft_substr(line, 0, ft_strlen(line) - 1);
 		if (line != NULL && line[0] != '\0')
 			add_history(line);
 	}

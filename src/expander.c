@@ -15,8 +15,12 @@ void	print_int_codes(char *str);
 char	*expander(char *token, bool unquote)
 {
 	char	*expanded;
+	char	*one;
+	char	*two;
 	size_t	i;
 
+	one = NULL;
+	two = NULL;
 	expanded = NULL;
 	i = 0;
 	while (token != NULL && i < ft_strlen(token))
@@ -112,6 +116,19 @@ int	valid_exp_char(int c, bool first_char)
 	return (0);
 }
 
+char	*ft_chrdup(char c)
+{
+	char	*duplicate;
+
+	duplicate = NULL;
+	duplicate = (char *)malloc(2 * sizeof(char));
+	if (duplicate == NULL)
+		return (NULL);
+	duplicate[0] = c;
+	duplicate[1] = '\0';
+	return (duplicate);
+}
+
 char	*get_varname(char *token)
 {
 	size_t	i;
@@ -125,7 +142,8 @@ char	*get_varname(char *token)
 	else if (token[1] == '\'' || token[1] == '"')
 		return (ft_substr(token, 0, ft_strchr_int(token + 2, token[1]) + 1));
 	j = 0;
-	while ((valid_exp_char(token[i], true) && j == 0) || valid_exp_char(token[i], false))
+	while ((valid_exp_char(token[i], true) && j == 0)
+		|| valid_exp_char(token[i], false))
 	{
 		i++;
 		j++;
@@ -150,3 +168,16 @@ char	*expand_varname(char *varname)
 	ft_free((void **)&varname);
 	return (value);
 }
+
+// int	main(int argc, char *argv[])
+// {
+// 	char	*str;
+// 	char	*expanded;
+
+// 	if (argc < 2)
+// 		return (-1);
+// 	str = ft_strdup(argv[1]);
+// 	expanded = expander(str, true);
+// 	printf("expanded: %s\n", expanded);
+// 	return (0);
+// }
