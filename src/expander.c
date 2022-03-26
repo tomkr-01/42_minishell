@@ -7,7 +7,7 @@ int		valid_exp_char(int c, bool first_char);
 char	*get_varname(char *token);
 char	*expand_varname(char *varname);
 
-char	*expander(char *token, bool unquote)
+char	*expansion(char *token, bool unquote)
 {
 	char	*expanded;
 	char	*one;
@@ -33,6 +33,57 @@ char	*expander(char *token, bool unquote)
 	// printf("with quotes: %s | %d\n", one, ft_strlen(one));
 	if (unquote)
 		return (quote_remover(expanded));
+	return (expanded);
+}
+
+// you have probably split the expander in two files because
+// of the 3 functions below
+
+char	*without_quotes(char *token, int *index, int old_index)
+{
+	char	*string;
+
+	while (token[*index] != '\0' && token[*index] != '\'' && token[*index] != '\"')
+		*index += 1;
+	string = ft_substr(token, old_index, *index - old_index);
+	*index -= 1;
+	return (string);
+}
+
+char	*with_quotes(char *token, int *index, int old_index, char c)
+{
+	char	*string;
+
+	*index += 1;
+	while (token[*index] != '\0' && token[*index] != c)
+		*index += 1;
+	string = ft_substr(token, old_index, *index - old_index + 1);
+	// *index += 1;
+	return (string);
+}
+
+char	*expander(char *token, bool unquote)
+{
+	int			index;
+	int			old_index;
+	char		*string;
+	char		*expanded;
+
+	if (token == NULL)
+		return (NULL);
+	index = 0;
+	expanded = NULL;
+	while (token[index] != '\0')
+	{
+		old_index = index;
+		if (token[index] != '\'' && token[index] != '\"')
+			string = without_quotes(token, &index, old_index);
+		else
+			string = with_quotes(token, &index, old_index, token[index]);
+		// printf("%s\n", string);
+		index++;
+		expanded = ft_strjoin_free(expanded, expansion(string, true));
+	}
 	return (expanded);
 }
 

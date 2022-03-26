@@ -95,9 +95,9 @@ char	*expansion(char *token, bool unquote)
 			string = with_quotes(token, &index, old_index, token[index]);
 		printf("%s\n", string);
 		index++;
-		// expanded = ft_strjoin(expanded, start_expansion(string));
+		expanded = ft_strjoin_free(expanded, expander(string, true));
 	}
-	return (NULL);
+	return (expanded);
 }
 
 int	main(void)

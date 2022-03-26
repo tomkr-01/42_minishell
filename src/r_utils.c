@@ -88,11 +88,6 @@ char	*find_executable(char *command)
 			printf("this is a directory: %s\n", command);
 			return (NULL);
 		}
-		else if (statbuf->st_mode & ~(0111))
-		{
-			printf("permission denied\n");
-			return (NULL);
-		}
 	}
 	// if (access(command, F_OK) == 0)
 	// {

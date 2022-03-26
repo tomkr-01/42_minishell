@@ -2,9 +2,6 @@
 
 extern t_minishell	g_msh;
 
-// utility function for export and unset, this function is in export too
-// I appended the two to check
-
 int	is_valid_identifier2(char *argument, int *id_len)
 {
 	if (!ft_isalpha(argument[0]) && argument[0] != '_')
@@ -53,7 +50,8 @@ int	unset_builtin(char **arguments)
 	{
 		if (is_valid_identifier2(arguments[i], &id_len) == 1)
 		{
-			put_stderr(SHELL, "unset_builtin", arguments[i], "not a valid identifier");
+			put_stderr(SHELL, "unset_builtin", arguments[i],
+				"not a valid identifier");
 			exit_status = EXIT_FAILURE;
 		}
 		else
@@ -71,7 +69,6 @@ int	unset_builtin(char **arguments)
 // 	unset_builtin(&argv[1]);
 // 	return (0);
 // }
-
 
 // int	unset_builtin(char **arguments)
 // {

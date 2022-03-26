@@ -97,7 +97,7 @@ void	heredoc(char **token_content)
 	expansion = false;
 	delimiter_copy = ft_strdup(*token_content);
 	limiter = quote_remover(*token_content);
-	if (ft_strcmp(delimiter_copy, limiter) != 0)
+	if (ft_strcmp(delimiter_copy, limiter) == 0)
 		expansion = true;
 	if (isatty(STDIN_FILENO))
 		*token_content = heredoc_readline(&limiter);
@@ -306,7 +306,6 @@ t_table	*parser(t_list *token)
 		{
 			if (append_redirection(&table->redirections, token, type) == -1)
 				return (NULL);
-			// printf("%p\n", table->redirections);
 		}
 		else
 			parse_command(&token, &table);

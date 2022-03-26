@@ -85,7 +85,8 @@ int	export_builtin(char **arguments)
 			exit_status = EXIT_FAILURE;
 		}
 		if (status == 1)
-			put_stderr(SHELL, "export_builtin", arguments[i], "not a valid identifier");
+			put_stderr(SHELL, "export_builtin", arguments[i],
+				"not a valid identifier");
 		i++;
 	}
 	return (exit_status);

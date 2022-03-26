@@ -6,11 +6,9 @@ int	echo_builtin(char **arguments)
 	size_t	j;
 	int		new_line;
 
-	i = 0;
+	i = -1;
 	new_line = 1;
-	if (arguments == NULL)
-		return (ft_putstr_fd("\n", STDOUT_FILENO));
-	while (arguments[i] != NULL)
+	while (arguments != NULL && arguments[++i] != NULL)
 	{
 		j = 0;
 		while (arguments[i][0] == '-' && arguments[i][++j] == 'n')
@@ -25,7 +23,6 @@ int	echo_builtin(char **arguments)
 			if (arguments[i + 1] != NULL)
 				ft_putchar_fd(' ', STDOUT_FILENO);
 		}
-		i++;
 	}
 	if (-2 < new_line && new_line < 2)
 		ft_putchar_fd('\n', STDOUT_FILENO);

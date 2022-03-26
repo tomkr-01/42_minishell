@@ -1,7 +1,7 @@
 #include "../inc/minishell.h"
 
-t_minishell	g_msh;
-extern char **environ;
+t_minishell		g_msh;
+extern char		**environ;
 
 void	environment_init(char **envp)
 {

@@ -132,6 +132,31 @@ int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 	return (0);
 }
 
+static void	send_null_to_stdin(void)
+{
+	pid_t	process_id;
+	int		pipe_end[2];
+	char	*line;
+
+	line = NULL;
+	pipe(pipe_end);
+	process_id = fork();
+	if (process_id == 0)
+	{
+		close(pipe_end[READ]);
+		ft_putstr_fd(line, pipe_end[WRITE]);
+		close(pipe_end[WRITE]);
+		exit(1);
+	}
+	else if (process_id > 0)
+	{
+		wait(NULL);
+		close(pipe_end[WRITE]);
+		dup2(pipe_end[READ], 0);
+		close(pipe_end[READ]);
+	}
+}
+
 int	open_files(t_table **table, int *is_ambiguous)
 {
 	int			fd;
@@ -151,6 +176,7 @@ int	open_files(t_table **table, int *is_ambiguous)
 	if (fd < 0)
 	{
 		perror(file);
+		send_null_to_stdin();
 		return (-1);
 	}
 	if ((*table)->redirections->type == IN)
@@ -287,31 +313,6 @@ void	wait_for_all(int pid, int initial_stdin, int initial_stdout)
 	wait_for_last(pid, initial_stdin, initial_stdout);
 	while (wait(NULL) != -1)
 		filestream_operations(&initial_stdin, &initial_stdout, 2);
-}
-
-static void	send_null_to_stdin(void)
-{
-	pid_t	process_id;
-	int		pipe_end[2];
-	char	*line;
-
-	line = NULL;
-	pipe(pipe_end);
-	process_id = fork();
-	if (process_id == 0)
-	{
-		close(pipe_end[READ]);
-		ft_putstr_fd(line, pipe_end[WRITE]);
-		close(pipe_end[WRITE]);
-		exit(1);
-	}
-	else if (process_id > 0)
-	{
-		wait(NULL);
-		close(pipe_end[WRITE]);
-		dup2(pipe_end[READ], 0);
-		close(pipe_end[READ]);
-	}
 }
 
 /* signals catching not working for simple command */
