@@ -7,20 +7,20 @@ void	handle_input(char *line)
 
 	tokens = NULL;
 	command_table = NULL;
-	// lexer frees the line
 	tokens = lexer(line);
 	if (tokens == NULL)
 		return ;
-	// if failing free the tokens
-	// syntax check must be formed into bool with two options or int func
 	if (!syntax_check(tokens))
+	{
+		ft_lstclear(&tokens, &del_content);
 		return ;
+	}
 	command_table = parser(tokens);
-	if (command_table == NULL)
-		return ;
 	executioner(command_table);
-	ft_lstclear(&tokens, &del_content);
-	// clear the command table
+	if (command_table != NULL)
+		free_command_table(command_table);
+	else if (tokens != NULL)
+		ft_lstclear(&tokens, &del_content);
 }
 
 char	*read_input(void)
@@ -30,8 +30,6 @@ char	*read_input(void)
 	if (isatty(STDIN_FILENO) == 1)
 	{
 		line = readline("$> ");
-		// line = get_next_line(0);
-		// line = ft_substr(line, 0, ft_strlen(line) - 1);
 		if (line != NULL && line[0] != '\0')
 			add_history(line);
 	}

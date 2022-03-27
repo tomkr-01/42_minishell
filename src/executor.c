@@ -14,6 +14,11 @@ void	filestream_operations(int *initial_stdin, int *initial_stdout, int mode)
 		dup2(*initial_stdin, STDIN_FILENO);
 		dup2(*initial_stdout, STDOUT_FILENO);
 	}
+	else if (mode == 3)
+	{
+		close(*initial_stdin);
+		close(*initial_stdout);
+	}
 }
 
 int	pipe_found(t_table **table, int **pipe_ends)
@@ -93,11 +98,13 @@ void	clear_table_row(t_table **table)
 	}
 	// if ((*table)->arguments != NULL)
 	// 	ft_free_array2((*table)->arguments);
-	if ((*table)->arguments != NULL)
-	{
-		free((*table)->arguments);
-		(*table)->arguments = NULL;
-	}
+	ft_free_array(&(*table)->arguments);
+	(*table)->arguments = NULL;
+	// if ((*table)->arguments != NULL)
+	// {
+	// 	free((*table)->arguments);
+	// 	(*table)->arguments = NULL;
+	// }
 }
 
 int	is_ambiguous_redirect(t_table **table, char **file, int *status)
@@ -108,21 +115,20 @@ int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 
 	clear_list = false;
 	filename_token = ft_strdup((*table)->redirections->name);
-	expanded_string = expander(filename_token, false);
+	expanded_string = expansion(filename_token, false);
 	if (ft_strcmp((*table)->redirections->name, expanded_string) != 0)
 	{
-		*file = ft_strtrim(expanded_string, " ");
-		// ft_free((void **)expanded_string);
-		if (*file == NULL || *file[0] == '\0')
-			clear_list = true;
-		if (count(*file, ' ') > 1)
+		*file = ft_strtrim_free(expanded_string, " ");
+		if (*file == NULL || *file[0] == '\0' || count(*file, ' ') > 1)
 			clear_list = true;
 		if (clear_list)
 			clear_table_row(table);
 		else
 			return (0);
-		write(2, "minishell: ambiguous redirect\n", 30);
-		// write(2, (*table)->redirections->name, ft_strlen((*table)->redirections->name));
+		// put_stderr causes segfault
+		// put_stderr(SHELL, NULL, (*table)->redirections->name,
+		// 	"ambiguous redirect");
+		printf("ambiguous redirect\n");
 		ft_free((void **)file);
 		*status = 1;
 		return (-1);
@@ -157,15 +163,13 @@ static void	send_null_to_stdin(void)
 	}
 }
 
-int	open_files(t_table **table, int *is_ambiguous)
+int	open_files(t_table **table, int *status)
 {
 	int			fd;
-	int			status;
 	char		*file;
 
 	file = NULL;
-	status = is_ambiguous_redirect(table, &file, is_ambiguous);
-	if (status == -1)
+	if (is_ambiguous_redirect(table, &file, status) == -1)
 		return (-1);
 	if ((*table)->redirections->type == IN)
 		fd = open(file, O_RDONLY);
@@ -189,33 +193,29 @@ int	open_files(t_table **table, int *is_ambiguous)
 
 void	execute_child(t_table **table, int *status)
 {
-	char			*copy;
 	char			*command;
+	struct stat		statbuf;
 
-	if ((*table)->arguments == NULL)
-		exit(*status);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	change_attributes(true);
-	copy = ft_strdup((*table)->arguments[0]);
+	if ((*table)->arguments == NULL)
+		exit(*status);
 	if (check_builtins((*table)->arguments))
 	{
 		builtins((*table)->arguments);
 		exit(g_msh.exit_code);
 	}
-	if ((*table)->arguments != NULL)
-		command = find_executable((*table)->arguments[0]);
+	command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
-	write(2, command, ft_strlen(command));
-	write(2, ": ", 2);
-	if (access(command, F_OK) == 0)
+	ft_free((void **)&command);
+	if (stat(command, &statbuf) == 0)
 	{
-		if (access(command, X_OK) != 0)
-			write(2, "minishell: permission denied\n", 29);
+		put_stderr(SHELL, (*table)->arguments[0], NULL, "permission denied");
 		exit(126);
 	}
 	else
-		write(2, "minishell: command not found\n", 29);
+		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found");
 	exit(127);
 }
 
@@ -341,48 +341,7 @@ void	simple_command(t_table *table)
 			execute_child(&table, &status);
 	}
 	wait_for_last(process_id, initial_stdin, initial_stdout);
-}
-
-// void	simple_command(t_table *table)
-// {
-// 	int		initial_stdin;
-// 	int		initial_stdout;
-// 	pid_t	process_id;
-	
-// 	if (check_builtins(table->arguments))
-// 	{
-// 		execute_redirections(&table);
-// 		builtins(table->arguments);
-// 		filestream_operations(&initial_stdin, &initial_stdout, 2);
-// 		return ;
-// 	}
-// 	else
-// 	{
-// 		if (own_fork(&process_id) == -1)
-// 			return ;
-// 		if (process_id == 0)
-// 		{
-// 			execute_redirections(&table);
-// 			execute_child(&table);
-// 		}
-// 	}
-// 	wait_for_last(process_id, initial_stdin, initial_stdout);
-// }
-
-int	print_execution(t_table *table)
-{
-	if (table == NULL)
-		return (-1);
-	while (table != NULL)
-	{
-		while (table->redirections != NULL)
-		{
-			printf("%d: %s\n", table->redirections->type, table->redirections->name);
-			table->redirections = table->redirections->next;
-		}
-		table = table->next;
-	}
-	return (1);
+	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
 void	execute_pipeline(t_table *table)
@@ -410,10 +369,15 @@ void	execute_pipeline(t_table *table)
 		table = table->next;
 	}
 	wait_for_all(process_id, initial_stdin, initial_stdout);
+	free(pipe_ends);
+	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
 void	executioner(t_table *table)
 {
+	t_table		*head;
+
+	head = table;
 	if (table == NULL)
 		return ;
 	if (table->next == NULL)

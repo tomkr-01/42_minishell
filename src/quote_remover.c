@@ -39,7 +39,6 @@ char	*quote_remover(char *token)
 		token = ft_substr_free(token,
 				next_quote(token, quote) + 1, ft_strlen(token));
 	}
-	// printf("quotes remove: %s | %d\n", expansion_char_remover(q_removed), ft_strlen(expansion_char_remover(q_removed)));
 	return (expansion_char_remover(q_removed));
 }
 

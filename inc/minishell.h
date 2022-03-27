@@ -103,5 +103,9 @@ void	executioner(t_table *table);
 int		count(const char *s, char c);
 void	ft_free(void **ptr);
 char	*str_append_char(char *string, char c);
+char	*expansion(char *token, bool unquote);
+char	*ft_chrdup(char c);
+void	clear_table_row(t_table **table);
+void	free_command_table(t_table *table);
 
 #endif

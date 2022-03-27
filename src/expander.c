@@ -10,12 +10,8 @@ char	*expand_varname(char *varname);
 char	*expansion(char *token, bool unquote)
 {
 	char	*expanded;
-	char	*one;
-	char	*two;
 	size_t	i;
 
-	one = NULL;
-	two = NULL;
 	expanded = NULL;
 	i = 0;
 	while (token != NULL && token[i] != '\0')
@@ -29,8 +25,6 @@ char	*expansion(char *token, bool unquote)
 		token = ft_substr_free(token,
 				ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
 	}
-	one = ft_strdup(expanded);
-	// printf("with quotes: %s | %d\n", one, ft_strlen(one));
 	if (unquote)
 		return (quote_remover(expanded));
 	return (expanded);
@@ -80,10 +74,10 @@ char	*expander(char *token, bool unquote)
 			string = without_quotes(token, &index, old_index);
 		else
 			string = with_quotes(token, &index, old_index, token[index]);
-		// printf("%s\n", string);
 		index++;
-		expanded = ft_strjoin_free(expanded, expansion(string, true));
+		expanded = ft_strjoin_free(expanded, expansion(string, unquote));
 	}
+	ft_free((void **)&token);
 	return (expanded);
 }
 

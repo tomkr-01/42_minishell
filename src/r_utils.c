@@ -5,30 +5,26 @@ char	**array_append_array(char **first, char **second)
 	int		i;
 	int		j;
 	char	**new_array;
-	i = 0;
-	j = 0;
+
+	i = -1;
+	j = -1;
 	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
 			* sizeof(char *));
 	if (new_array == NULL)
 		return (NULL);
-	while (first != NULL && first[i] != NULL)
-	{
+	while (first != NULL && first[++i] != NULL)
 		new_array[i] = ft_strdup(first[i]);
-		i++;
-	}
-	while (second != NULL && second[j] != NULL)
-	{
+	while (second != NULL && second[++j] != NULL)
 		new_array[i + j] = ft_strdup(second[j]);
-		j++;
-	}
 	new_array[i + j] = NULL;
-	/* to possibilities
-		but check before if they are NULL
-		1. free while copying
-		2. call ft_free_split onto the old arrays
-	*/
+	if (first != NULL)
+		ft_free_array(&first);
+	if (second != NULL);
+		ft_free_array(&second);
 	return (new_array);
 }
+
+
 char	*str_append_char(char *string, char c)
 {
 	int			index;
@@ -36,14 +32,7 @@ char	*str_append_char(char *string, char c)
 	char		*new;
 
 	if (string == NULL)
-	{
-		new = (char *)malloc(2 * sizeof(char));
-		if (new == NULL)
-		return (NULL);
-		new[0] = c;
-		new[1] = '\0';
-		return (new);
-	}
+		ft_chrdup(c);
 	index = 0;
 	str_len = ft_strlen(string);
 	new = (char *)malloc((str_len + 2) * sizeof(char));
@@ -61,47 +50,53 @@ char	*str_append_char(char *string, char c)
 	return (new);
 }
 
-// void	ft_free(void **ptr)
-// {
-// 	if (*ptr != NULL)
-// 		free(*ptr);
-// 	*ptr = NULL;
-// }
+void	print_error_and_exit(char *command, char *message, int exit_code)
+{
+	write(2, "minishell: ", 11);
+	write(2, command, ft_strlen(command));
+	write(2, ": ",2);
+	write(2, message, ft_strlen(message));
+	write(2, "\n", 1);
+	ft_free((void **)&command);
+	exit(exit_code);
+}
+
+int	command_check(char *command)
+{
+	struct stat		statbuf;
+
+	if (stat(command, &statbuf) == 0)
+	{
+		if (S_ISDIR(statbuf.st_mode))
+			print_error_and_exit(command, "is a directory", 126);
+		else if (ft_strncmp(command, "/", 1) != 0
+			&& ft_strncmp(command, "./", 2) != 0)
+			print_error_and_exit(command, "command not found", 127);
+	}
+	else
+	{
+		if (ft_strncmp(command, "./", 2) == 0)
+			print_error_and_exit(command, "no such file or directory", 127);
+	}
+	return (0);
+}
 
 char	*find_executable(char *command)
 {
 	int		index;
-	char	*path;
 	char	*executable;
 	char	*absolute_path;
 	char	**directories;
-	struct stat	*statbuf;
 
-	// didn't work previously because statbuf wasn't allocated, either this way or on the stack
-	statbuf = (struct stat *)malloc(sizeof(struct stat));
-	if (statbuf == NULL)
-		return (NULL);
-	if (stat(command, statbuf) == 0)
-	{
-		if (S_ISDIR(statbuf->st_mode))
-		{
-			printf("this is a directory: %s\n", command);
-			return (NULL);
-		}
-	}
-	// if (access(command, F_OK) == 0)
-	// {
-	// 	if (ft_strncmp(command, "./", 2) != 0)
-	// 		return (NULL);
-	// 	else
-	// 		return (command);
-	// }
+	command_check(command);
+	if (access(command, F_OK | X_OK) == 0)
+		return (command);
 	index = 0;
-	path = get_var("PATH");
-	directories = ft_split(path, ':');
-	if (directories == NULL)
-		return (NULL);
-	// free(path);
+	if (get_var("PATH") == NULL)
+		return (command);
+	directories = ft_split(get_var("PATH"), ':');
+	// if (directories == NULL)
+	// 	return (NULL);
 	executable = ft_strjoin("/", command);
 	while (directories[index] != NULL)
 	{
@@ -110,7 +105,6 @@ char	*find_executable(char *command)
 		{
 			ft_free((void **)&executable);
 			ft_free((void **)&directories);
-			// ft_free((void **)&command);
 			return (absolute_path);
 		}
 		ft_free((void **)&absolute_path);
