@@ -14,11 +14,6 @@ void	filestream_operations(int *initial_stdin, int *initial_stdout, int mode)
 		dup2(*initial_stdin, STDIN_FILENO);
 		dup2(*initial_stdout, STDOUT_FILENO);
 	}
-	else if (mode == 3)
-	{
-		close(*initial_stdin);
-		close(*initial_stdout);
-	}
 }
 
 int	pipe_found(t_table **table, int **pipe_ends)
@@ -183,7 +178,6 @@ int	open_files(t_table **table, int *status)
 		send_null_to_stdin();
 		return (-1);
 	}
-	printf("%d : %s\n", (*table)->redirections->type, (*table)->redirections->name);
 	if ((*table)->redirections->type == IN)
 		dup2(fd, STDIN_FILENO);
 	else
@@ -194,30 +188,33 @@ int	open_files(t_table **table, int *status)
 
 void	execute_child(t_table **table, int *status)
 {
+	char			*copy;
 	char			*command;
-	struct stat		statbuf;
 
+	if ((*table)->arguments == NULL)
+		exit(*status);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	change_attributes(true);
-	if ((*table)->arguments == NULL)
-		exit(*status);
+	copy = ft_strdup((*table)->arguments[0]);
 	if (check_builtins((*table)->arguments))
 	{
 		builtins((*table)->arguments);
 		exit(g_msh.exit_code);
 	}
-	command = find_executable((*table)->arguments[0]);
+	if ((*table)->arguments != NULL)
+		command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
-	if (stat(command, &statbuf) == 0)
+	write(2, command, ft_strlen(command));
+	write(2, ": ", 2);
+	if (access(command, F_OK) == 0)
 	{
-		put_stderr(SHELL, (*table)->arguments[0], NULL, "permission denied");
-		ft_free((void **)&command);
+		if (access(command, X_OK) != 0)
+			write(2, "minishell: permission denied\n", 29);
 		exit(126);
 	}
 	else
-		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found2");
-	ft_free((void **)&command);
+		write(2, "minishell: command not found\n", 29);
 	exit(127);
 }
 
@@ -343,7 +340,48 @@ void	simple_command(t_table *table)
 			execute_child(&table, &status);
 	}
 	wait_for_last(process_id, initial_stdin, initial_stdout);
-	filestream_operations(&initial_stdin, &initial_stdout, 3);
+}
+
+// void	simple_command(t_table *table)
+// {
+// 	int		initial_stdin;
+// 	int		initial_stdout;
+// 	pid_t	process_id;
+	
+// 	if (check_builtins(table->arguments))
+// 	{
+// 		execute_redirections(&table);
+// 		builtins(table->arguments);
+// 		filestream_operations(&initial_stdin, &initial_stdout, 2);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		if (own_fork(&process_id) == -1)
+// 			return ;
+// 		if (process_id == 0)
+// 		{
+// 			execute_redirections(&table);
+// 			execute_child(&table);
+// 		}
+// 	}
+// 	wait_for_last(process_id, initial_stdin, initial_stdout);
+// }
+
+int	print_execution(t_table *table)
+{
+	if (table == NULL)
+		return (-1);
+	while (table != NULL)
+	{
+		while (table->redirections != NULL)
+		{
+			printf("%d: %s\n", table->redirections->type, table->redirections->name);
+			table->redirections = table->redirections->next;
+		}
+		table = table->next;
+	}
+	return (1);
 }
 
 void	execute_pipeline(t_table *table)
@@ -371,8 +409,6 @@ void	execute_pipeline(t_table *table)
 		table = table->next;
 	}
 	wait_for_all(process_id, initial_stdin, initial_stdout);
-	free(pipe_ends);
-	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
 void	executioner(t_table *table)

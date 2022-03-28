@@ -26,8 +26,6 @@ char	**array_append_array(char **first, char **second)
 		ft_free_array(&second);
 	return (new_array);
 }
-
-
 char	*str_append_char(char *string, char c)
 {
 	int			index;
@@ -35,7 +33,14 @@ char	*str_append_char(char *string, char c)
 	char		*new;
 
 	if (string == NULL)
-		ft_chrdup(c);
+	{
+		new = (char *)malloc(2 * sizeof(char));
+		if (new == NULL)
+		return (NULL);
+		new[0] = c;
+		new[1] = '\0';
+		return (new);
+	}
 	index = 0;
 	str_len = ft_strlen(string);
 	new = (char *)malloc((str_len + 2) * sizeof(char));
@@ -60,20 +65,26 @@ void	print_error_and_exit(char *command, char *message, int exit_code)
 	write(2, ": ",2);
 	write(2, message, ft_strlen(message));
 	write(2, "\n", 1);
+	ft_free((void **)&command);
 	exit(exit_code);
 }
 
 int	command_check(char *command)
 {
-	struct stat		statbuf;
+	int				status;
+	struct stat		*statbuf;
 
-	if (stat(command, &statbuf) == 0)
+	status = 0;
+	statbuf = (struct stat *)malloc(sizeof(struct stat));
+	if (statbuf == NULL)
+		return (-1);
+	if (stat(command, statbuf) == 0)
 	{
-		if (S_ISDIR(statbuf.st_mode))
+		if (S_ISDIR(statbuf->st_mode))
 			print_error_and_exit(command, "is a directory", 126);
 		else if (ft_strncmp(command, "/", 1) != 0
 			&& ft_strncmp(command, "./", 2) != 0)
-			print_error_and_exit(command, "command not found1", 127);
+			print_error_and_exit(command, "command not found\n", 127);
 	}
 	else
 	{
@@ -93,13 +104,13 @@ char	*find_executable(char *command)
 
 	command_check(command);
 	if (access(command, F_OK) == 0)
-		return (ft_strdup(command));
+		return (command);
 	index = 0;
 	path = get_var("PATH");
 	if (path == NULL)
-		return (NULL);
+		return (command);
 	directories = ft_split(path, ':');
-	ft_free((void**)&path);
+	ft_free((void **)&path);
 	if (directories == NULL)
 		return (NULL);
 	executable = ft_strjoin("/", command);
@@ -109,13 +120,13 @@ char	*find_executable(char *command)
 		if (access(absolute_path, F_OK) == 0)
 		{
 			ft_free((void **)&executable);
-			ft_free_array(&directories);
+			ft_free((void **)&directories);
 			return (absolute_path);
 		}
 		ft_free((void **)&absolute_path);
 		index++;
 	}
 	ft_free((void **)&executable);
-	ft_free_array(&directories);
+	ft_free((void **)&directories);
 	return (command);
 }

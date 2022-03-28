@@ -23,7 +23,6 @@ void	*lexer(char const *line)
 		else
 			i++;
 	}
-	ft_free((void **)&line);
 	return (tokens);
 }
 

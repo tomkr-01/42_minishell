@@ -43,8 +43,7 @@ char	*heredoc_get_next_line(char **limiter)
 	char	*here_string;
 
 	signal(SIGINT, &heredoc_signals);
-	here_string = NULL;
-	*limiter = ft_strjoin_free(*limiter, ft_strdup("\n"));
+	*limiter = ft_strjoin(*limiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
@@ -54,9 +53,10 @@ char	*heredoc_get_next_line(char **limiter)
 			ft_free((void **)&line);
 			break ;
 		}
-		here_string = ft_strjoin_free(here_string, line);
+		here_string = ft_strjoin(here_string, line);
 		if (here_string == NULL)
 			break ;
+		ft_free((void **)&line);
 	}
 	return (here_string);
 }
@@ -77,10 +77,10 @@ char	*heredoc_readline(char **limiter)
 			ft_free((void **)&line);
 			break ;
 		}
-		line = ft_strjoin_free(line, ft_strdup("\n"));
-		here_string = ft_strjoin_free(here_string, line);;
+		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));;
 		if (here_string == NULL)
 			break ;
+		ft_free((void **)&line);
 	}
 	return (here_string);
 }
@@ -111,8 +111,35 @@ void	heredoc(char **token_content)
 		close(fd);
 	close(fd);
 	if (expansion)
-		*token_content = expander(*token_content, false);
+		*token_content = expander(*token_content, true);
 }
+
+// int	append_redirection(t_redirection **lst, t_list *token, int redir_type)
+// {
+// 	t_redirection	*tmp;
+// 	t_redirection	*new_redirection;
+
+// 	tmp = *lst;
+// 	if (redir_type == HEREDOC)
+// 	{
+// 		heredoc(&token->content);
+// 		if (token->content == NULL)
+// 			return (-1);
+// 	}
+// 	new_redirection = create_redirection(redir_type, token->content);
+// 	if (tmp == NULL)
+// 	{
+// 		tmp = new_redirection;
+// 		return (0);
+// 	}
+// 	if (new_redirection == NULL)
+// 		return (-1);
+// 	while (tmp->next != NULL)
+// 		tmp = tmp->next;
+// 	new_redirection->next = tmp->next;
+// 	tmp->next = new_redirection;
+// 	return (0);
+// }
 
 int	append_redirection(t_redirection **redir, t_list *token, int redir_type)
 {
@@ -237,29 +264,10 @@ void	parse_command(t_list **token, t_table **table)
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
 		// ft_free_array(&argument_list);
 	}
-	free(expanded_string);
 	return ;
 }
 
-int	print_table(t_table **head)
-{
-	t_table		*start;
-
-	printf("printing after parsing:\n");
-	start = *head;
-	while (start != NULL)
-	{
-		while (start->redirections != NULL)
-		{
-			printf("%s\n", start->redirections->name);
-			start->redirections = start->redirections->next;
-		}
-		start = start->next;
-	}
-	return (0);
-}
-
-void	free_command_table(t_table *table)
+void	free_parser(t_table *table)
 {
 	t_table			*head;
 	t_table			*next;
@@ -277,11 +285,11 @@ void	free_command_table(t_table *table)
 			table->redirections = table->redirections->next;
 		}
 		free(redir_head);
-		ft_free_array(&table->arguments);
+		// ft_free_array(&table->arguments);
+		table->arguments = NULL;
 		table = table->next;
 	}
 	free(head);
-	head = NULL;
 }
 
 t_table	*parser(t_list *token)
@@ -289,13 +297,11 @@ t_table	*parser(t_list *token)
 	int				type;
 	t_table			*head;
 	t_table			*table;
-	t_table			*copy;
 
 	table = create_table_row();
 	if (table == NULL)
 		return (NULL);
 	head = table;
-	copy = table;
 	while (token != NULL)
 	{
 		type = 0;
