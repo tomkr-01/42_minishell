@@ -14,6 +14,11 @@ void	filestream_operations(int *initial_stdin, int *initial_stdout, int mode)
 		dup2(*initial_stdin, STDIN_FILENO);
 		dup2(*initial_stdout, STDOUT_FILENO);
 	}
+	else if (mode == 3)
+	{
+		close(*initial_stdin);
+		close(*initial_stdout);
+	}
 }
 
 int	pipe_found(t_table **table, int **pipe_ends)
@@ -340,6 +345,7 @@ void	simple_command(t_table *table)
 			execute_child(&table, &status);
 	}
 	wait_for_last(process_id, initial_stdin, initial_stdout);
+	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
 // void	simple_command(t_table *table)
@@ -409,6 +415,7 @@ void	execute_pipeline(t_table *table)
 		table = table->next;
 	}
 	wait_for_all(process_id, initial_stdin, initial_stdout);
+	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
 void	executioner(t_table *table)

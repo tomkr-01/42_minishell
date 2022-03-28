@@ -84,7 +84,7 @@ int	command_check(char *command)
 			print_error_and_exit(command, "is a directory", 126);
 		else if (ft_strncmp(command, "/", 1) != 0
 			&& ft_strncmp(command, "./", 2) != 0)
-			print_error_and_exit(command, "command not found\n", 127);
+			print_error_and_exit(command, "command not found", 127);
 	}
 	else
 	{
