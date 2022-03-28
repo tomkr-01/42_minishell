@@ -2,12 +2,11 @@
 
 extern t_minishell	g_msh;
 
-size_t	next_exp(char *token);
-int		valid_exp_char(int c, bool first_char);
+size_t	next_exp(char *token, size_t pos);
 char	*get_varname(char *token);
 char	*expand_varname(char *varname);
 
-char	*expansion(char *token, bool unquote)
+char	*expander(char *token, bool unquote)
 {
 	char	*expanded;
 	char	*one;
@@ -18,170 +17,58 @@ char	*expansion(char *token, bool unquote)
 	two = NULL;
 	expanded = NULL;
 	i = 0;
-	while (token != NULL && token[i] != '\0')
+	while (token != NULL && i < ft_strlen(token))
 	{
 		expanded = ft_strjoin_free(expanded,
-				ft_substr(token, 0, next_exp(token)));
-		token = ft_substr_free(token,
-				next_exp(token), ft_strlen(token));
+				ft_substr(token, i, next_exp(token, i) - i));
+		i = next_exp(token, i);
 		expanded = ft_strjoin_free(expanded,
-				expand_varname(get_varname(token)));
-		token = ft_substr_free(token,
-				ft_strlen_free(get_varname(token)) + 1, ft_strlen(token));
+				expand_varname(get_varname(&token[next_exp(token, i)])));
+		i += ft_strlen_free(get_varname(&token[next_exp(token, i)]));
 	}
-	one = ft_strdup(expanded);
-	// printf("with quotes: %s | %d\n", one, ft_strlen(one));
-	if (unquote)
-		return (quote_remover(expanded));
-	return (expanded);
-}
-
-// you have probably split the expander in two files because
-// of the 3 functions below
-
-char	*without_quotes(char *token, int *index, int old_index)
-{
-	char	*string;
-
-	while (token[*index] != '\0' && token[*index] != '\'' && token[*index] != '\"')
-		*index += 1;
-	string = ft_substr(token, old_index, *index - old_index);
-	*index -= 1;
-	return (string);
-}
-
-char	*with_quotes(char *token, int *index, int old_index, char c)
-{
-	char	*string;
-
-	*index += 1;
-	while (token[*index] != '\0' && token[*index] != c)
-		*index += 1;
-	string = ft_substr(token, old_index, *index - old_index + 1);
-	// *index += 1;
-	return (string);
-}
-
-char	*expander(char *token, bool unquote)
-{
-	int			index;
-	int			old_index;
-	char		*string;
-	char		*expanded;
-
-	if (token == NULL)
-		return (NULL);
-	index = 0;
-	expanded = NULL;
-	while (token[index] != '\0')
-	{
-		old_index = index;
-		if (token[index] != '\'' && token[index] != '\"')
-			string = without_quotes(token, &index, old_index);
-		else
-			string = with_quotes(token, &index, old_index, token[index]);
-		// printf("%s\n", string);
-		index++;
-		expanded = ft_strjoin_free(expanded, expansion(string, true));
-	}
-	return (expanded);
-}
-
-size_t	next_exp(char *token)
-{
-	size_t	pos;
-
-	pos = 0;
-	while (token != NULL && token[pos] != '\0')
-	{
-		if (token[pos] == '\'')
-		{
-			pos += ft_strchr_int(&token[pos + 1], '\'') + 1;
-		}
-		else if (token[pos] == '"')
-		{
-			while (token[++pos] != '\0' && token[pos] != '"')
-			{
-				if (token[pos] == '$' && valid_exp_char(token[pos + 1], true))
-					return (pos);
-			}
-		}
-		else if (token[pos] == '$' && valid_exp_char(token[pos + 1], true))
-		{
-			return (pos);
-		}
-		if (token[pos] != '\0')
-			pos++;
-	}
-	return (pos);
-}
-
-int	valid_exp_char(int c, bool first_char)
-{
-	if (ft_isalnum(c) || c == '_'
-		|| (first_char == true && (c == '?' || c == '\'' || c == '"')))
-		return (1);
-	return (0);
-}
-
-char	*ft_chrdup(char c)
-{
-	char	*duplicate;
-
-	duplicate = NULL;
-	duplicate = (char *)malloc(2 * sizeof(char));
-	if (duplicate == NULL)
-		return (NULL);
-	duplicate[0] = c;
-	duplicate[1] = '\0';
-	return (duplicate);
+	return (quote_remover(expanded));
 }
 
 char	*get_varname(char *token)
 {
 	size_t	i;
+	size_t	j;
 
 	i = 1;
-	if (token[0] == '\0')
+	if (token == NULL || token[0] != '$')
 		return (NULL);
-	else if (token[1] == '?')
-		return (ft_strdup("?"));
+	if (token[1] == '?')
+		return (ft_strdup("$?"));
 	else if (ft_isdigit(token[1]))
-		return (ft_chrdup(token[1]));
+		return (ft_substr(token, 0, 2));
 	else if (token[1] == '\'' || token[1] == '"')
-		return (ft_substr(token, 1, ft_strchr_int(token + 2, token[1]) + 2));
-	while (valid_exp_char(token[i], false))
+		return (ft_substr(token, 0, ft_strchr_int(token + 2, token[1]) + 1));
+	j = 0;
+	while ((valid_exp_char(token[i], true) && j == 0)
+		|| valid_exp_char(token[i], false))
+	{
 		i++;
-	return (ft_substr(token, 1, i - 1));
+		j++;
+	}
+	return (ft_substr(token, i - j - 1, i));
 }
 
 char	*expand_varname(char *varname)
 {
 	char	*value;
 
-	if (varname == NULL)
+	if (varname == NULL || varname[0] == '\0')
 		return (NULL);
-	else if (ft_strcmp(varname, "?") == 0)
+	else if (ft_strcmp(varname, "$?") == 0)
 		value = ft_itoa(g_msh.exit_code);
-	else if (varname[0] == '\'' || varname[0] == '\"')
-		value = ft_strdup(varname);
+	else if (ft_strlen(varname) == 2 && ft_isdigit(varname[1]))
+		return (NULL);
+	else if (varname[1] == '\'' || varname[1] == '\"')
+		value = ft_strdup(&varname[1]);
 	else
-		value = get_var((const char *)varname);
-	value = ft_strjoin_free(ft_strdup(""), value);
-	value = ft_strjoin_free(value, ft_strdup(""));
+		value = get_var((const char *)&varname[1]);
+	value = ft_strjoin_free(ft_strdup(NULL), value);
+	value = ft_strjoin_free(value, ft_strdup(NULL));
 	ft_free((void **)&varname);
 	return (value);
 }
-
-// int	main(int argc, char *argv[])
-// {
-// 	char	*str;
-// 	char	*expanded;
-
-// 	if (argc < 2)
-// 		return (-1);
-// 	str = ft_strdup(argv[1]);
-// 	expanded = expander(str, true);
-// 	printf("expanded: %s\n", expanded);
-// 	return (0);
-// }

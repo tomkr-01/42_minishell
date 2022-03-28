@@ -9,7 +9,7 @@ SRC_PATH =	./src/
 SRCS	=	main.c signal.c environment.c t_utils.c r_utils.c
 
 # input
-SRCS	+=	lexer.c syntax_check.c expander.c quote_remover.c
+SRCS	+=	lexer.c syntax_check.c expander.c expander_utils.c quote_remover.c
 
 # parser
 SRCS	+=	table.c

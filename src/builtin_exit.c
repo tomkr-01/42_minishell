@@ -1,36 +1,30 @@
 #include "../inc/minishell.h"
 #include <limits.h>
 
-int	ft_is_numeric(char *arguments)
+extern t_minishell g_msh;
+
+int	is_non_numeric(char *arguments)
 {
 	int		index;
-	int		status;
 
 	index = 0;
-	status = 0;
-	if (arguments == NULL)
-		return (1);
-	if (arguments[index] == '\0')
-		status = 1;
-	else if (arguments[index] == '+' || arguments[index] == '-')
-	{
-		if (ft_isdigit(arguments[++index]) == 0)
-			status = 1;
-	}
-	while (arguments[index] != '\0' && status == 0)
-	{
-		if (!ft_isdigit(arguments[index++]) || ft_strlen(arguments) > 19)
-			status = 1;
-	}
-	if (status == 1)
+	if (arguments == NULL || arguments[0] == '\0')
 		return (0);
-	return (1);
+	while (arguments[index] != '\0')
+	{
+		if (index == 0 && (arguments[index] == '+' || arguments[index] == '-'))
+			;
+		else if (!ft_isdigit(arguments[index]))
+			return (1);
+		index++;
+	}
+	return (0);
 }
 
 int	exit_builtin(char **arguments)
 {
 	ft_putendl_fd("exit", STDERR_FILENO);
-	if (!ft_is_numeric(arguments[0]))
+	if (is_non_numeric(arguments[0]))
 	{
 		put_stderr(SHELL, "exit", arguments[0], "numeric argument required");
 		exit((unsigned char)255);
@@ -41,8 +35,9 @@ int	exit_builtin(char **arguments)
 		return (EPERM);
 	}
 	else if (ft_arrlen(arguments) == 1)
-		exit((unsigned char)ft_atoi(arguments[0]));
+	{
+		exit(ft_atoi(arguments[0]));
+	}
 	else
-		exit(EXIT_SUCCESS);
-	return (EXIT_SUCCESS);
+		exit(g_msh.exit_code);
 }

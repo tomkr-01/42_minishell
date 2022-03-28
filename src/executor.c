@@ -109,26 +109,22 @@ void	clear_table_row(t_table **table)
 
 int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 {
-	bool	clear_list;
 	char	*filename_token;
 	char	*expanded_string;
 
-	clear_list = false;
 	filename_token = ft_strdup((*table)->redirections->name);
-	expanded_string = expansion(filename_token, false);
+	expanded_string = expander(filename_token, false);
 	if (ft_strcmp((*table)->redirections->name, expanded_string) != 0)
 	{
 		*file = ft_strtrim_free(expanded_string, " ");
 		if (*file == NULL || *file[0] == '\0' || count(*file, ' ') > 1)
-			clear_list = true;
-		if (clear_list)
+		{
+			put_stderr(SHELL, NULL, (*table)->redirections->name,
+				"ambiguous redirect");
 			clear_table_row(table);
+		}
 		else
 			return (0);
-		// put_stderr causes segfault
-		// put_stderr(SHELL, NULL, (*table)->redirections->name,
-		// 	"ambiguous redirect");
-		printf("ambiguous redirect\n");
 		ft_free((void **)file);
 		*status = 1;
 		return (-1);

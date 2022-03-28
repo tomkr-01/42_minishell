@@ -1,21 +1,5 @@
 #include "../inc/minishell.h"
 
-// msh:
-// $> export hello=textvar
-// $> echo $hello
-// textvar 
-// $> echo $"hello"
-// "hello" 						faulty!!!
-// $> echo $'hello'
-// 'hello'						faulty!!!
-
-// bash:
-// bash-3.2$ export hello=textvar
-// bash-3.2$ echo $"hello"
-// hello
-// bash-3.2$ echo $'hello'
-// hello
-
 size_t	next_quote(char *token, char quote);
 char	*expansion_char_remover(char *token);
 
@@ -39,7 +23,6 @@ char	*quote_remover(char *token)
 		token = ft_substr_free(token,
 				next_quote(token, quote) + 1, ft_strlen(token));
 	}
-	// printf("quotes remove: %s | %d\n", expansion_char_remover(q_removed), ft_strlen(expansion_char_remover(q_removed)));
 	return (expansion_char_remover(q_removed));
 }
 
@@ -53,12 +36,12 @@ size_t	next_quote(char	*token, char quote)
 	{
 		check_str = ft_substr(token, 0, i + 1);
 		if (quote == 0 && (token[i] == '\'' || token[i] == '\"')
-			&& ft_count_char(check_str, '\31') % 2 == 0)
+			&& ft_count_char(check_str, '~') % 2 == 0)
 		{
 			ft_free((void **)&check_str);
 			return (i);
 		}
-		else if (quote == token[i] && ft_count_char(check_str, '\31') % 2 == 0)
+		else if (quote == token[i] && ft_count_char(check_str, '~') % 2 == 0)
 		{
 			ft_free((void **)&check_str);
 			return (i);
@@ -83,7 +66,7 @@ char	*expansion_char_remover(char *token)
 				"hallo"));
 	while (token != NULL && token[i] != '\0')
 	{
-		if (token[i] == '\31')
+		if (token[i] == '~')
 			i++;
 		else
 			c_removed[j++] = token[i++];

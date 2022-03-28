@@ -24,7 +24,7 @@ int	is_valid_identifier(char *argument, int *id_len)
 	while (argument[*id_len] != '=')
 	{
 		// can be replaced by valid_exp_char with first char option turned off
-		if (!ft_isalnum(argument[*id_len]) && argument[*id_len] != '_')
+		if (valid_exp_char(argument[*id_len], false))
 			return (1);
 		*id_len += 1;
 	}
@@ -81,60 +81,11 @@ int	export_builtin(char **arguments)
 			has_assignment(arguments[i], &id_len, &status);
 		else
 		{
-			status = 1;
-			exit_status = EXIT_FAILURE;
-		}
-		if (status == 1)
 			put_stderr(SHELL, "export_builtin", arguments[i],
 				"not a valid identifier");
+			exit_status = EXIT_FAILURE;
+		}
 		i++;
 	}
 	return (exit_status);
 }
-
-// int	export_builtin(char **arguments)
-// {
-// 	size_t	a_i;
-// 	size_t	i;
-
-// 	a_i = 0;
-// 	if (arguments == NULL || arguments[0] == NULL)
-// 	{
-// 		print_enrivonment();
-// 		return (EXIT_SUCCESS);
-// 	}
-// 	while (arguments[a_i] != NULL)
-// 	{
-// 		if (invalid_identifier(arguments[a_i]) == true)
-// 			a_i++;
-// 		i = 0;
-// 		while (g_msh.env[i] != NULL && ft_strncmp(g_msh.env[i], arguments[a_i],
-// 				ft_strchr_int(arguments[a_i], '=') + 1) != 0)
-// 			i++;
-// 		if (g_msh.env[i] != NULL)
-// 			g_msh.env[i] = ft_strdup(arguments[a_i]);
-// 		else
-// 			g_msh.env = add_array_element(g_msh.env, arguments[a_i]);
-// 		a_i++;
-// 	}
-// 	return (EXIT_SUCCESS);
-// }
-
-// bool	invalid_identifier(char *variable)
-// {
-// 	size_t	i;
-
-// 	i = 0;
-// 	if (ft_strchr(variable, '=') == NULL)
-// 		return (true);
-// 	while (variable[i] != '=')
-// 	{
-// 		if (valid_exp_char(variable[i], false) == false)
-// 		{
-// 			put_stderr(SHELL, "export_builtin", variable, "not a valid identifier");
-// 			return (true);
-// 		}
-// 		i++;
-// 	}
-// 	return (false);
-// }
