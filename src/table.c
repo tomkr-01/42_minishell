@@ -255,15 +255,22 @@ void	parse_command(t_list **token, t_table **table)
 
 	argument_list = NULL;
 	expanded_string = expander(ft_strdup((*token)->content), true);
-	if (((*table)->arguments != NULL && check_builtins((*table)->arguments))
-			|| count(expanded_string, ' ') == 1)
-		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
-	else if (count(expanded_string, ' ') > 1)
+	if ((*table)->arguments == NULL)
 	{
 		argument_list = ft_split(expanded_string, ' ');
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
-		// ft_free_array(&argument_list);
 	}
+	else
+		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
+	// if (((*table)->arguments != NULL && check_builtins((*table)->arguments))
+	// 		|| count(expanded_string, ' ') == 1)
+	// 	(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
+	// else if (count(expanded_string, ' ') > 1)
+	// {
+	// 	argument_list = ft_split(expanded_string, ' ');
+	// 	(*table)->arguments = array_append_array((*table)->arguments, argument_list);
+	// 	// ft_free_array(&argument_list);
+	// }
 	return ;
 }
 
