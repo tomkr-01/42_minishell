@@ -9,7 +9,7 @@ SRC_PATH =	./src/
 SRCS	=	main.c signal.c environment.c t_utils.c r_utils.c
 
 # input
-SRCS	+=	lexer.c syntax_check.c expander.c quote_remover.c
+SRCS	+=	lexer.c syntax_check.c expander.c expander_utils.c quote_remover.c
 
 # parser
 SRCS	+=	table.c
@@ -25,12 +25,12 @@ OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
 LIBFT	=	-L./libs/libft libs/libft/libft.a
 # iMac
-# READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
-# READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
+READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
+READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
 # Macbook
-READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
-READLINE2	=	-I/opt/homebrew/opt/readline/include
-LIBS	=	$(LIBFT) $(READLINE) $(READLINE2)
+# READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
+# READLINE2	=	-I/opt/homebrew/opt/readline/include
+LIBS	=	$(LIBFT) $(READLINE)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
 

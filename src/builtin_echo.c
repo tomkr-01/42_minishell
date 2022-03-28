@@ -11,9 +11,9 @@ int	echo_builtin(char **arguments)
 	while (arguments != NULL && arguments[++i] != NULL)
 	{
 		j = 0;
-		while (arguments[i][0] == '-' && arguments[i][j + 1] == 'n')
-			j++;
-		if (arguments[i][j] == '\0' && new_line > 0 && j > 1)
+		while (arguments[i][0] == '-' && arguments[i][++j] == 'n')
+			;
+		if (arguments[i][j] == '\0' && new_line > 0 && j > 0)
 			new_line = 2;
 		else
 		{

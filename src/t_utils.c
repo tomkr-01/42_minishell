@@ -77,5 +77,7 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 // or at the end after an command was executed
 void	del_content(void *ptr)
 {
+	if (ptr != NULL)
+		free(ptr);
 	ptr = NULL;
 }

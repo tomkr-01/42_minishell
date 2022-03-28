@@ -96,18 +96,19 @@ void	heredoc(char **token_content)
 	fd = dup(STDIN_FILENO);
 	expansion = false;
 	delimiter_copy = ft_strdup(*token_content);
-	limiter = quote_remover(*token_content);
+	limiter = quote_remover(ft_strdup(*token_content));
 	if (ft_strcmp(delimiter_copy, limiter) == 0)
 		expansion = true;
+	ft_free((void **)&delimiter_copy);
 	if (isatty(STDIN_FILENO))
 		*token_content = heredoc_readline(&limiter);
 	else
 		*token_content = heredoc_get_next_line(&limiter);
+	ft_free((void **)&limiter);
 	if (close(STDIN_FILENO) == -1)
-		*token_content = NULL;
+		ft_free((void**)token_content);
 	if (dup2(fd, STDIN_FILENO) == -1)
 		close(fd);
-	// dup2(fd, STDIN_FILENO);
 	close(fd);
 	if (expansion)
 		*token_content = expander(*token_content, true);
@@ -253,7 +254,7 @@ void	parse_command(t_list **token, t_table **table)
 	char	**argument_list;
 
 	argument_list = NULL;
-	expanded_string = expander((*token)->content, true);
+	expanded_string = expander(ft_strdup((*token)->content), true);
 	if (((*table)->arguments != NULL && check_builtins((*table)->arguments))
 			|| count(expanded_string, ' ') == 1)
 		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
@@ -261,27 +262,34 @@ void	parse_command(t_list **token, t_table **table)
 	{
 		argument_list = ft_split(expanded_string, ' ');
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
-		ft_free_array(&argument_list);
+		// ft_free_array(&argument_list);
 	}
 	return ;
 }
 
-int	print_table(t_table **head)
+void	free_parser(t_table *table)
 {
-	t_table		*start;
+	t_table			*head;
+	t_table			*next;
+	t_redirection	*redir_head;
+	t_redirection	*redir_next;
 
-	printf("printing after parsing:\n");
-	start = *head;
-	while (start != NULL)
+	head = table;
+	while (table != NULL)
 	{
-		while (start->redirections != NULL)
+		redir_head = table->redirections;
+		while (table->redirections != NULL)
 		{
-			printf("%s\n", start->redirections->name);
-			start->redirections = start->redirections->next;
+			free(table->redirections->name);
+			table->redirections->name = NULL;
+			table->redirections = table->redirections->next;
 		}
-		start = start->next;
+		free(redir_head);
+		// ft_free_array(&table->arguments);
+		table->arguments = NULL;
+		table = table->next;
 	}
-	return (0);
+	free(head);
 }
 
 t_table	*parser(t_list *token)
@@ -311,5 +319,6 @@ t_table	*parser(t_list *token)
 			parse_command(&token, &table);
 		token = token->next;
 	}
+	ft_lstclear(&token, &del_content);
 	return (head);
 }
