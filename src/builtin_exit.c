@@ -1,6 +1,9 @@
 #include "../inc/minishell.h"
 #include <limits.h>
 
+// what the actual fuck?!
+
+
 extern t_minishell g_msh;
 
 int	is_non_numeric(char *arguments)
