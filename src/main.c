@@ -18,7 +18,7 @@ void	handle_input(char *line)
 	command_table = parser(tokens);
 	executioner(command_table);
 	if (command_table != NULL)
-		free_command_table(command_table);
+		; // free_command_table(command_table);
 	else if (tokens != NULL)
 		ft_lstclear(&tokens, &del_content);
 }

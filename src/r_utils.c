@@ -6,20 +6,23 @@ char	**array_append_array(char **first, char **second)
 	int		j;
 	char	**new_array;
 
-	i = -1;
+	i = 0;
 	j = -1;
 	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
 			* sizeof(char *));
 	if (new_array == NULL)
 		return (NULL);
-	while (first != NULL && first[++i] != NULL)
+	while (first != NULL && first[i] != NULL)
+	{
 		new_array[i] = ft_strdup(first[i]);
+		i++;
+	}
 	while (second != NULL && second[++j] != NULL)
 		new_array[i + j] = ft_strdup(second[j]);
 	new_array[i + j] = NULL;
 	if (first != NULL)
 		ft_free_array(&first);
-	if (second != NULL);
+	if (second != NULL)
 		ft_free_array(&second);
 	return (new_array);
 }
