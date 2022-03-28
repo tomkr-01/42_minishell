@@ -1,5 +1,7 @@
 #include "../inc/minishell.h"
 
+extern t_minishell g_msh;
+
 void	handle_input(char *line)
 {
 	t_list		*tokens;
@@ -54,7 +56,7 @@ int	main(int argc, char *argv[], char **envp)
 			if (isatty(STDERR_FILENO))
 				write(STDERR_FILENO, "exit\n", 5);
 			change_attributes(true);
-			return (-1);
+			return (g_msh.exit_code);
 		}
 		handle_input(line);
 	}

@@ -1,6 +1,8 @@
 #include "../inc/minishell.h"
 #include <limits.h>
 
+extern t_minishell g_msh;
+
 int	is_non_numeric(char *arguments)
 {
 	int		index;
@@ -37,5 +39,5 @@ int	exit_builtin(char **arguments)
 		exit(ft_atoi(arguments[0]));
 	}
 	else
-		exit(EXIT_SUCCESS);
+		exit(g_msh.exit_code);
 }
