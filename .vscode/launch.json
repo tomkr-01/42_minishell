@@ -8,7 +8,7 @@
 			"name": "gcc - Aktive Datei erstellen und debuggen",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "/Users/rjasari/Desktop/42_minishell/src/a.out",
+			"program": "/Users/rjasari/Desktop/42_minishell/a.out",
 			"args": ["PATH"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",

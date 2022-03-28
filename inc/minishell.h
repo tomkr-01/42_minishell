@@ -57,6 +57,12 @@ typedef struct s_table {
 	struct s_table			*next;
 }			t_table;
 
+typedef struct s_quotes
+{
+	int	s;
+	int	d;
+}	t_quotes;
+
 /* ************************************************************************** */
 /* FUNCTION PROTOTYPES														  */
 /* ************************************************************************** */
