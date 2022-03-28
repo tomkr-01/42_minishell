@@ -7,11 +7,6 @@ int		valid_exp_char(int c, bool first_char);
 char	*get_varname(char *token);
 char	*expand_varname(char *varname);
 
-// run with this command!!!
-// echo "$PWD"'$USER'"$USER""'$PWD'"
-
-void	print_int_codes(char *str);
-
 char	*expander(char *token, bool unquote)
 {
 	char	*expanded;
@@ -25,82 +20,89 @@ char	*expander(char *token, bool unquote)
 	i = 0;
 	while (token != NULL && i < ft_strlen(token))
 	{
-		expanded = ft_strjoin_free(expanded, ft_substr(token, i, next_exp(token, i, true) - i));
+		expanded = ft_strjoin_free(expanded,
+				ft_substr(token, i, next_exp(token, i, true) - i));
 		i = next_exp(token, i, false);
-		expanded = ft_strjoin_free(expanded, expand_varname(get_varname(&token[next_exp(token, i, true)])));
+		expanded = ft_strjoin_free(expanded,
+				expand_varname(get_varname(&token[next_exp(token, i, true)])));
 		i += ft_strlen_free(get_varname(&token[next_exp(token, i, false)]));
 	}
-	char * q_removed = quote_remover(expanded);
-	// print_int_codes(q_removed);
-	return (q_removed);
+	return (quote_remover(expanded));
 }
 
-void	print_int_codes(char *str)
+typedef struct s_quotes
 {
-	size_t	i;
+	int	s = -1;
+	int	d = -1;
+}	t_quotes;
+
+t_quotes	set_quotes(char *token, size_t pos)
+{
+	size_t		i;
+	t_quotes	q;
 
 	i = 0;
-	while (str[i] != '\0')
+	while (token != NULL && token[i] != '\0' && i < pos)
 	{
-		printf("%i ", str[i++]);
+		if (token[i] == '\'' && q.d < 0)
+			q.s *= -1;
+		if (token[i] == '\"' && q.s < 0)
+			q.d *= -1;
+		i++;
+	}
+	return (q);
+}
+
+void	expand_single_quotes(size_t *pos, t_quotes *q)
+{
+	pos++;
+	if (q.s > 0)
+		q.s = -1;
+	else
+	{	
+		while (token[pos] != '\0' && token[pos] != '\'')
+			pos++;
+		pos++;
+	}
+}
+
+void	expand_double_quotes(size_t *pos, t_quotes *q)
+{
+	pos++;
+	if (q.d > 0)
+		q.d = -1;
+	else
+	{
+		while (token[pos] != '\0' && token[pos] != '\"')
+		{
+			if (token[pos] == '$' && valid_exp_char(token[pos + 1], true))
+				return (pos);
+			pos++;
+		}
+		pos++;
 	}
 }
 
 size_t	next_exp(char *token, size_t pos, bool print)
 {
-	size_t	i;
-	int		s;
-	int		d;
+	size_t		i;
+	t_quotes	q;
 
 	i = 0;
-	s = -1;
-	d = -1;
-	while (token != NULL && token[i] != '\0' && i < pos)
-	{
-		if (token[i] == '\'' && d < 0)
-		{
-			s *= -1;
-		}
-		if (token[i] == '\"' && s < 0)
-		{
-			d *= -1;
-		}
-		i++;
-	}
+	q = set_quotes(token, pos);
 	while (token != NULL && pos < ft_strlen(token))
 	{
-		if (token[pos] == '\'' && d < 0)
+		if (token[pos] == '\'' && q.d < 0)
 		{
-			pos++;
-			if (s > 0)
-				s = -1;
-			else
-			{	
-				while (token[pos] != '\0' && token[pos] != '\'')
-					pos++;
-				pos++;
-			}
+			expand_single_quotes(&pos, &q);
 		}
-		else if (token[pos] == '\"' && s < 0)
+		else if (token[pos] == '\"' && q.s < 0)
 		{
-			pos++;
-			if (d > 0)
-				d = -1;
-			else
-			{
-				while (token[pos] != '\0' && token[pos] != '\"')
-				{
-					if (token[pos] == '$' && valid_exp_char(token[pos + 1], true))
-					{
-						return (pos);
-					}
-					pos++;
-				}
-				pos++;
-			}
+			expand_double_quotes(&pos, &q);
 		}
-		else if (token[pos] == '$' && valid_exp_char(token[pos + 1], true) && (s < 0))
+		else if (token[pos] == '$' && valid_exp_char(token[pos + 1], true)
 		{
+			&& q.s < 0)
 			return (pos);
 		}
 		else
@@ -111,22 +113,11 @@ size_t	next_exp(char *token, size_t pos, bool print)
 
 int	valid_exp_char(int c, bool first_char)
 {
-	if (ft_isalpha(c) || c == '_' || (first_char == true && (c == '?' || c == '\'' || c == '"')) || (first_char == false && ft_isdigit(c)))
+	if (ft_isalpha(c) || c == '_'
+		|| (first_char == true && (c == '?' || c == '\'' || c == '"'))
+		|| (first_char == false && ft_isdigit(c)))
 		return (1);
 	return (0);
-}
-
-char	*ft_chrdup(char c)
-{
-	char	*duplicate;
-
-	duplicate = NULL;
-	duplicate = (char *)malloc(2 * sizeof(char));
-	if (duplicate == NULL)
-		return (NULL);
-	duplicate[0] = c;
-	duplicate[1] = '\0';
-	return (duplicate);
 }
 
 char	*get_varname(char *token)
@@ -168,16 +159,3 @@ char	*expand_varname(char *varname)
 	ft_free((void **)&varname);
 	return (value);
 }
-
-// int	main(int argc, char *argv[])
-// {
-// 	char	*str;
-// 	char	*expanded;
-
-// 	if (argc < 2)
-// 		return (-1);
-// 	str = ft_strdup(argv[1]);
-// 	expanded = expander(str, true);
-// 	printf("expanded: %s\n", expanded);
-// 	return (0);
-// }

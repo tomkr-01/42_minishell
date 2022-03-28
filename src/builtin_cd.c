@@ -5,9 +5,14 @@ int		export_builtin(char **arguments);
 int	cd_builtin(char **arguments)
 {
 	char	**export_pwds;
+	char	*home_dir;
 
 	if (arguments[0] == NULL)
-		chdir(get_var("HOME"));
+	{
+		home_dir = get_var("HOME");
+		chdir(home_dir);
+		ft_free((void **)&home_dir);
+	}
 	else if (chdir(arguments[0]))
 	{
 		put_stderr(SHELL, "cd", arguments[0], strerror(ENOENT));

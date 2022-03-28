@@ -11,3 +11,5 @@ int	pwd_builtin(char **arguments)
 	ft_free((void **)&pwd);
 	return (EXIT_SUCCESS);
 }
+
+// what does the if condition in line 7 do??

@@ -30,7 +30,7 @@ LIBFT	=	-L./libs/libft libs/libft/libft.a
 # Macbook
 READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
 READLINE2	=	-I/opt/homebrew/opt/readline/include
-LIBS	=	$(LIBFT) $(READLINE)
+LIBS	=	$(LIBFT) $(READLINE) $(READLINE2)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
 
