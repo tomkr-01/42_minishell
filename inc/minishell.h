@@ -103,5 +103,7 @@ char	*find_executable(char *command);
 void	executioner(t_table *table);
 int		count(const char *s, char c);
 char	*str_append_char(char *string, char c);
+char	*expansion(char *token, bool unquote);
+void	free_parser(t_table *table);
 
 #endif

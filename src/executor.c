@@ -93,11 +93,13 @@ void	clear_table_row(t_table **table)
 	}
 	// if ((*table)->arguments != NULL)
 	// 	ft_free_array2((*table)->arguments);
-	if ((*table)->arguments != NULL)
-	{
-		free((*table)->arguments);
-		(*table)->arguments = NULL;
-	}
+	ft_free_array(&(*table)->arguments);
+	(*table)->arguments = NULL;
+	// if ((*table)->arguments != NULL)
+	// {
+	// 	free((*table)->arguments);
+	// 	(*table)->arguments = NULL;
+	// }
 }
 
 int	is_ambiguous_redirect(t_table **table, char **file, int *status)
@@ -108,21 +110,20 @@ int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 
 	clear_list = false;
 	filename_token = ft_strdup((*table)->redirections->name);
-	expanded_string = expander(filename_token, false);
+	expanded_string = expansion(filename_token, false);
 	if (ft_strcmp((*table)->redirections->name, expanded_string) != 0)
 	{
-		*file = ft_strtrim(expanded_string, " ");
-		// ft_free((void **)expanded_string);
-		if (*file == NULL || *file[0] == '\0')
-			clear_list = true;
-		if (count(*file, ' ') > 1)
+		*file = ft_strtrim_free(expanded_string, " ");
+		if (*file == NULL || *file[0] == '\0' || count(*file, ' ') > 1)
 			clear_list = true;
 		if (clear_list)
 			clear_table_row(table);
 		else
 			return (0);
-		write(2, "minishell: ambiguous redirect\n", 30);
-		// write(2, (*table)->redirections->name, ft_strlen((*table)->redirections->name));
+		// put_stderr causes segfault
+		// put_stderr(SHELL, NULL, (*table)->redirections->name,
+		// 	"ambiguous redirect");
+		printf("ambiguous redirect\n");
 		ft_free((void **)file);
 		*status = 1;
 		return (-1);
@@ -157,15 +158,13 @@ static void	send_null_to_stdin(void)
 	}
 }
 
-int	open_files(t_table **table, int *is_ambiguous)
+int	open_files(t_table **table, int *status)
 {
 	int			fd;
-	int			status;
 	char		*file;
 
 	file = NULL;
-	status = is_ambiguous_redirect(table, &file, is_ambiguous);
-	if (status == -1)
+	if (is_ambiguous_redirect(table, &file, status) == -1)
 		return (-1);
 	if ((*table)->redirections->type == IN)
 		fd = open(file, O_RDONLY);
