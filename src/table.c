@@ -111,7 +111,7 @@ void	heredoc(char **token_content)
 		close(fd);
 	close(fd);
 	if (expansion)
-		*token_content = expander(*token_content, true);
+		*token_content = expander(*token_content, false);
 }
 
 // int	append_redirection(t_redirection **lst, t_list *token, int redir_type)

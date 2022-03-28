@@ -26,7 +26,9 @@ char	*expander(char *token, bool unquote)
 				expand_varname(get_varname(&token[next_exp(token, i)])));
 		i += ft_strlen_free(get_varname(&token[next_exp(token, i)]));
 	}
-	return (quote_remover(expanded));
+	if (unquote)
+		return (quote_remover(expanded));
+	return (expanded);
 }
 
 char	*get_varname(char *token)

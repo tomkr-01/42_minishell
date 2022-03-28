@@ -111,5 +111,6 @@ int		count(const char *s, char c);
 char	*str_append_char(char *string, char c);
 char	*expansion(char *token, bool unquote);
 void	free_parser(t_table *table);
+size_t	next_exp(char *token, size_t pos);
 
 #endif

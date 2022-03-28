@@ -11,8 +11,10 @@ int	is_non_numeric(char *arguments)
 	int		index;
 
 	index = 0;
-	if (arguments == NULL || arguments[0] == '\0')
+	if (arguments == NULL)
 		return (0);
+	if (arguments[0] == '\0')
+		return (1);
 	while (arguments[index] != '\0')
 	{
 		if (index == 0 && (arguments[index] == '+' || arguments[index] == '-'))

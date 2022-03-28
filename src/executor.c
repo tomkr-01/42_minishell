@@ -177,7 +177,8 @@ int	open_files(t_table **table, int *status)
 	{
 		perror(file);
 		send_null_to_stdin();
-		return (-1);
+		clear_table_row(table);
+		return ((*status = 1) * -1);
 	}
 	if ((*table)->redirections->type == IN)
 		dup2(fd, STDIN_FILENO);
