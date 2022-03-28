@@ -60,7 +60,6 @@ void	print_error_and_exit(char *command, char *message, int exit_code)
 	write(2, ": ",2);
 	write(2, message, ft_strlen(message));
 	write(2, "\n", 1);
-	ft_free((void **)&command);
 	exit(exit_code);
 }
 
@@ -74,7 +73,7 @@ int	command_check(char *command)
 			print_error_and_exit(command, "is a directory", 126);
 		else if (ft_strncmp(command, "/", 1) != 0
 			&& ft_strncmp(command, "./", 2) != 0)
-			print_error_and_exit(command, "command not found", 127);
+			print_error_and_exit(command, "command not found1", 127);
 	}
 	else
 	{
@@ -87,19 +86,22 @@ int	command_check(char *command)
 char	*find_executable(char *command)
 {
 	int		index;
+	char	*path;
 	char	*executable;
 	char	*absolute_path;
 	char	**directories;
 
 	command_check(command);
-	if (access(command, F_OK | X_OK) == 0)
-		return (command);
+	if (access(command, F_OK) == 0)
+		return (ft_strdup(command));
 	index = 0;
-	if (get_var("PATH") == NULL)
-		return (command);
-	directories = ft_split(get_var("PATH"), ':');
-	// if (directories == NULL)
-	// 	return (NULL);
+	path = get_var("PATH");
+	if (path == NULL)
+		return (NULL);
+	directories = ft_split(path, ':');
+	ft_free((void**)&path);
+	if (directories == NULL)
+		return (NULL);
 	executable = ft_strjoin("/", command);
 	while (directories[index] != NULL)
 	{
@@ -107,13 +109,13 @@ char	*find_executable(char *command)
 		if (access(absolute_path, F_OK) == 0)
 		{
 			ft_free((void **)&executable);
-			ft_free((void **)&directories);
+			ft_free_array(&directories);
 			return (absolute_path);
 		}
 		ft_free((void **)&absolute_path);
 		index++;
 	}
 	ft_free((void **)&executable);
-	ft_free((void **)&directories);
+	ft_free_array(&directories);
 	return (command);
 }

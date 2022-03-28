@@ -191,7 +191,7 @@ export HALLO42=42
 env | grep HALLO42
 
 /bin/echo $HOME
-env | grep HOME
+env | grep HOME    
 export HOME=42
 /bin/echo $HOME
 env | grep HOME

@@ -10,6 +10,7 @@
 		"_blksize_t.h": "c",
 		"_dev_t.h": "c",
 		"_mode_t.h": "c",
-		"_off_t.h": "c"
+		"_off_t.h": "c",
+		"__config": "c"
 	}
 }

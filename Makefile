@@ -25,7 +25,7 @@ OBJS =			$(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 all: $(NAME)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) $(INCLUDE) $(LIBFT) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 $(NAME): $(PREP) libft_dir $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(READLINE) $(LIBFT)

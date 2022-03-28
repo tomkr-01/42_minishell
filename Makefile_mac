@@ -1,7 +1,7 @@
 NAME	=	minishell
 CC		=	gcc
 # CFLAGS	=	-Wall -Wextra -Werror
-CFLAGS	+=	-g -fsanitize=address
+CFLAGS	+=	-g # -fsanitize=address
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 
@@ -30,7 +30,7 @@ READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
 # Macbook
 # READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
 # READLINE2	=	-I/opt/homebrew/opt/readline/include
-LIBS	=	$(LIBFT) $(READLINE)
+LIBS	=	$(LIBFT) $(READLINE2)
 
 .PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
 

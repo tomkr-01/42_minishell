@@ -23,6 +23,7 @@ void	handle_input(char *line)
 		ft_lstclear(&tokens, &del_content);
 }
 
+
 char	*read_input(void)
 {
 	char	*line;

@@ -183,6 +183,7 @@ int	open_files(t_table **table, int *status)
 		send_null_to_stdin();
 		return (-1);
 	}
+	printf("%d : %s\n", (*table)->redirections->type, (*table)->redirections->name);
 	if ((*table)->redirections->type == IN)
 		dup2(fd, STDIN_FILENO);
 	else
@@ -208,14 +209,15 @@ void	execute_child(t_table **table, int *status)
 	}
 	command = find_executable((*table)->arguments[0]);
 	execve(command, (*table)->arguments, g_msh.env);
-	ft_free((void **)&command);
 	if (stat(command, &statbuf) == 0)
 	{
 		put_stderr(SHELL, (*table)->arguments[0], NULL, "permission denied");
+		ft_free((void **)&command);
 		exit(126);
 	}
 	else
-		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found");
+		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found2");
+	ft_free((void **)&command);
 	exit(127);
 }
 
@@ -375,9 +377,6 @@ void	execute_pipeline(t_table *table)
 
 void	executioner(t_table *table)
 {
-	t_table		*head;
-
-	head = table;
 	if (table == NULL)
 		return ;
 	if (table->next == NULL)

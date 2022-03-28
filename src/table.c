@@ -264,9 +264,10 @@ void	free_command_table(t_table *table)
 	t_table			*head;
 	t_table			*next;
 	t_redirection	*redir_head;
+	t_redirection	*redir_next;
 
 	head = table;
-	while (table != NULL);
+	while (table != NULL)
 	{
 		redir_head = table->redirections;
 		while (table->redirections != NULL)
@@ -275,12 +276,12 @@ void	free_command_table(t_table *table)
 			table->redirections->name = NULL;
 			table->redirections = table->redirections->next;
 		}
-		next = table->next;
+		free(redir_head);
 		ft_free_array(&table->arguments);
-		table->arguments = NULL;
-		// free(table);
-		table = next;
+		table = table->next;
 	}
+	free(head);
+	head = NULL;
 }
 
 t_table	*parser(t_list *token)
@@ -288,11 +289,13 @@ t_table	*parser(t_list *token)
 	int				type;
 	t_table			*head;
 	t_table			*table;
+	t_table			*copy;
 
 	table = create_table_row();
 	if (table == NULL)
 		return (NULL);
 	head = table;
+	copy = table;
 	while (token != NULL)
 	{
 		type = 0;
