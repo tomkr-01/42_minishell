@@ -7,13 +7,15 @@ int	env_builtin(char **arguments)
 	size_t	i;
 
 	i = 0;
+	if (arguments != NULL && arguments[0] != NULL)
+	{
+		put_stderr(NULL, "env", arguments[0], strerror(ENOENT));
+		return (127);
+	}
 	while (g_msh.env[i] != NULL)
 	{
 		ft_putendl_fd(g_msh.env[i], STDOUT_FILENO);
 		i++;
 	}
-	if (arguments[0] == NULL)
-		return (EXIT_SUCCESS);
-	put_stderr(NULL, "env", arguments[0], strerror(ENOENT));
-	return (127);
+	return (EXIT_SUCCESS);
 }

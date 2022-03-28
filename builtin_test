@@ -1,21 +1,10 @@
-echo $USER'$USER'text oui oui     oui  oui $USER oui      $USER ''		| error due to empty single quotes ''
-echo $USER '' $USER $USER '' $USER '' $USER -n $USER					| error due to empty single quotes ''
 echo "$USER""Users/$USER/file""'$USER'"'$USER'							| outputs -> rjasariUsers/rjasari/file'$USER'rjasari		\ should -> rjasariUsers/rjasari/file'rjasari'$USER
 echo '$USER'"$USER"'$USER'												| outputs -> $USERrjasarirjasari							\ should -> $USERrjasari$USER
 echo " $USER  "'$PWD'													| outputs -> rjasari /Users/rjasari/Desktop/42_minishell	\ should -> rjasari $PWD
 echo " $USER  \$ "'$PWD'												| outputs -> rjasari \$ /Users/rjasari/Desktop/42_minishell	\ should -> rjasari $\ $PWD
-echo $USER213															| if expanded is equal NULL -> crash
-echo $USER$12USER$USER=4$USER12											| if expanded is equal NULL -> crash
-echo $USER $123456789USER $USER123456789								| if expanded is equal NULL -> crash
-echo $USER $9999USER $8888USER $7777USER								| if expanded is equal NULL -> crash
-echo $USER $USER9999 $USER8888 $USER7777								| if expanded is equal NULL -> crash
-echo $USER $USER9999 $USER8888 $USER7777 "$USER"						| if expanded is equal NULL -> crash
-echo "$9USER" "'$USER=12$SOMETHING'"									| if expanded is equal NULL -> crash
 /Users																	| prompt is prefixed with something							\ should -> bash: /Users: is a directory
 ..																		| prompt is prefixed with something							\ should -> bash: ..: command not found
 /																		| prompt is prefixed with something							\ should -> bash: /: is a directory
-exit 0 0																| return value of $? = 0, but should be 1
-exit -42 -24															| return value of $? = 0, but should be 1
 exit +0																	| outputs -> numeric argument required						\ should -> normal exit
 exit 9223372036854775807												| outputs -> numeric argument required						\ should -> nothing
 env | grep "_="
@@ -104,3 +93,16 @@ unset sudo
 unset TES^T
 unset TES!T
 unset TES\~T
+echo $USER'$USER'text oui oui     oui  oui $USER oui      $USER ''		
+echo $USER '' $USER $USER '' $USER '' $USER -n $USER					
+echo "$USER""Users/$USER/file""'$USER'"'$USER'							
+echo '$USER'"$USER"'$USER'												
+echo " $USER  "'$PWD'													
+echo " $USER  \$ "'$PWD'												
+echo $USER213															
+echo $USER$12USER$USER=4$USER12											
+echo $USER $123456789USER $USER123456789								
+echo $USER $9999USER $8888USER $7777USER								
+echo $USER $USER9999 $USER8888 $USER7777								
+echo $USER $USER9999 $USER8888 $USER7777 "$USER"						
+echo "$9USER" "'$USER=12$SOMETHING'"

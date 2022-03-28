@@ -23,6 +23,7 @@ char	*quote_remover(char *token)
 		token = ft_substr_free(token,
 				next_quote(token, quote) + 1, ft_strlen(token));
 	}
+	// printf("quotes remove: %s | %d\n", expansion_char_remover(q_removed), ft_strlen(expansion_char_remover(q_removed)));
 	return (expansion_char_remover(q_removed));
 }
 
@@ -63,7 +64,7 @@ char	*expansion_char_remover(char *token)
 	c_removed = ft_calloc(ft_strlen(token) + 1, sizeof(*c_removed));
 	if (c_removed == NULL)
 		exit(put_stderr(SHELL, "expansion_char_remover()", NULL,
-			strerror(ENOMEM)));
+				"hallo"));
 	while (token != NULL && token[i] != '\0')
 	{
 		if (token[i] == '~')

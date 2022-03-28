@@ -10,7 +10,7 @@ char	**add_array_element(char **old_arr, char *new_el)
 	i = 0;
 	new_arr = ft_calloc(ft_arrlen(old_arr) + 2, sizeof(*new_arr));
 	if (new_arr == NULL)
-		exit(put_stderr(SHELL, "add_array_element()", NULL, strerror(ENOMEM)));
+		exit(put_stderr(SHELL, "add_array_element()", NULL, "hallo"));
 	while (old_arr != NULL && old_arr[i] != NULL)
 	{
 		new_arr[i] = old_arr[i];
@@ -34,7 +34,7 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 	old = 0;
 	new_arr = ft_calloc(ft_arrlen(old_arr), sizeof(*new_arr));
 	if (new_arr == NULL)
-		exit(put_stderr(SHELL, "rm_array_element()", NULL, strerror(ENOMEM)));
+		exit(put_stderr(SHELL, "rm_array_element()", NULL, "hallo"));
 	while (old_arr[old] != NULL)
 	{
 		if (old_arr[old] == old_el)
@@ -73,7 +73,8 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 	return (EXIT_FAILURE);
 }
 
-// not needed because the content of the linked list will be free during variable expansion
+// we need this function to free as we want to free the tokens in the parser
+// or at the end after an command was executed
 void	del_content(void *ptr)
 {
 	ptr = NULL;

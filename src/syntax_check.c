@@ -1,6 +1,6 @@
 #include "../inc/minishell.h"
 
-extern t_minishell g_msh;
+extern t_minishell		g_msh;
 
 int		operator_check(t_list *tokens);
 int		quote_check(t_list *tokens);

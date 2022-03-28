@@ -5,17 +5,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "gcc - Build and debug active file",
+			"name": "gcc - Aktive Datei erstellen und debuggen",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "/Users/rjasari/Desktop/42_minishell/minishell",
-			"args": [],
+			"program": "/Users/rjasari/Desktop/42_minishell/src/a.out",
+			"args": ["PATH"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],
-			"externalConsole": true,
+			"externalConsole": false,
 			"MIMode": "lldb",
-			"preLaunchTask": "C/C++: gcc build active file"
+			"preLaunchTask": "C/C++: gcc Aktive Datei kompilieren"
 		}
 	]
 }

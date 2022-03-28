@@ -1,7 +1,6 @@
 #include "../inc/minishell.h"
 #include <fcntl.h>
 
-
 // void	heredoc(char *delimiter)
 // {
 // 	bool	expansion;

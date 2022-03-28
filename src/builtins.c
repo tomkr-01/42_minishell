@@ -12,13 +12,15 @@ int		exit_builtin(char **arguments);
 
 bool	check_builtins(char **arguments)
 {
-	if (strcmp(arguments[0], "cd") == 0
-		|| strcmp(arguments[0], "echo") == 0
-		|| strcmp(arguments[0], "env") == 0
-		|| strcmp(arguments[0], "exit") == 0
-		|| strcmp(arguments[0], "export") == 0
-		|| strcmp(arguments[0], "unset") == 0
-		|| strcmp(arguments[0], "pwd") == 0)
+	if (arguments == NULL)
+		return (false);
+	if (ft_strcmp(arguments[0], "cd") == 0
+		|| ft_strcmp(arguments[0], "echo") == 0
+		|| ft_strcmp(arguments[0], "env") == 0
+		|| ft_strcmp(arguments[0], "exit") == 0
+		|| ft_strcmp(arguments[0], "export") == 0
+		|| ft_strcmp(arguments[0], "unset") == 0
+		|| ft_strcmp(arguments[0], "pwd") == 0)
 		return (true);
 	else
 		return (false);
@@ -26,18 +28,18 @@ bool	check_builtins(char **arguments)
 
 void	builtins(char **arguments)
 {
-	if (strcmp(arguments[0], "cd") == 0)
+	if (ft_strcmp(arguments[0], "cd") == 0)
 		g_msh.exit_code = cd_builtin(&arguments[1]);
-	else if (strcmp(arguments[0], "echo") == 0)
+	else if (ft_strcmp(arguments[0], "echo") == 0)
 		g_msh.exit_code = echo_builtin(&arguments[1]);
-	else if (strcmp(arguments[0], "env") == 0)
+	else if (ft_strcmp(arguments[0], "env") == 0)
 		g_msh.exit_code = env_builtin(&arguments[1]);
-	else if (strcmp(arguments[0], "exit") == 0)
+	else if (ft_strcmp(arguments[0], "exit") == 0)
 		g_msh.exit_code = exit_builtin(&arguments[1]);
-	else if (strcmp(arguments[0], "export") == 0)
+	else if (ft_strcmp(arguments[0], "export") == 0)
 		g_msh.exit_code = export_builtin(&arguments[1]);
-	else if (strcmp(arguments[0], "unset") == 0)
+	else if (ft_strcmp(arguments[0], "unset") == 0)
 		g_msh.exit_code = unset_builtin(&arguments[1]);
-	else if (strcmp(arguments[0], "pwd") == 0)
+	else if (ft_strcmp(arguments[0], "pwd") == 0)
 		g_msh.exit_code = pwd_builtin(&arguments[1]);
 }
