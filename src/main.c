@@ -25,6 +25,8 @@ void	handle_input(char *line)
 		ft_lstclear(&tokens, &del_content);
 }
 
+#define PROMPT "$> "
+
 char	*read_input(void)
 {
 	char	*line;
