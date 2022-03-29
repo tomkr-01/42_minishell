@@ -20,12 +20,13 @@ char	**array_append_array(char **first, char **second)
 	while (second != NULL && second[++j] != NULL)
 		new_array[i + j] = ft_strdup(second[j]);
 	new_array[i + j] = NULL;
-	if (first != NULL)
-		ft_free_array(&first);
-	if (second != NULL)
-		ft_free_array(&second);
+	// if (first != NULL)
+	// 	ft_free_array(&first);
+	// if (second != NULL)
+	// 	ft_free_array(&second);
 	return (new_array);
 }
+
 char	*str_append_char(char *string, char c)
 {
 	int			index;
@@ -190,13 +191,50 @@ char	*find_executable(char *command)
 		if (access(absolute_path, F_OK) == 0 && command != NULL)
 		{
 			ft_free((void **)&executable);
-			ft_free((void **)&directories);
+			ft_free_array(&directories);
 			return (absolute_path);
 		}
 		ft_free((void **)&absolute_path);
 		index++;
 	}
 	ft_free((void **)&executable);
-	ft_free((void **)&directories);
+	ft_free_array(&directories);
 	return (command);
+}
+
+void	redi_clear(t_redirection **redi)
+{
+	t_redirection	*p;	
+	t_redirection	*next;
+
+	p = *redi;
+	if (p == NULL)
+		return ;
+	while (p != NULL)
+	{
+		next = p->next;
+		ft_free((void **)&(p->name));
+		ft_free((void **)&p);
+		p = next;
+	}
+	*redi = NULL;
+}
+
+void	table_clear(t_table **table)
+{
+	t_table	*p;
+	t_table	*next;
+
+	p = *table;
+	if (p == NULL)
+		return ;
+	while (p != NULL)
+	{
+		next = p->next;
+		ft_free_array(&(p->arguments));
+		redi_clear(&(p->redirections));
+		ft_free((void **)&p);
+		p = next;
+	}
+	*table = NULL;
 }

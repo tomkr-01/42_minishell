@@ -1,0 +1,14 @@
+27:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:85             too many spaces
+28:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:88
+29:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:91
+30:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:94
+31:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:97
+32:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:100
+33:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:103
+34:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:106
+35:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:109
+38:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:118
+39:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:121
+40:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/1_variables.sh:124            too many spaces
+14:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/9_go_wild.sh:49               wrong output with variables
+17:  STD_OUT: KO   STD_ERR:  OK   EXIT_CODE:  OK    cmds/mand/9_go_wild.sh:65               one too many lines

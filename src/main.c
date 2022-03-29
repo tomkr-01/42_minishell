@@ -18,11 +18,9 @@ void	handle_input(char *line)
 		return ;
 	}
 	command_table = parser(tokens);
+	// ft_lstclear(&tokens, &del_content);
 	executioner(command_table);
-	if (command_table != NULL)
-		free_parser(command_table);
-	else if (tokens != NULL)
-		ft_lstclear(&tokens, &del_content);
+	table_clear(&command_table);
 }
 
 #define PROMPT "$> "

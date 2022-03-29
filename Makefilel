@@ -1,3 +1,5 @@
+# valgrind: docker run -ti -v $(PWD):/test memory-test bash -c "cd /test/; make re && valgrind --leak-check=full --show-leak-kinds=definite --track-origins=yes ./minishell;"
+
 NAME =			minishell
 PREP =			obj
 
@@ -9,7 +11,7 @@ INC =			-I/inc
 LIBFT_DIR =		libs/libft
 LIBFT =			-L./$(LIBFT_DIR)/ -lft
 ARCHIVE =		libs/libft/libft.a
-READLINE =		-lreadline
+READLINE =		-L/Users/tkruger/.brew/opt/readline/lib -lreadline
 
 SRC_DIR =		./src/
 SRCS =			builtin_cd.c builtin_echo.c builtin_env.c \

@@ -94,6 +94,7 @@ void	executioner(t_table *table);
 
 /* r_utils.c */
 char	**array_append_array(char **first, char **second);
+void	table_clear(t_table **table);
 
 /* t_utils.c */
 char	**add_array_element(char **old_arr, char *new_el);
