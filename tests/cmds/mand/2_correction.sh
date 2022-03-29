@@ -6,7 +6,7 @@
 /bin/echo 1
 /bin/cat 42
 
-""
+ ""
 
 "   "
 

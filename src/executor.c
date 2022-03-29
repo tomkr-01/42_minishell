@@ -417,6 +417,7 @@ void	execute_pipeline(t_table *table)
 
 void	executioner(t_table *table)
 {
+	signal(SIGINT, SIG_IGN);
 	if (table == NULL)
 		return ;
 	if (table->next == NULL)
