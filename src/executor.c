@@ -107,21 +107,21 @@ void	clear_table_row(t_table **table)
 	// }
 }
 
-int	is_ambiguous_redirect(t_table **table, char **file, int *status)
+int	is_ambiguous_redirect(t_redirection *redir, char **file, int *status)
 {
 	char	*filename_token;
 	char	*expanded_string;
 
-	filename_token = ft_strdup((*table)->redirections->name);
+	filename_token = ft_strdup(redir->name);
 	expanded_string = expander(filename_token, false);
-	if (ft_strcmp((*table)->redirections->name, expanded_string) != 0)
+	if (ft_strcmp(redir->name, expanded_string) != 0)
 	{
 		*file = ft_strtrim_free(expanded_string, " ");
 		if (*file == NULL || *file[0] == '\0' || count(*file, ' ') > 1)
 		{
-			put_stderr(SHELL, NULL, (*table)->redirections->name,
+			put_stderr(SHELL, NULL, redir->name,
 				"ambiguous redirect");
-			clear_table_row(table);
+			// clear_table_row(table);
 			// table_clear(table);
 		}
 		else
@@ -160,28 +160,30 @@ static void	send_null_to_stdin(void)
 	}
 }
 
-int	open_files(t_table **table, int *status)
+int	open_files(t_redirection *redir, int *status)
 {
 	int			fd;
 	char		*file;
 
 	file = NULL;
-	if (is_ambiguous_redirect(table, &file, status) == -1)
+	if (is_ambiguous_redirect(redir, &file, status) == -1)
 		return (-1);
-	if ((*table)->redirections->type == IN)
+	if (redir->type == IN)
 		fd = open(file, O_RDONLY);
-	else if ((*table)->redirections->type == OUT)
+	else if (redir->type == OUT)
 		fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	else if ((*table)->redirections->type == APPEND)
+	else if (redir->type == APPEND)
 		fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
 	if (fd < 0)
 	{
 		perror(file);
 		ft_free((void **)&file);
 		send_null_to_stdin();
-		return ((*status = 1) * -1);
+		// return ((*status = 1) * -1);
+		*status = 1;
+		return (-1);
 	}
-	if ((*table)->redirections->type == IN)
+	if (redir->type == IN)
 		dup2(fd, STDIN_FILENO);
 	else
 		dup2(fd, STDOUT_FILENO);
@@ -249,7 +251,7 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-// void	execute_redirections(t_table **table, int *status)
+// int	execute_redirections(t_table **table, int *status)
 // {
 // 	t_redirection	**tmp_redir;
 
@@ -259,25 +261,31 @@ int	read_stdin_into_pipe(char *here_doc)
 // 		if ((*tmp_redir)->type == HEREDOC)
 // 			read_stdin_into_pipe((*tmp_redir)->name);
 // 		else
-// 			open_files(table, status);
+// 		{
+// 			if (open_files(table, status) == -1)
+// 				return (-1);
+// 		}
 // 		if (*tmp_redir != NULL)
 // 			*tmp_redir = (*tmp_redir)->next;
 // 	}
+// 	return (0);
 // }
 
-int	execute_redirections(t_table **table, t_redirection *redir, int *status)
+int	execute_redirections(t_redirection **redirections, int *status)
 {
+	t_redirection	*redir;
+
+	redir = *redirections;
 	while (redir != NULL)
 	{
 		if (redir->type == HEREDOC)
 			read_stdin_into_pipe(redir->name);
 		else
 		{
-			if (open_files(table, status) == -1)
+			if (open_files(redir, status) == -1)
 				return (-1);
 		}
-		if (redir != NULL)
-			redir = redir->next;
+		redir = redir->next;
 	}
 	return (0);
 }
@@ -290,7 +298,7 @@ void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 	status = 0;
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
-	redir_value = execute_redirections(table, (*table)->redirections, &status);
+	redir_value = execute_redirections(&(*table)->redirections, &status);
 	if (redir_value == -1)
 		ft_free_array(&(*table)->arguments);
 	execute_child(table, &status);
@@ -350,7 +358,7 @@ void	simple_command(t_table *table)
 	
 	status = 0;
 	filestream_operations(&initial_stdin, &initial_stdout, 1);
-	if (execute_redirections(&table, table->redirections, &status) == -1)
+	if (execute_redirections(&table->redirections, &status) == -1)
 		ft_free_array(&table->arguments);
 	if (check_builtins(table->arguments))
 	{
