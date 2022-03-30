@@ -22,7 +22,8 @@ int	operator_check(t_list *tokens)
 
 	prev_op = 1;
 	if (ft_lstlast(tokens)->content[0] == '<'
-		|| ft_lstlast(tokens)->content[0] == '>')
+		|| ft_lstlast(tokens)->content[0] == '>'
+		|| ft_lstlast(tokens)->content[0] == '|')
 		return (put_stderr(SHELL, NULL, NULL,
 				"syntax error near unexpected operator"));
 	while (tokens != NULL)
