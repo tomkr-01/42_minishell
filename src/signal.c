@@ -31,4 +31,3 @@ int	change_attributes(bool print_controls)
 		return (-1);
 	return (0);
 }
-	   

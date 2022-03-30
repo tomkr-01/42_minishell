@@ -56,6 +56,7 @@ int	main(int argc, char *argv[], char **envp)
 			if (isatty(STDERR_FILENO))
 				write(STDERR_FILENO, "exit\n", 5);
 			change_attributes(true);
+			rl_clear_history();
 			return (g_msh.exit_code);
 		}
 		handle_input(line);
