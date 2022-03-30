@@ -18,7 +18,7 @@ void	handle_input(char *line)
 		return ;
 	}
 	command_table = parser(tokens);
-	// ft_lstclear(&tokens, &del_content);
+	// ft_lstclear(&tokens, &del_content); new commit 
 	executioner(command_table);
 	table_clear(&command_table);
 }
