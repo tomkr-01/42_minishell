@@ -1,31 +1,30 @@
 #include "../inc/minishell.h"
 
-char	**array_append_array(char **first, char **second)
-{
-	int		i;
-	int		j;
-	char	**new_array;
+// char	**array_append_array(char **first, char **second)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	**new_array;
 
-	i = 0;
-	j = -1;
-	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
-			* sizeof(char *));
-	if (new_array == NULL)
-		return (NULL);
-	while (first != NULL && first[i] != NULL)
-	{
-		new_array[i] = ft_strdup(first[i]);
-		i++;
-	}
-	while (second != NULL && second[++j] != NULL)
-		new_array[i + j] = ft_strdup(second[j]);
-	new_array[i + j] = NULL;
-	// if (first != NULL)
-	// 	ft_free_array(&first);
-	// if (second != NULL)
-	// 	ft_free_array(&second);
-	return (new_array);
-}
+// 	i = 0;
+// 	j = -1;
+// 	new_array = (char **)malloc((ft_arrlen(first) + ft_arrlen(second) + 1)
+// 			* sizeof(char *));
+// 	if (new_array == NULL)
+// 		return (NULL);
+// 	while (first != NULL && first[i] != NULL)
+// 	{
+// 		new_array[i] = ft_strdup(first[i]);
+// 		i++;
+// 	}
+// 	while (second != NULL && second[++j] != NULL)
+// 		new_array[i + j] = ft_strdup(second[j]);
+// 	new_array[i + j] = NULL;
+// 	ft_free_array(&first);
+// 	ft_free_array(&second);
+// 	return (new_array);
+// }
+
 
 char	*str_append_char(char *string, char c)
 {
@@ -204,7 +203,7 @@ char	*find_executable(char *command)
 
 void	redi_clear(t_redirection **redi)
 {
-	t_redirection	*p;	
+	t_redirection	*p;
 	t_redirection	*next;
 
 	p = *redi;

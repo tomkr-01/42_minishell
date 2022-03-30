@@ -121,8 +121,8 @@ int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 		{
 			put_stderr(SHELL, NULL, (*table)->redirections->name,
 				"ambiguous redirect");
-			// clear_table_row(table);
-			table_clear(table);
+			clear_table_row(table);
+			// table_clear(table);
 		}
 		else
 			return (0);
@@ -177,9 +177,8 @@ int	open_files(t_table **table, int *status)
 	if (fd < 0)
 	{
 		perror(file);
+		ft_free((void **)&file);
 		send_null_to_stdin();
-		clear_table_row(table);
-		// table_clear(table);
 		return ((*status = 1) * -1);
 	}
 	if ((*table)->redirections->type == IN)
@@ -192,7 +191,6 @@ int	open_files(t_table **table, int *status)
 
 void	execute_child(t_table **table, int *status)
 {
-	char			*copy;
 	char			*command;
 
 	if ((*table)->arguments == NULL)
@@ -200,27 +198,26 @@ void	execute_child(t_table **table, int *status)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	change_attributes(true);
-	copy = ft_strdup((*table)->arguments[0]);
 	if (check_builtins((*table)->arguments))
 	{
 		builtins((*table)->arguments);
 		exit(g_msh.exit_code);
 	}
-	if ((*table)->arguments != NULL)
-		command = find_executable((*table)->arguments[0]);
+	command = find_executable(ft_strdup((*table)->arguments[0]));
 	execve(command, (*table)->arguments, g_msh.env);
-	write(2, command, ft_strlen(command));
-	write(2, ": ", 2);
-	if (access(command, F_OK) == 0)
+	ft_free((void **)&command);
+	if (access((*table)->arguments[0], F_OK) == 0 && access((*table)->arguments[0], X_OK) != 0)
 	{
-		if (access(command, X_OK) != 0)
-			write(2, "minishell: permission denied\n", 29);
+		put_stderr(SHELL, (*table)->arguments[0], NULL, "permission denied");
+		// table_clear(table);
 		exit(126);
 	}
 	else
-		write(2, "minishell: command not found\n", 29);
-	table_clear(table);
-	exit(127);
+	{
+		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found");
+		// table_clear(table);
+		exit(127);
+	}
 }
 
 int	read_stdin_into_pipe(char *here_doc)
@@ -252,27 +249,50 @@ int	read_stdin_into_pipe(char *here_doc)
 	return (status);
 }
 
-void	execute_redirections(t_table **table, int *status)
+// void	execute_redirections(t_table **table, int *status)
+// {
+// 	t_redirection	**tmp_redir;
+
+// 	tmp_redir = &(*table)->redirections;
+// 	while (*tmp_redir != NULL)
+// 	{
+// 		if ((*tmp_redir)->type == HEREDOC)
+// 			read_stdin_into_pipe((*tmp_redir)->name);
+// 		else
+// 			open_files(table, status);
+// 		if (*tmp_redir != NULL)
+// 			*tmp_redir = (*tmp_redir)->next;
+// 	}
+// }
+
+int	execute_redirections(t_table **table, t_redirection *redir, int *status)
 {
-	while ((*table)->redirections != NULL)
+	while (redir != NULL)
 	{
-		if ((*table)->redirections->type == HEREDOC)
-			read_stdin_into_pipe((*table)->redirections->name);
+		if (redir->type == HEREDOC)
+			read_stdin_into_pipe(redir->name);
 		else
-			open_files(table, status);
-		if ((*table)->redirections != NULL)
-			(*table)->redirections = (*table)->redirections->next;
+		{
+			if (open_files(table, status) == -1)
+				return (-1);
+		}
+		if (redir != NULL)
+			redir = redir->next;
 	}
+	return (0);
 }
 
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
+	int		redir_value;
 	int		status;
 
 	status = 0;
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
-	execute_redirections(table, &status);
+	redir_value = execute_redirections(table, (*table)->redirections, &status);
+	if (redir_value == -1)
+		ft_free_array(&(*table)->arguments);
 	execute_child(table, &status);
 }
 
@@ -330,7 +350,8 @@ void	simple_command(t_table *table)
 	
 	status = 0;
 	filestream_operations(&initial_stdin, &initial_stdout, 1);
-	execute_redirections(&table, &status);
+	if (execute_redirections(&table, table->redirections, &status) == -1)
+		ft_free_array(&table->arguments);
 	if (check_builtins(table->arguments))
 	{
 		builtins(table->arguments);
@@ -347,32 +368,6 @@ void	simple_command(t_table *table)
 	wait_for_last(process_id, initial_stdin, initial_stdout);
 	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
-
-// void	simple_command(t_table *table)
-// {
-// 	int		initial_stdin;
-// 	int		initial_stdout;
-// 	pid_t	process_id;
-	
-// 	if (check_builtins(table->arguments))
-// 	{
-// 		execute_redirections(&table);
-// 		builtins(table->arguments);
-// 		filestream_operations(&initial_stdin, &initial_stdout, 2);
-// 		return ;
-// 	}
-// 	else
-// 	{
-// 		if (own_fork(&process_id) == -1)
-// 			return ;
-// 		if (process_id == 0)
-// 		{
-// 			execute_redirections(&table);
-// 			execute_child(&table);
-// 		}
-// 	}
-// 	wait_for_last(process_id, initial_stdin, initial_stdout);
-// }
 
 int	print_execution(t_table *table)
 {

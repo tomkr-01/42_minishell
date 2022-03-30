@@ -76,7 +76,7 @@ char	*heredoc_readline(char **limiter)
 			break ;
 		}
 		line = ft_strjoin_free(line, ft_strdup("\n"));
-		here_string = ft_strjoin_free(here_string, line);;
+		here_string = ft_strjoin_free(here_string, line);
 		if (here_string == NULL)
 			break ;
 	}
@@ -93,11 +93,12 @@ void	heredoc(char **token_content)
 	change_attributes(false);
 	fd = dup(STDIN_FILENO);
 	expansion = false;
-	delimiter_copy = ft_strdup(*token_content);
+	// delimiter_copy = ft_strdup(*token_content);
 	limiter = quote_remover(ft_strdup(*token_content));
-	if (ft_strcmp(delimiter_copy, limiter) == 0)
+	if (ft_strcmp(*token_content, limiter) == 0)
 		expansion = true;
-	ft_free((void **)&delimiter_copy);
+	// ft_free((void **)&delimiter_copy);
+	ft_free((void **)token_content);
 	if (isatty(STDIN_FILENO))
 		*token_content = heredoc_readline(&limiter);
 	else
@@ -151,7 +152,7 @@ int	append_redirection(t_redirection **redir, t_list *token, int redir_type)
 		if (token->content == NULL)
 			return (-1);
 	}
-	new = create_redirection(redir_type, token->content);
+	new = create_redirection(redir_type, ft_strdup(token->content));
 	if (*redir == NULL)
 	{
 		*redir = new;
@@ -249,16 +250,11 @@ void	print_array_of_arrays(char **array)
 void	parse_command(t_list **token, t_table **table)
 {
 	char	*expanded_string;
-	char	**argument_list;
 
-	argument_list = NULL;
 	expanded_string = expander(ft_strdup((*token)->content), true);
 	if ((*table)->arguments == NULL)
 	{
-		argument_list = ft_split(expanded_string, ' ');
-		ft_free((void **)&expanded_string);
-		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
-		ft_free_array(&argument_list);
+		(*table)->arguments = ft_split(expanded_string, ' ');
 	}
 	else
 		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
@@ -272,7 +268,6 @@ void	parse_command(t_list **token, t_table **table)
 	// 	(*table)->arguments = array_append_array((*table)->arguments, argument_list);
 	// 	// ft_free_array(&argument_list);
 	// }
-	return ;
 }
 
 // void	free_parser(t_table *table)

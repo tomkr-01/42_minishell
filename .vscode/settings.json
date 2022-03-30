@@ -11,6 +11,8 @@
 		"_dev_t.h": "c",
 		"_mode_t.h": "c",
 		"_off_t.h": "c",
-		"__config": "c"
+		"__config": "c",
+		"stdlib.h": "c",
+		"_uint32_t.h": "c"
 	}
 }

@@ -1,7 +1,7 @@
 NAME	=	minishell
 CC		=	gcc
 # CFLAGS	=	-Wall -Wextra -Werror
-CFLAGS	+=	-g -fsanitize=address
+CFLAGS	+=	-g #-fsanitize=address
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 
