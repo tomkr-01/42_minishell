@@ -1,46 +1,61 @@
-NAME =			minishell
-PREP =			obj
+NAME	=	minishell
+CC		=	gcc
+# CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	+=	-g -fsanitize=address
+INC		=	./inc/minishell.h
+SRC_PATH =	./src/
 
-CC =			gcc
-RM =			rm -rf
-CFLAGS =		-g #-Wall -Werror -Wextra
-INC =			-I/inc
+# general
+SRCS	=	main.c signal.c environment.c t_utils.c r_utils.c
 
-LIBFT_DIR =		libs/libft
-LIBFT =			-L./$(LIBFT_DIR)/ -lft
-ARCHIVE =		libs/libft/libft.a
-READLINE =		-lreadline
+# input
+SRCS	+=	lexer.c syntax_check.c expander.c expander_utils.c quote_remover.c
 
-SRC_DIR =		./src/
-SRCS =			builtin_cd.c builtin_echo.c builtin_env.c \
-				builtin_exit.c builtin_export.c builtin_pwd.c \
-				builtin_unset.c builtins.c environment.c \
-				executor.c expander.c lexer.c main.c \
-				quote_remover.c r_utils.c signal.c \
-				syntax_check.c t_utils.c table.c expander_utils.c
+# parser
+SRCS	+=	table.c
 
-OBJ_DIR =		./obj/
-OBJS =			$(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
+# executor
+SRCS	+= executor.c
 
-all: $(NAME)
+# builtins
+SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
+			builtin_exit.c builtin_export.c builtin_pwd.c builtin_unset.c
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+OBJ_PATH =	./objs/
+OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
+LIBFT	=	-L./libs/libft libs/libft/libft.a
+# iMac
+READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
+READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
+# Macbook
+# READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
+# READLINE2	=	-I/opt/homebrew/opt/readline/include
+LIBS	=	$(LIBFT) $(READLINE)
 
-$(NAME): $(PREP) libft_dir $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(READLINE) $(LIBFT)
+.PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
 
-$(PREP):
-	mkdir -p $(OBJ_DIR)
+all: libmake $(NAME)
 
-libft_dir:
-	make -C $(LIBFT_DIR)
+$(NAME): $(OBJ_PATH) $(OBJS)
+	$(CC) $(CFLAGS) $(LIBFT) $(READLINE) $(OBJS) -o $(NAME)
+
+$(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC) $(L_INC)
+	$(CC) $(CFLAGS) $(LIBFT) -c $< -o $@
+
+$(OBJ_PATH):
+	mkdir -p $(OBJ_PATH)
+
+libmake:
+	make -C libs/libft/
 
 clean:
-	make fclean -C ./libs/libft
-	$(RM) $(OBJ_DIR)
+	rm -rf $(OBJ_PATH)
+	rm -f *.o *~
+	rm -rf *.dSYM
+	make clean -C libs/libft/
 
 fclean: clean
-	$(RM) $(NAME)
+	rm -rf $(NAME)
+	rm -f libs/libft/libft.a
 
 re: fclean all

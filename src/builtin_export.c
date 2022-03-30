@@ -40,7 +40,7 @@ void	search_in_environment(char *argument, int *id_len, int *status)
 	i = 0;
 	while (g_msh.env[i] != NULL && *status == 0)
 	{
-		if (ft_strncmp(g_msh.env[i], argument, *id_len) == 0)
+		if (ft_strncmp(g_msh.env[i], argument, *id_len + 1) == 0)
 		{
 			free(g_msh.env[i]);
 			g_msh.env[i] = ft_strdup(argument);

@@ -53,10 +53,9 @@ char	*heredoc_get_next_line(char **limiter)
 			ft_free((void **)&line);
 			break ;
 		}
-		here_string = ft_strjoin(here_string, line);
+		here_string = ft_strjoin_free(here_string, line);
 		if (here_string == NULL)
 			break ;
-		ft_free((void **)&line);
 	}
 	return (here_string);
 }
@@ -67,7 +66,6 @@ char	*heredoc_readline(char **limiter)
 	char	*here_string;
 
 	signal(SIGINT, &heredoc_signals);
-	here_string = NULL;
 	here_string = ft_strdup("");
 	while (1)
 	{
@@ -77,10 +75,10 @@ char	*heredoc_readline(char **limiter)
 			ft_free((void **)&line);
 			break ;
 		}
-		here_string = ft_strjoin(here_string, ft_strjoin(line, "\n"));;
+		line = ft_strjoin_free(line, ft_strdup("\n"));
+		here_string = ft_strjoin_free(here_string, line);;
 		if (here_string == NULL)
 			break ;
-		ft_free((void **)&line);
 	}
 	return (here_string);
 }
@@ -260,9 +258,11 @@ void	parse_command(t_list **token, t_table **table)
 		argument_list = ft_split(expanded_string, ' ');
 		ft_free((void **)&expanded_string);
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
+		ft_free_array(&argument_list);
 	}
 	else
 		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
+	ft_free((void **)&expanded_string);
 	// if (((*table)->arguments != NULL && check_builtins((*table)->arguments))
 	// 		|| count(expanded_string, ' ') == 1)
 	// 	(*table)->arguments = add_array_element((*table)->arguments, expanded_string);
@@ -275,30 +275,30 @@ void	parse_command(t_list **token, t_table **table)
 	return ;
 }
 
-void	free_parser(t_table *table)
-{
-	t_table			*head;
-	t_table			*next;
-	t_redirection	*redir_head;
-	t_redirection	*redir_next;
+// void	free_parser(t_table *table)
+// {
+// 	t_table			*head;
+// 	t_table			*next;
+// 	t_redirection	*redir_head;
+// 	t_redirection	*redir_next;
 
-	head = table;
-	while (table != NULL)
-	{
-		redir_head = table->redirections;
-		while (table->redirections != NULL)
-		{
-			free(table->redirections->name);
-			table->redirections->name = NULL;
-			table->redirections = table->redirections->next;
-		}
-		free(redir_head);
-		// ft_free_array(&table->arguments);
-		table->arguments = NULL;
-		table = table->next;
-	}
-	free(head);
-}
+// 	head = table;
+// 	while (table != NULL)
+// 	{
+// 		redir_head = table->redirections;
+// 		while (table->redirections != NULL)
+// 		{
+// 			free(table->redirections->name);
+// 			table->redirections->name = NULL;
+// 			table->redirections = table->redirections->next;
+// 		}
+// 		free(redir_head);
+// 		// ft_free_array(&table->arguments);
+// 		table->arguments = NULL;
+// 		table = table->next;
+// 	}
+// 	free(head);
+// }
 
 t_table	*parser(t_list *token)
 {
@@ -327,6 +327,5 @@ t_table	*parser(t_list *token)
 			parse_command(&token, &table);
 		token = token->next;
 	}
-	ft_lstclear(&token, &del_content);
 	return (head);
 }

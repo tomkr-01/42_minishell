@@ -50,6 +50,7 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 
 int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 {
+	// system("say 'you fucked up. Try again!'");
 	if (shell_name != NULL)
 	{
 		ft_putstr_fd(shell_name, STDERR_FILENO);
@@ -77,7 +78,5 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 // or at the end after an command was executed
 void	del_content(void *ptr)
 {
-	if (ptr != NULL)
-		free(ptr);
-	ptr = NULL;
+	ft_free((void **)&ptr);
 }

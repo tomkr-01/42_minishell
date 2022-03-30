@@ -54,37 +54,37 @@ void	prepare_pipe(int **pipe_ends)
 	close((*pipe_ends)[WRITE]);
 }
 
-void	ft_free_split(char **array)
-{
-	int	i;
+// void	ft_free_split(char **array)
+// {
+// 	int	i;
 
-	i = 0;
-	while (array && array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
-	array = NULL;
-}
+// 	i = 0;
+// 	while (array && array[i])
+// 	{
+// 		free(array[i]);
+// 		i++;
+// 	}
+// 	free(array);
+// 	array = NULL;
+// }
 
-void	ft_free_array2(char **arr)
-{
-	size_t	i;
+// void	ft_free_array2(char **arr)
+// {
+// 	size_t	i;
 
-	if (arr == NULL)
-		return ;
-	i = 0;
-	while (arr[i] != NULL)
-	{
-		free(arr[i]);
-		arr[i] = NULL;
-		i++;
-	}
-	if (arr != NULL)
-		free(arr);
-	arr = NULL;
-}
+// 	if (arr == NULL)
+// 		return ;
+// 	i = 0;
+// 	while (arr[i] != NULL)
+// 	{
+// 		free(arr[i]);
+// 		arr[i] = NULL;
+// 		i++;
+// 	}
+// 	if (arr != NULL)
+// 		free(arr);
+// 	arr = NULL;
+// }
 
 void	clear_table_row(t_table **table)
 {
@@ -121,7 +121,8 @@ int	is_ambiguous_redirect(t_table **table, char **file, int *status)
 		{
 			put_stderr(SHELL, NULL, (*table)->redirections->name,
 				"ambiguous redirect");
-			clear_table_row(table);
+			// clear_table_row(table);
+			table_clear(table);
 		}
 		else
 			return (0);
@@ -178,6 +179,7 @@ int	open_files(t_table **table, int *status)
 		perror(file);
 		send_null_to_stdin();
 		clear_table_row(table);
+		// table_clear(table);
 		return ((*status = 1) * -1);
 	}
 	if ((*table)->redirections->type == IN)
@@ -217,6 +219,7 @@ void	execute_child(t_table **table, int *status)
 	}
 	else
 		write(2, "minishell: command not found\n", 29);
+	table_clear(table);
 	exit(127);
 }
 
@@ -411,6 +414,7 @@ void	execute_pipeline(t_table *table)
 			parent_process(&pipe_ends, &pipe_flag);
 		table = table->next;
 	}
+	ft_free((void **)&pipe_ends);
 	wait_for_all(process_id, initial_stdin, initial_stdout);
 	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
