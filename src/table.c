@@ -249,12 +249,19 @@ void	print_array_of_arrays(char **array)
 
 void	parse_command(t_list **token, t_table **table)
 {
+	int		status;
 	char	*expanded_string;
+	char	**argument_list;
 
-	expanded_string = expander(ft_strdup((*token)->content), true);
-	if ((*table)->arguments == NULL)
+	status = 0;
+	expanded_string = expander(ft_strdup((*token)->content), false);
+	if (ft_strchr(expanded_string, '\"') || ft_strchr(expanded_string, '\''))
+		status = 1;
+	expanded_string = quote_remover(expanded_string);
+	if (status == 0)
 	{
-		(*table)->arguments = ft_split(expanded_string, ' ');
+		argument_list = ft_split(expanded_string, ' ');
+		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
 	}
 	else
 		(*table)->arguments = add_array_element((*table)->arguments, expanded_string);

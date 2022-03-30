@@ -25,6 +25,22 @@
 // 	return (new_array);
 // }
 
+char	**array_append_array(char **first, char **second)
+{
+	int		i;
+
+	i = 0;
+	if (second == NULL)
+		return (first);
+	while (second[i] != NULL)
+	{
+		first = add_array_element(first, second[i]);
+		i++;
+	}
+	ft_free_array(&second);
+	return (first);
+}
+
 
 char	*str_append_char(char *string, char c)
 {
