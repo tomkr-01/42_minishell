@@ -258,6 +258,7 @@ void	parse_command(t_list **token, t_table **table)
 	if ((*table)->arguments == NULL)
 	{
 		argument_list = ft_split(expanded_string, ' ');
+		ft_free((void **)&expanded_string);
 		(*table)->arguments = array_append_array((*table)->arguments, argument_list);
 	}
 	else
