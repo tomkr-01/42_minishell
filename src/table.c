@@ -4,7 +4,7 @@ extern t_minishell	g_msh;
 
 t_table	*create_table_row(void)
 {
-	t_table		*row;
+	t_table	*row;
 
 	row = (t_table *)malloc(sizeof(t_table));
 	if (row == NULL)
@@ -45,7 +45,7 @@ char	*heredoc_get_next_line(char **limiter)
 
 	signal(SIGINT, &heredoc_signals);
 	lim = ft_strjoin(*limiter, "\n");
-	here_string = ft_strdup("");
+	here_string = NULL;					// previously there was an empty string dupped ( ft_strdup(""); )
 	while (1)
 	{
 		line = minishell_get_next_line(STDIN_FILENO);
@@ -68,37 +68,40 @@ char	*heredoc_readline(char **limiter)
 	char	*here_string;
 
 	signal(SIGINT, &heredoc_signals);
-	here_string = ft_strdup("");
+	here_string = NULL;					// previously there was an empty string dupped ( ft_strdup(""); )
 	while (1)
 	{
 		line = readline("> ");
 		if (line == NULL || ft_strcmp(line, *limiter) == 0)
 		{
 			ft_free((void **)&line);
-			break ;
+			return (here_string);
 		}
 		line = ft_strjoin_free(line, ft_strdup("\n"));
 		here_string = ft_strjoin_free(here_string, line);
 		if (here_string == NULL)
-			break ;
+		{
+			ft_free((void **)&line);
+			return (NULL);
+		}
 	}
 	return (here_string);
 }
 
 void	heredoc(char **token_content)
 {
-	int			fd;
-	bool		expansion;
-	char		*delimiter_copy;
-	char		*limiter;
+	int		fd;
+	bool	expansion;
+	char	*delimiter_copy;
+	char	*limiter;
 
 	change_attributes(false);
 	fd = dup(STDIN_FILENO);
 	expansion = false;
-	limiter = quote_remover(ft_strdup(*token_content));
+	limiter = quote_remover(*token_content);	 // did't dup the token_content so that it doesn't have to be freed afterwards. was previously ( ft_strdup(*token_content); )
 	if (ft_strcmp(*token_content, limiter) == 0)
 		expansion = true;
-	ft_free((void **)token_content);
+	// ft_free((void **)token_content);
 	if (isatty(STDIN_FILENO))
 		*token_content = heredoc_readline(&limiter);
 	else
@@ -106,9 +109,9 @@ void	heredoc(char **token_content)
 	ft_free((void **)&limiter);
 	if (close(STDIN_FILENO) == -1)
 		ft_free((void **)token_content);
-	if (dup2(fd, STDIN_FILENO) == -1)
-		close(fd);
-	close(fd);
+	if (dup2(fd, STDIN_FILENO) == -1)	// this could be done more efficiently
+		close(fd);						// this could be done more efficiently
+	close(fd);							// this could be done more efficiently
 	if (expansion)
 		*token_content = expander(*token_content, false);
 }
@@ -120,11 +123,9 @@ int	append_redirection(t_redirection **redir, t_list *token, int redir_type)
 
 	tmp = *redir;
 	if (redir_type == HEREDOC)
-	{
 		heredoc(&token->content);
-		if (token->content == NULL)
-			return (-1);
-	}
+	if (redir_type == HEREDOC && token->content == NULL)
+		return (-1);
 	new = create_redirection(redir_type, ft_strdup(token->content));
 	if (*redir == NULL)
 	{
@@ -172,7 +173,6 @@ int	count(const char *s, char c)
 			count++;
 		i++;
 	}
-	count += 1;
 	return (count);
 }
 
@@ -201,9 +201,9 @@ void	parse_command(t_list **token, t_table **table)
 
 t_table	*parser(t_list *token)
 {
-	int				type;
-	t_table			*head;
-	t_table			*table;
+	int		type;
+	t_table	*head;
+	t_table	*table;
 
 	table = create_table_row();
 	if (table == NULL)

@@ -23,7 +23,7 @@ void	filestream_operations(int *initial_stdin, int *initial_stdout, int mode)
 
 int	pipe_found(t_table **table, int **pipe_ends)
 {
-	int			status;
+	int	status;
 
 	status = 0;
 	if ((*table)->next != NULL)
@@ -78,7 +78,7 @@ int	is_ambiguous_redirect(t_redirection *redir, char **file, int *status)
 	if (ft_strcmp(redir->name, expanded_string) != 0)
 	{
 		*file = ft_strtrim_free(expanded_string, " ");
-		if (*file == NULL || *file[0] == '\0' || count(*file, ' ') > 1)
+		if (*file == NULL || *file[0] == '\0' || count(*file, ' ') > 0)
 		{
 			put_stderr(SHELL, NULL, redir->name,
 				"ambiguous redirect");
@@ -120,10 +120,10 @@ static int	send_null_to_stdin(void)
 	return (1);
 }
 
-int	open_files(t_redirection *redir, int *status, t_table *head)
+int	open_files(t_redirection *redir, int *status)
 {
-	int			fd;
-	char		*file;
+	int		fd;
+	char	*file;
 
 	file = NULL;
 	if (is_ambiguous_redirect(redir, &file, status) == -1)
@@ -138,7 +138,6 @@ int	open_files(t_redirection *redir, int *status, t_table *head)
 	{
 		perror(file);
 		ft_free((void **)&file);
-		// *status = send_null_to_stdin();
 		*status = 1;
 		return (-1);
 	}
@@ -157,28 +156,11 @@ void	set_attributes(void)
 	change_attributes(true);
 }
 
-int	execute_child(t_table **table, int *status, t_table *head)
+void	execute_child_errors(t_table **table)
 {
-	int				exit_status;
-	char			*command;
+	int	exit_status;
 
-	if ((*table)->arguments == NULL)
-	{
-		table_clear(&head);     
-		ft_free_array(&g_msh.env);
-		exit(*status);
-	}
-	set_attributes();
-	if (check_builtins((*table)->arguments))
-	{
-		builtins((*table)->arguments);
-		table_clear(&head);
-		ft_free_array(&g_msh.env);
-		return (1);
-	}
-	command = find_executable(ft_strdup((*table)->arguments[0]), head);
-	execve(command, (*table)->arguments, g_msh.env);
-	ft_free((void **)&command);
+	exit_status = 0;
 	if (access((*table)->arguments[0], F_OK) == 0
 		&& access((*table)->arguments[0], X_OK) != 0)
 	{
@@ -187,33 +169,57 @@ int	execute_child(t_table **table, int *status, t_table *head)
 	}
 	else
 	{
-		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found1");
+		put_stderr(SHELL, (*table)->arguments[0], NULL, "command not found");
 		exit_status = 127;
 	}
-	table_clear(&head);
+	table_clear(&(get_head()->next));
 	ft_free_array(&g_msh.env);
 	exit(exit_status);
+}
+
+int	execute_child(t_table **table, int *status)
+{
+	char	*command;
+
+	if ((*table)->arguments == NULL)
+	{
+		table_clear(&(get_head()->next));
+		ft_free_array(&g_msh.env);
+		exit(*status);
+	}
+	set_attributes();
+	if (check_builtins((*table)->arguments))
+	{
+		builtins((*table)->arguments);
+		table_clear(&(get_head()->next));
+		ft_free_array(&g_msh.env);
+		return (1);
+	}
+	command = find_executable(ft_strdup((*table)->arguments[0]));
+	execve(command, (*table)->arguments, g_msh.env);
+	ft_free((void **)&command);
+	execute_child_errors(table);
 	return (0);
 }
 
-int	read_stdin_into_pipe(char *here_doc, t_table *head)
+int	read_stdin_into_pipe(char *here_doc)
 {
-	int			status;
-	int			pipe_ends[2];
-	pid_t		process_id;
+	int		status;
+	int		pipe_ends[2];
+	pid_t	process_id;
 
 	status = pipe(pipe_ends);
-	if (status == -1)
+	if (status == -1 || own_fork(&process_id) == -1)
 		return (-1);
-	if (own_fork(&process_id) == -1)
-		return (-1);
+	// if (own_fork(&process_id) == -1)
+	// 	return (-1);
 	if (process_id == 0)
 	{
 		close(pipe_ends[READ]);
 		dup2(pipe_ends[WRITE], STDOUT_FILENO);
 		close(pipe_ends[WRITE]);
 		ft_putstr_fd(here_doc, 1);
-		table_clear(&head);
+		table_clear(&(get_head()->next));
 		ft_free_array(&g_msh.env);
 		exit(1);
 	}
@@ -227,7 +233,7 @@ int	read_stdin_into_pipe(char *here_doc, t_table *head)
 	return (status);
 }
 
-int	execute_redirections(t_redirection **redirections, int *status, t_table *head)
+int	execute_redirections(t_redirection **redirections, int *status)
 {
 	t_redirection	*redir;
 
@@ -235,10 +241,10 @@ int	execute_redirections(t_redirection **redirections, int *status, t_table *hea
 	while (redir != NULL)
 	{
 		if (redir->type == HEREDOC)
-			read_stdin_into_pipe(redir->name, head);
+			read_stdin_into_pipe(redir->name);
 		else
 		{
-			if (open_files(redir, status, head) == -1)
+			if (open_files(redir, status) == -1)
 			{
 				ft_free_array(&g_msh.env);
 				return (-1);
@@ -249,19 +255,19 @@ int	execute_redirections(t_redirection **redirections, int *status, t_table *hea
 	return (0);
 }
 
-void	child_process(t_table **table, int **pipe_ends, int *pipe_flag, t_table *head)
+void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 {
-	int		redir_value;
-	int		status;
+	int	redir_value;
+	int	status;
 
 	status = 0;
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
-	redir_value = execute_redirections(&(*table)->redirections, &status, head);
+	redir_value = execute_redirections(&(*table)->redirections, &status);
 	if (redir_value == -1)
 		ft_free_array(&(*table)->arguments);
 	free(*pipe_ends);
-	if (execute_child(table, &status, head) == 1)
+	if (execute_child(table, &status) == 1)
 		exit(g_msh.exit_code);
 }
 
@@ -285,7 +291,7 @@ int	initialize_pipe(int **pipe_ends)
 
 void	wait_for_last(int pid, int initial_stdin, int initial_stdout)
 {
-	int		status;
+	int	status;
 
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
@@ -308,7 +314,7 @@ void	wait_for_all(int pid, int initial_stdin, int initial_stdout)
 		filestream_operations(&initial_stdin, &initial_stdout, 2);
 }
 
-void	simple_command(t_table *table, t_table *head)
+void	simple_command(t_table *table)
 {
 	int		status;
 	int		initial_stdin;
@@ -317,7 +323,7 @@ void	simple_command(t_table *table, t_table *head)
 
 	status = 0;
 	filestream_operations(&initial_stdin, &initial_stdout, 1);
-	if (execute_redirections(&table->redirections, &status, head) == -1)
+	if (execute_redirections(&table->redirections, &status) == -1)
 		ft_free_array(&table->arguments);
 	if (check_builtins(table->arguments))
 	{
@@ -330,13 +336,13 @@ void	simple_command(t_table *table, t_table *head)
 		if (own_fork(&process_id) == -1)
 			return ;
 		if (process_id == 0)
-			execute_child(&table, &status, head);
+			execute_child(&table, &status);
 	}
 	wait_for_last(process_id, initial_stdin, initial_stdout);
 	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
-void	execute_pipeline(t_table *table, t_table *head)
+void	execute_pipeline(t_table *table)
 {
 	int		initial_stdin;
 	int		initial_stdout;
@@ -355,7 +361,7 @@ void	execute_pipeline(t_table *table, t_table *head)
 		if (own_fork(&process_id) == -1)
 			return ;
 		if (process_id == 0)
-			child_process(&table, &pipe_ends, &pipe_flag, head);
+			child_process(&table, &pipe_ends, &pipe_flag);
 		else if (process_id > 0)
 			parent_process(&pipe_ends, &pipe_flag);
 		table = table->next;
@@ -365,13 +371,13 @@ void	execute_pipeline(t_table *table, t_table *head)
 	filestream_operations(&initial_stdin, &initial_stdout, 3);
 }
 
-void	executioner(t_table *table, t_table *head)
+void	executioner(t_table *table)
 {
 	signal(SIGINT, SIG_IGN);
 	if (table == NULL)
 		return ;
 	if (table->next == NULL)
-		simple_command(table, head);
+		simple_command(table);
 	else
-		execute_pipeline(table, head);
+		execute_pipeline(table);
 }

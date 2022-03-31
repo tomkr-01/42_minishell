@@ -70,10 +70,8 @@ t_table	*get_head(void)
 void	handle_input(char *line)
 {
 	t_list		*tokens;
-	t_table		*command_table;
 
 	tokens = NULL;
-	command_table = NULL;
 	tokens = lexer(line);
 	if (tokens == NULL)
 		return ;
@@ -82,11 +80,10 @@ void	handle_input(char *line)
 		ft_lstclear(&tokens, &del_content);
 		return ;
 	}
-	command_table = parser(tokens);
-	get_head()->next = command_table;
+	get_head()->next = parser(tokens);
 	ft_lstclear(&tokens, &del_content);
-	executioner(command_table, command_table);
-	table_clear(&command_table);
+	executioner(get_head()->next);
+	table_clear(&(get_head()->next));
 }
 
 char	*read_input(void)
@@ -95,7 +92,7 @@ char	*read_input(void)
 
 	if (isatty(STDIN_FILENO) == 1)
 	{
-		line = readline("$> ");
+		line = readline(PROMPT);
 		if (line != NULL && line[0] != '\0')
 			add_history(line);
 	}
