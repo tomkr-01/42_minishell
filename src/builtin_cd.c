@@ -1,6 +1,6 @@
 #include "../inc/minishell.h"
 
-int		export_builtin(char **arguments);
+int	export_builtin(char **arguments);
 
 int	cd_builtin(char **arguments)
 {
@@ -20,7 +20,9 @@ int	cd_builtin(char **arguments)
 	}
 	export_pwds = ft_calloc(3, sizeof(*export_pwds));
 	if (export_pwds == NULL)
-		exit(put_stderr(SHELL, "cd_builtin()", NULL, strerror(ENOMEM)));
+		put_stderr(SHELL, "cd_builtin()", NULL, strerror(ENOMEM));
+	if (export_pwds == NULL)
+		exit(ENOMEM);
 	export_pwds[0] = ft_strjoin_free(ft_strdup("OLDPWD="), get_var("PWD"));
 	export_pwds[1] = ft_strjoin_free(ft_strdup("PWD="), getcwd(NULL, 0));
 	export_pwds[2] = NULL;

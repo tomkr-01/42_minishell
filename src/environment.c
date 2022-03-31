@@ -1,7 +1,6 @@
 #include "../inc/minishell.h"
 
 t_minishell		g_msh;
-extern char		**environ;
 
 void	environment_init(char **envp)
 {
@@ -43,25 +42,3 @@ char	*get_var(const char *variable)
 	ft_free((void **)&env_var);
 	return (NULL);
 }
-
-// char	*get_var(const char *variable)
-// {
-// 	int		index;
-// 	int		var_len;
-// 	char	*env_var;
-
-// 	index = 0;
-// 	env_var = ft_strjoin(variable, "=");
-// 	var_len = ft_strlen(env_var);
-// 	while (environ[index])
-// 	{
-// 		if (ft_strncmp(environ[index], env_var, var_len) == 0)
-// 		{
-// 			ft_free((void **)&env_var);
-// 			return (ft_strdup(environ[index] + var_len));
-// 		}
-// 		index++;
-// 	}
-// 	ft_free((void **)&env_var);
-// 	return (NULL);
-// }

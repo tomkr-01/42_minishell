@@ -22,9 +22,10 @@
 /* DEFINES																	  */
 /* ************************************************************************** */
 
-# define SHELL "minishell"
+# define SHELL "beardshell"
+# define PROMPT "beardshell> "
 # define OPERATORS "|<>"
-# define METACHARS OPERATORS" \t\n"
+# define METACHARS "|<> \t\n"
 
 # define PIPE "|"
 # define OUT 1

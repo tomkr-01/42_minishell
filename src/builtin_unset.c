@@ -1,40 +1,8 @@
 #include "../inc/minishell.h"
 
 extern t_minishell	g_msh;
-
-int	is_valid_identifier2(char *argument, int *id_len)
-{
-	if (!ft_isalpha(argument[0]) && argument[0] != '_')
-		return (1);
-	*id_len = 1;
-	while (argument[*id_len] != '\0')
-	{
-		if (!ft_isalnum(argument[*id_len]) && argument[*id_len] != '_')
-			return (1);
-		*id_len += 1;
-	}
-	return (0);
-}
-
-void	remove_variable(char *argument, int *id_len)
-{
-	int		i;
-
-	i = 0;
-	if (g_msh.env == NULL)
-		return ;
-	while (g_msh.env[i] != NULL)
-	{
-		// you can use the strchr instead of the id_len
-		// I use id_len because i run strchr beforehand
-		if (ft_strncmp(g_msh.env[i], argument, *id_len) == 0)
-		{
-			g_msh.env = rm_array_element(g_msh.env, g_msh.env[i]);
-			break ;
-		}
-		i++;
-	}
-}
+int		is_valid_identifier2(char *argument, int *id_len);
+void	remove_variable(char *argument, int *id_len);
 
 int	unset_builtin(char **arguments)
 {
@@ -59,4 +27,36 @@ int	unset_builtin(char **arguments)
 		i++;
 	}
 	return (exit_status);
+}
+
+int	is_valid_identifier2(char *argument, int *id_len)
+{
+	if (!ft_isalpha(argument[0]) && argument[0] != '_')
+		return (1);
+	*id_len = 1;
+	while (argument[*id_len] != '\0')
+	{
+		if (!ft_isalnum(argument[*id_len]) && argument[*id_len] != '_')
+			return (1);
+		*id_len += 1;
+	}
+	return (0);
+}
+
+void	remove_variable(char *argument, int *id_len)
+{
+	int		i;
+
+	i = 0;
+	if (g_msh.env == NULL)
+		return ;
+	while (g_msh.env[i] != NULL)
+	{
+		if (ft_strncmp(g_msh.env[i], argument, *id_len) == 0)
+		{
+			g_msh.env = rm_array_element(g_msh.env, g_msh.env[i]);
+			break ;
+		}
+		i++;
+	}
 }

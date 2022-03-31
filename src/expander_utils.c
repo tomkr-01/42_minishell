@@ -24,7 +24,6 @@ t_quotes	set_quotes(char *token, size_t pos)
 			q.d *= -1;
 		i++;
 	}
-	// printf("quotes: s: %i, d: %i\n", q.s, q.d);
 	return (q);
 }
 

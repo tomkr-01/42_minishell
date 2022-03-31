@@ -50,7 +50,6 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 
 int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 {
-	// system("say 'you fucked up. Try again!'");
 	if (shell_name != NULL)
 	{
 		ft_putstr_fd(shell_name, STDERR_FILENO);
@@ -74,8 +73,6 @@ int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
 	return (EXIT_FAILURE);
 }
 
-// we need this function to free as we want to free the tokens in the parser
-// or at the end after an command was executed
 void	del_content(void *ptr)
 {
 	ft_free((void **)&ptr);

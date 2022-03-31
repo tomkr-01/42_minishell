@@ -1,6 +1,6 @@
 #include "../inc/minishell.h"
 
-extern t_minishell g_msh;
+extern t_minishell	g_msh;
 
 static char	*str_append_chr(char *str, char append);
 static char	*minishell_gnl_free_line(char *line);
@@ -88,7 +88,6 @@ void	handle_input(char *line)
 	executioner(command_table, command_table);
 	table_clear(&command_table);
 }
-
 
 char	*read_input(void)
 {
