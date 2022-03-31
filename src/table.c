@@ -41,14 +41,15 @@ char	*heredoc_get_next_line(char **limiter)
 {
 	char	*line;
 	char	*here_string;
+	char	*lim;
 
 	signal(SIGINT, &heredoc_signals);
-	*limiter = ft_strjoin(*limiter, "\n");
+	lim = ft_strjoin(*limiter, "\n");
 	here_string = ft_strdup("");
 	while (1)
 	{
-		line = get_next_line(STDIN_FILENO);
-		if (line == NULL || ft_strcmp(line, *limiter) == 0)
+		line = minishell_get_next_line(STDIN_FILENO);
+		if (line == NULL || ft_strcmp(line, lim) == 0)
 		{
 			ft_free((void **)&line);
 			break ;
@@ -57,6 +58,7 @@ char	*heredoc_get_next_line(char **limiter)
 		if (here_string == NULL)
 			break ;
 	}
+	ft_free((void **)&lim);
 	return (here_string);
 }
 

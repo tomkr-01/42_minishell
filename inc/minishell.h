@@ -90,7 +90,7 @@ bool	syntax_check(t_list *tokens);
 
 /* table.c */
 t_table	*parser(t_list *token);
-void	executioner(t_table *table);
+void	redi_clear(t_redirection **redi);
 
 /* r_utils.c */
 char	**array_append_array(char **first, char **second);
@@ -106,12 +106,14 @@ void	del_content(void *ptr);
 void	control_c(int sig);
 void	execution_signals(int sig);
 int		change_attributes(bool print_controls);
-char	*find_executable(char *command);
-void	executioner(t_table *table);
+char	*find_executable(char *command, t_table *head);
+void	executioner(t_table *table, t_table *head);
 int		count(const char *s, char c);
 char	*str_append_char(char *string, char c);
 char	*expansion(char *token, bool unquote);
 void	free_parser(t_table *table);
 size_t	next_exp(char *token, size_t pos);
+char	*minishell_get_next_line(int fd);
+t_table	*get_head(void);
 
 #endif

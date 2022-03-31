@@ -13,6 +13,7 @@ TEST_KO_ERR=0
 TEST_KO_EXIT=0
 
 main() {
+	touch tmp_valgrind-out.txt
 	if [[ ! -f $MINISHELL_PATH/$EXECUTABLE ]] ; then
 		echo -e "\033[0;31m# **************************************************************************** #"
 		echo "#    MINISHELL NOT COMPILED                                                    #"
@@ -139,15 +140,15 @@ test_from_file() {
 			else
 				echo -ne "\033[0;32mOK\033[m  "
 			fi
-			echo -ne "\033[0;36mLEAKS:\033[m "
-			echo -n "$INPUT" | valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=tmp_valgrind-out.txt $MINISHELL_PATH/$EXECUTABLE 2>/dev/null >/dev/null
-			cat tmp_valgrind-out.txt | grep LEAK >/dev/null
-			# leaks -atExit -- $MINISHELL_PATH/$EXECUTABLE <<< "$INPUT" 2>/dev/null >/dev/null
-			if [[ $? == 0 ]] ; then
-				echo -ne "\033[0;31mKO\033[m  "
-			else
-				echo -ne "\033[0;32mOK\033[m  "
-			fi
+			# echo -ne "\033[0;36mLEAKS:\033[m "
+			# echo -n "$INPUT" | valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=tmp_valgrind-out.txt $MINISHELL_PATH/$EXECUTABLE 2>/dev/null >/dev/null
+			# cat tmp_valgrind-out.txt | grep LEAK >/dev/null
+			# # leaks -atExit -- $MINISHELL_PATH/$EXECUTABLE <<< "$INPUT" 2>/dev/null >/dev/null
+			# if [[ $? == 0 ]] ; then
+			# 	echo -ne "\033[0;31mKO\033[m  "
+			# else
+			# 	echo -ne "\033[0;32mOK\033[m  "
+			# fi
 			INPUT=""
 			((i++))
 			((TEST_COUNT++))
@@ -160,4 +161,4 @@ test_from_file() {
 main "$@"
 
 # Clean all tmp files
-[[ $1 != "-f" ]] && rm -f tmp_*
+[[ $1 != "-f" ]] && rm -rf tmp_*

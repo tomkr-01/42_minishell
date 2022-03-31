@@ -1,5 +1,7 @@
 #include "../inc/minishell.h"
 
+extern t_minishell		g_msh;
+
 char	**array_append_array(char **first, char **second)
 {
 	int		i;
@@ -53,7 +55,7 @@ char	*str_append_char(char *string, char c)
 	return (new);
 }
 
-void	print_error_and_exit(char *command, char *message, int exit_code)
+static void	print_error_and_exit(char *command, char *message, int exit_code, t_table *head)
 {
 	write(2, "minishell: ", 11);
 	write(2, command, ft_strlen(command));
@@ -61,10 +63,12 @@ void	print_error_and_exit(char *command, char *message, int exit_code)
 	write(2, message, ft_strlen(message));
 	write(2, "\n", 1);
 	ft_free((void **)&command);
+	table_clear(&head);
+	ft_free_array(&g_msh.env);
 	exit(exit_code);
 }
 
-int	command_check(char *command, char *path)
+static int	command_check(char *command, char *path, t_table *head)
 {
 	struct stat		statbuf;
 
@@ -72,25 +76,34 @@ int	command_check(char *command, char *path)
 	{
 		if (ft_strncmp(command, "./", 2) == 0
 			|| ft_strncmp(command, "/", 1) == 0)
-			print_error_and_exit(command, "no such file or directory", 127);
+		{
+			ft_free((void **)&path);
+			print_error_and_exit(command, "no such file or directory", 127, head);
+		}
 		else if (path == NULL)
-			print_error_and_exit(command, "no such file or directory", 127);
+			print_error_and_exit(command, "no such file or directory", 127, head);
 	}
 	else
 	{
 		if (path != NULL && ft_strncmp(command, "./", 2) != 0
 			&& ft_strncmp(command, "/", 1) != 0)
-			print_error_and_exit(command, "command not found", 127);
+		{
+			ft_free((void **)&path);
+			print_error_and_exit(command, "command not found", 127, head);
+		}
 	}
 	if (stat(command, &statbuf) == 0)
 	{
 		if (S_ISDIR(statbuf.st_mode))
-			print_error_and_exit(command, "is a directory", 126);
+		{
+			ft_free((void **)&path);
+			print_error_and_exit(command, "is a directory", 126, head);
+		}
 	}
 	return (1);
 }
 
-char	*search_in_directories(char	**directories, char *command,
+static char	*search_in_directories(char	**directories, char *command,
 	char *executable)
 {
 	int		index;
@@ -104,6 +117,7 @@ char	*search_in_directories(char	**directories, char *command,
 		{
 			ft_free((void **)&executable);
 			ft_free_array(&directories);
+			ft_free((void **)&command);
 			return (absolute_path);
 		}
 		ft_free((void **)&absolute_path);
@@ -114,7 +128,7 @@ char	*search_in_directories(char	**directories, char *command,
 	return (command);
 }
 
-char	*find_executable(char *command)
+char	*find_executable(char *command, t_table *head)
 {
 	char	*result;
 	char	*path;
@@ -122,9 +136,12 @@ char	*find_executable(char *command)
 	char	**directories;
 
 	path = get_var("PATH");
-	command_check(command, path);
+	command_check(command, path, head);
 	if (access(command, F_OK) == 0)
-		return (ft_strdup(command));
+	{
+		ft_free((void **)&path);
+		return (command);
+	}
 	directories = ft_split(path, ':');
 	ft_free((void **)&path);
 	if (directories == NULL)
@@ -133,6 +150,20 @@ char	*find_executable(char *command)
 	result = search_in_directories(directories, command, executable);
 	return (result);
 }
+
+// void	ft_free_array(char ***arr)
+// {
+// 	char	**parser;
+// 	size_t	i;
+
+// 	parser = *arr;
+// 	i = 0;
+// 	while (arr != NULL && parser != NULL && parser[i] != NULL)
+// 	{
+// 		ft_free((void **)&parser[i++]);
+// 	}
+// 	ft_free((void **)*arr);
+// }
 
 void	redi_clear(t_redirection **redi)
 {
@@ -164,6 +195,7 @@ void	table_clear(t_table **table)
 	{
 		next = p->next;
 		ft_free_array(&(p->arguments));
+		p->arguments = NULL;
 		redi_clear(&(p->redirections));
 		ft_free((void **)&p);
 		p = next;
