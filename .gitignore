@@ -3,6 +3,7 @@ minishell
 
 *vscode/
 objs/
+obj/
 
 # Prerequisites
 *.d
