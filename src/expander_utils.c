@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 14:25:58 by tkruger           #+#    #+#             */
-/*   Updated: 2022/04/01 14:25:59 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/04/01 16:00:49 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ size_t	next_exp(char *token, size_t pos)
 
 	i = 0;
 	q = set_quotes(token, pos);
-	while (token != NULL && pos < ft_strlen(token))
+	while (token != NULL && pos < (size_t)ft_strlen(token))
 	{
 		if (token[pos] == '\'' && q.d < 0)
 			expand_single_quotes(token, &pos, &q);

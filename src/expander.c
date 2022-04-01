@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 14:26:01 by tkruger           #+#    #+#             */
-/*   Updated: 2022/04/01 14:26:02 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/04/01 16:00:56 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*expander(char *token, bool unquote)
 	two = NULL;
 	expanded = NULL;
 	i = 0;
-	while (token != NULL && i < ft_strlen(token))
+	while (token != NULL && i < (size_t)ft_strlen(token))
 	{
 		expanded = ft_strjoin_free(expanded,
 				ft_substr(token, i, next_exp(token, i) - i));

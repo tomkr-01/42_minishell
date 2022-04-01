@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 14:26:13 by tkruger           #+#    #+#             */
-/*   Updated: 2022/04/01 14:26:14 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/04/01 16:08:11 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ void	heredoc(char **token_content)
 {
 	int		fd;
 	bool	expansion;
-	char	*delimiter_copy;
 	char	*limiter;
 
 	change_attributes(false);

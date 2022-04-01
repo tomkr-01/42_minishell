@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 14:25:03 by tkruger           #+#    #+#             */
-/*   Updated: 2022/04/01 14:25:04 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/04/01 16:00:11 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ static int	open_files(t_redirection *redir, int *status)
 	int		fd;
 	char	*file;
 
-	file = NULL;
+	fd = 0;
 	if (is_ambiguous_redirect(redir, &file, status) == -1)
 		return (-1);
 	if (redir->type == IN)

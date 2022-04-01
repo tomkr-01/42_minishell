@@ -6,7 +6,7 @@
 /*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/01 14:25:10 by tkruger           #+#    #+#             */
-/*   Updated: 2022/04/01 14:25:11 by tkruger          ###   ########.fr       */
+/*   Updated: 2022/04/01 16:00:30 by tkruger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ char	*search_in_directories(char	**directories, char *command, int *status)
 char	*find_executable(char *command)
 {
 	int		status;
-	int		index;
 	char	*path;
 	char	**directories;
 
