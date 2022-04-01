@@ -1,42 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tkruger <tkruger@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/01 14:25:10 by tkruger           #+#    #+#             */
+/*   Updated: 2022/04/01 14:25:11 by tkruger          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern t_minishell		g_msh;
-
-char	*ft_chrdup(char c)
-{
-	char	*duplicate;
-
-	duplicate = (char *)malloc(2 * sizeof(char));
-	if (duplicate == NULL)
-		return (NULL);
-	duplicate[0] = c;
-	duplicate[1] = '\0';
-	return (duplicate);
-}
-
-char	*str_append_char(char *string, char c)
-{
-	int		index;
-	int		str_len;
-	char	*new;
-
-	if (string == NULL)
-		ft_chrdup(c);
-	index = 0;
-	str_len = ft_strlen(string);
-	new = (char *)malloc((str_len + 2) * sizeof(char));
-	if (new == NULL)
-		return (NULL);
-	while (string[index] != '\0')
-	{
-		new[index] = string[index];
-		index++;
-	}
-	new[index] = c;
-	new[++index] = '\0';
-	ft_free((void **)&string);
-	return (new);
-}
 
 char	*search_in_directories(char	**directories, char *command, int *status)
 {
