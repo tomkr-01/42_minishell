@@ -2,9 +2,9 @@
 
 extern t_minishell	g_msh;
 
-size_t	next_exp(char *token, size_t pos);
-char	*get_varname(char *token);
-char	*expand_varname(char *varname);
+size_t		next_exp(char *token, size_t pos);
+static char	*get_varname(char *token);
+static char	*expand_varname(char *varname);
 
 char	*expander(char *token, bool unquote)
 {
@@ -32,7 +32,7 @@ char	*expander(char *token, bool unquote)
 	return (expanded);
 }
 
-char	*get_varname(char *token)
+static char	*get_varname(char *token)
 {
 	size_t	i;
 	size_t	j;
@@ -56,7 +56,7 @@ char	*get_varname(char *token)
 	return (ft_substr(token, i - j - 1, i));
 }
 
-char	*expand_varname(char *varname)
+static char	*expand_varname(char *varname)
 {
 	char	*value;
 

@@ -1,7 +1,7 @@
 #include "../inc/minishell.h"
 
-size_t	text_token(const char *line, size_t *i);
-size_t	operator_token(const char *line, size_t *i);
+static size_t	text_token(const char *line, size_t *i);
+static size_t	operator_token(const char *line, size_t *i);
 
 void	*lexer(char const *line)
 {
@@ -27,7 +27,7 @@ void	*lexer(char const *line)
 	return (tokens);
 }
 
-size_t	operator_token(const char *line, size_t *i)
+static size_t	operator_token(const char *line, size_t *i)
 {
 	size_t	chrs;
 
@@ -56,7 +56,7 @@ size_t	operator_token(const char *line, size_t *i)
 	return (chrs);
 }
 
-size_t	text_token(const char *line, size_t *i)
+static size_t	text_token(const char *line, size_t *i)
 {
 	size_t	chrs;
 	int		single_quotes;

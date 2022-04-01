@@ -5,21 +5,16 @@ CFLAGS	+=	-g #-fsanitize=address
 INC		=	./inc/minishell.h
 SRC_PATH =	./src/
 
-# general
-SRCS	=	main.c signal.c environment.c t_utils.c r_utils.c
-
-# input
-SRCS	+=	lexer.c syntax_check.c expander.c expander_utils.c quote_remover.c
-
-# parser
-SRCS	+=	table.c
-
-# executor
-SRCS	+= executor.c
-
-# builtins
-SRCS	+=	builtins.c builtin_cd.c builtin_echo.c builtin_env.c \
-			builtin_exit.c builtin_export.c builtin_pwd.c builtin_unset.c
+SRCS 	=	builtin_cd.c builtin_echo.c builtin_env.c builtin_exit.c \
+			builtin_export.c builtin_pwd.c builtin_unset.c builtins.c \
+			environment.c \
+			exec_child.c exec_pipeline.c exec_redir.c exec_scmd.c \
+			exec_utils.c exec_wait.c executor.c \
+			expander_utils.c expander.c \
+			lexer.c main.c minishell_gnl.c \
+			parse_heredoc.c parse_redir.c parser.c \
+			quote_remover.c signal.c syntax_check.c \
+			utils_array.c utils_clear.c utils_error.c
 
 OBJ_PATH =	./objs/
 OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))

@@ -2,9 +2,9 @@
 
 extern t_minishell		g_msh;
 
-int		operator_check(t_list *tokens);
-int		quote_check(t_list *tokens);
-bool	is_operator(t_list *token);
+static int		operator_check(t_list *tokens);
+static int		quote_check(t_list *tokens);
+static bool		is_operator(t_list *token);
 
 bool	syntax_check(t_list *tokens)
 {
@@ -16,7 +16,7 @@ bool	syntax_check(t_list *tokens)
 	return (true);
 }
 
-int	operator_check(t_list *tokens)
+static int	operator_check(t_list *tokens)
 {
 	int	prev_op;
 
@@ -45,7 +45,7 @@ int	operator_check(t_list *tokens)
 	return (EXIT_SUCCESS);
 }
 
-int	quote_check(t_list *tokens)
+static int	quote_check(t_list *tokens)
 {
 	int	single_q;
 	int	double_q;
@@ -69,7 +69,7 @@ int	quote_check(t_list *tokens)
 	return (EXIT_SUCCESS);
 }
 
-bool	is_operator(t_list *token)
+static bool	is_operator(t_list *token)
 {
 	if (token->content[0] == '|'
 		|| token->content[0] == '<'

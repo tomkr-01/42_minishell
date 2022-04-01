@@ -64,57 +64,67 @@ typedef struct s_quotes
 	int	d;
 }	t_quotes;
 
+t_minishell	g_msh;
+
 /* ************************************************************************** */
 /* FUNCTION PROTOTYPES														  */
 /* ************************************************************************** */
 
-/* environment.c */
+char	*minishell_get_next_line(int fd);
 void	environment_init(char **envp);
-char	*get_var(const char *variable);
 
-/* builtins*.c */
-bool	check_builtins(char **arguments);
-void	builtins(char **arguments);
-
-/* lexer.c */
 void	*lexer(char const *line);
-
-/* expander.c */
-int		valid_exp_char(int c, bool first_char);
-char	*expander(char *token, bool unquote);
-
-/* quote_remover.c */
-char	*quote_remover(char *token);
-
-/* syntax_check.c */
 bool	syntax_check(t_list *tokens);
-
-/* table.c */
 t_table	*parser(t_list *token);
-void	redi_clear(t_redirection **redi);
+void	executioner(t_table *table);
 
-/* r_utils.c */
-char	**array_append_array(char **first, char **second);
+// parser
+void	heredoc(char **token_content);
+int		append_redirection(t_redirection **redir, t_list *token,
+			int redir_type);
+
+// executor
+int		own_fork(pid_t *process_id);
+void	filestream_operations(int *initial_stdin, int *initial_stdout,
+			int mode);
+char	*find_executable(char *command);
+
+void	wait_for_last(int pid, int initial_stdin, int initial_stdout);
+void	wait_for_all(int pid, int initial_stdin, int initial_stdout);
+
+void	execute_redirections(t_redirection **redirections, int **pipe_ends, int *status);
+
+void	execute_child(t_table **table, int *status);
+void	child_process(t_table **table, int **pipe_ends, int *pipe_flag);
+
+void	simple_command(t_table *table);
+void	execute_pipeline(t_table *table);
+
+// builtins
+void	builtins(char **arguments);
+bool	check_builtins(char **arguments);
+
+// signals
+void	heredoc_signals(int sig);
+void	control_c(int sig);
+int		change_attributes(bool print_controls);
+
+// utils
+t_table	*get_head(void);
+void	del_content(void *ptr);
 void	table_clear(t_table **table);
 
-/* t_utils.c */
+int		put_stderr(char	*shell_name, char *cmd, char *arg, char *message);
 char	**add_array_element(char **old_arr, char *new_el);
 char	**rm_array_element(char **old_arr, char	*old_el);
-int		put_stderr(char	*s1, char *s2, char *s3, char *message);
-void	del_content(void *ptr);
+char	**array_append_array(char **first, char **second);
 
-/* signal.c */
-void	control_c(int sig);
-void	execution_signals(int sig);
-int		change_attributes(bool print_controls);
-char	*find_executable(char *command);
-void	executioner(t_table *table);
-int		count(const char *s, char c);
-char	*str_append_char(char *string, char c);
-char	*expansion(char *token, bool unquote);
-void	free_parser(t_table *table);
-size_t	next_exp(char *token, size_t pos);
-char	*minishell_get_next_line(int fd);
-t_table	*get_head(void);
+char	*get_var(const char *variable);
+char	*expander(char *token, bool unquote);
+char	*quote_remover(char *expanded);
+
+int		valid_exp_char(int c, bool first_char);
+
+void	ft_atexit(int status);
 
 #endif

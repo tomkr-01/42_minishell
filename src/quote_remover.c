@@ -1,6 +1,6 @@
 #include "../inc/minishell.h"
 
-size_t	next_quote(char *expanded, char quote);
+static size_t	next_quote(char *expanded, char quote);
 
 char	*quote_remover(char *expanded)
 {
@@ -26,7 +26,7 @@ char	*quote_remover(char *expanded)
 	return (q_removed);
 }
 
-size_t	next_quote(char	*expanded, char quote)
+static size_t	next_quote(char	*expanded, char quote)
 {
 	size_t	i;
 	char	*check_str;

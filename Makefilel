@@ -14,12 +14,16 @@ ARCHIVE =		libs/libft/libft.a
 READLINE =		-L/Users/tkruger/.brew/opt/readline/lib -lreadline
 
 SRC_DIR =		./src/
-SRCS =			builtin_cd.c builtin_echo.c builtin_env.c \
-				builtin_exit.c builtin_export.c builtin_pwd.c \
-				builtin_unset.c builtins.c environment.c \
-				executor.c expander.c lexer.c main.c \
-				quote_remover.c r_utils.c signal.c \
-				syntax_check.c t_utils.c table.c expander_utils.c
+SRCS 	=	builtin_cd.c builtin_echo.c builtin_env.c builtin_exit.c \
+			builtin_export.c builtin_pwd.c builtin_unset.c builtins.c \
+			environment.c \
+			exec_child.c exec_pipeline.c exec_redir.c exec_scmd.c \
+			exec_utils.c exec_wait.c executor.c \
+			expander_utils.c expander.c \
+			lexer.c main.c minishell_gnl.c \
+			parse_heredoc.c parse_redir.c parser.c \
+			quote_remover.c signal.c syntax_check.c \
+			utils_array.c utils_clear.c utils_error.c
 
 OBJ_DIR =		./obj/
 OBJS =			$(addprefix $(OBJ_DIR), $(SRCS:.c=.o))

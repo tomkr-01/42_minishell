@@ -1,7 +1,5 @@
 #include "../inc/minishell.h"
 
-// This f() returns returns a malloced char ** with the added element and frees
-// the old one
 char	**add_array_element(char **old_arr, char *new_el)
 {
 	char	**new_arr;
@@ -22,8 +20,6 @@ char	**add_array_element(char **old_arr, char *new_el)
 	return (new_arr);
 }
 
-// This f() returns a malloced char ** with the removed element and frees the
-// old one
 char	**rm_array_element(char **old_arr, char	*old_el)
 {
 	char	**new_arr;
@@ -48,32 +44,18 @@ char	**rm_array_element(char **old_arr, char	*old_el)
 	return (new_arr);
 }
 
-int	put_stderr(char	*shell_name, char *cmd, char *arg, char *message)
+char	**array_append_array(char **first, char **second)
 {
-	if (shell_name != NULL)
-	{
-		ft_putstr_fd(shell_name, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-	}
-	if (cmd != NULL)
-	{
-		ft_putstr_fd(cmd, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-	}
-	if (arg != NULL)
-	{
-		ft_putstr_fd(arg, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-	}
-	if (message != NULL)
-	{
-		ft_putstr_fd(message, STDERR_FILENO);
-	}
-	ft_putchar_fd('\n', STDERR_FILENO);
-	return (EXIT_FAILURE);
-}
+	int	i;
 
-void	del_content(void *ptr)
-{
-	ft_free((void **)&ptr);
+	i = 0;
+	if (second == NULL)
+		return (first);
+	while (second != NULL && second[i] != NULL)
+	{
+		first = add_array_element(first, second[i]);
+		i++;
+	}
+	ft_free_array(&second);
+	return (first);
 }

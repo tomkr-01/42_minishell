@@ -2,6 +2,14 @@
 #include <signal.h>
 #include <termios.h>
 
+void	heredoc_signals(int sig)
+{
+	if (sig == SIGINT)
+	{
+		close(STDIN_FILENO);
+		write(2, "\n", 1);
+	}
+}
 
 void	control_c(int sig)
 {

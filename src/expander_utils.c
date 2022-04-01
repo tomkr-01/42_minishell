@@ -8,7 +8,7 @@ int	valid_exp_char(int c, bool first_char)
 	return (0);
 }
 
-t_quotes	set_quotes(char *token, size_t pos)
+static t_quotes	set_quotes(char *token, size_t pos)
 {
 	size_t		i;
 	t_quotes	q;
@@ -27,7 +27,7 @@ t_quotes	set_quotes(char *token, size_t pos)
 	return (q);
 }
 
-void	expand_single_quotes(char *token, size_t *pos, t_quotes *q)
+static void	expand_single_quotes(char *token, size_t *pos, t_quotes *q)
 {
 	*pos += 1;
 	if (q->s > 0)
@@ -40,7 +40,7 @@ void	expand_single_quotes(char *token, size_t *pos, t_quotes *q)
 	}
 }
 
-void	expand_double_quotes(char *token, size_t *pos, t_quotes *q)
+static void	expand_double_quotes(char *token, size_t *pos, t_quotes *q)
 {
 	*pos += 1;
 	if (q->d > 0)
