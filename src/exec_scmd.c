@@ -7,9 +7,11 @@ void	simple_command(t_table *table)
 	int		initial_stdout;
 	pid_t	process_id;
 
-	status = 0;
+	status = 2;
 	filestream_operations(&initial_stdin, &initial_stdout, 1);
 	execute_redirections(&table->redirections, NULL, &status);
+	if (status == 1)
+		return ;
 	if (check_builtins(table->arguments))
 	{
 		builtins(table->arguments);

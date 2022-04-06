@@ -9,15 +9,11 @@ static char	*expand_varname(char *varname);
 char	*expander(char *token, bool unquote)
 {
 	char	*expanded;
-	char	*one;
-	char	*two;
 	size_t	i;
 
-	one = NULL;
-	two = NULL;
 	expanded = NULL;
 	i = 0;
-	while (token != NULL && i < ft_strlen(token))
+	while (token != NULL && i < (size_t)ft_strlen(token))
 	{
 		expanded = ft_strjoin_free(expanded,
 				ft_substr(token, i, next_exp(token, i) - i));

@@ -68,7 +68,6 @@ char	*search_in_directories(char	**directories, char *command, int *status)
 char	*find_executable(char *command)
 {
 	int		status;
-	int		index;
 	char	*path;
 	char	**directories;
 

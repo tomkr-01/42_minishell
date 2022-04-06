@@ -92,7 +92,8 @@ char	*find_executable(char *command);
 void	wait_for_last(int pid, int initial_stdin, int initial_stdout);
 void	wait_for_all(int pid, int initial_stdin, int initial_stdout);
 
-void	execute_redirections(t_redirection **redirections, int **pipe_ends, int *status);
+void	execute_redirections(t_redirection **redirections, int **pipe_ends,
+			int *status);
 
 void	execute_child(t_table **table, int *status);
 void	child_process(t_table **table, int **pipe_ends, int *pipe_flag);

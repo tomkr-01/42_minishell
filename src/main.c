@@ -36,7 +36,8 @@ static char	*read_input(void)
 	return (line);
 }
 
-int	main(int argc, char *argv[], char **envp)
+int	main(__attribute((unused)) int argc,
+		__attribute((unused)) char *argv[], char **envp)
 {
 	char	*line;
 

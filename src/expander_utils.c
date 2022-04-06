@@ -59,12 +59,10 @@ static void	expand_double_quotes(char *token, size_t *pos, t_quotes *q)
 
 size_t	next_exp(char *token, size_t pos)
 {
-	size_t		i;
 	t_quotes	q;
 
-	i = 0;
 	q = set_quotes(token, pos);
-	while (token != NULL && pos < ft_strlen(token))
+	while (token != NULL && pos < (size_t)ft_strlen(token))
 	{
 		if (token[pos] == '\'' && q.d < 0)
 			expand_single_quotes(token, &pos, &q);

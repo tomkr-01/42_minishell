@@ -69,6 +69,10 @@ void	child_process(t_table **table, int **pipe_ends, int *pipe_flag)
 	if (*pipe_flag == 1)
 		prepare_pipe(pipe_ends);
 	execute_redirections(&(*table)->redirections, pipe_ends, &status);
-	free(*pipe_ends);
+	if (pipe_ends != NULL)
+	{
+		free(*pipe_ends);
+		*pipe_ends = NULL;
+	}
 	execute_child(table, &status);
 }

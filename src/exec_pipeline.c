@@ -47,9 +47,7 @@ void	execute_pipeline(t_table *table)
 	while (table != NULL)
 	{
 		pipe_flag = pipe_found(&table, &pipe_ends);
-		if (pipe_flag == -1)
-			return ;
-		if (own_fork(&process_id) == -1)
+		if (pipe_flag == -1 || own_fork(&process_id) == -1)
 			return ;
 		if (process_id == 0)
 			child_process(&table, &pipe_ends, &pipe_flag);

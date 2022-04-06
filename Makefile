@@ -1,9 +1,10 @@
 NAME	=	minishell
 CC		=	gcc
-# CFLAGS	=	-Wall -Wextra -Werror
-CFLAGS	+=	-g #-fsanitize=address
-INC		=	./inc/minishell.h
+CFLAGS	+=	-Wall -Wextra -Werror
+DEP		= ./inc/minishell.h
+INC		= -Iinc -I$(HOME)/.brew/opt/readline/include
 SRC_PATH =	./src/
+PREP	=	objs
 
 SRCS 	=	builtin_cd.c builtin_echo.c builtin_env.c builtin_exit.c \
 			builtin_export.c builtin_pwd.c builtin_unset.c builtins.c \
@@ -16,31 +17,27 @@ SRCS 	=	builtin_cd.c builtin_echo.c builtin_env.c builtin_exit.c \
 			quote_remover.c signal.c syntax_check.c \
 			utils_array.c utils_clear.c utils_error.c
 
-OBJ_PATH =	./objs/
-OBJS	=	$(patsubst %c,$(OBJ_PATH)%o,$(SRCS))
-LIBFT	=	-L./libs/libft libs/libft/libft.a
-# iMac
-READLINE2 =	-I/Users/$(USER)/.brew/opt/readline/include
-READLINE =	-L/Users/$(USER)/.brew/opt/readline/lib -lreadline
-# Macbook
-# READLINE	=	-L/opt/homebrew/opt/readline/lib -lreadline
-# READLINE2	=	-I/opt/homebrew/opt/readline/include
+OBJ_PATH =	objs/
+OBJS	=	$(addprefix $(OBJ_PATH), $(SRCS:.c=.o))
+LIBFT	=	-L./libs/libft -lft
+LIBFT_PATH = libs/libft/libft.a
+READLINE =	-L$(HOME)/.brew/opt/readline/lib -lreadline -I$(HOME)/.brew/opt/readline/include
 LIBS	=	$(LIBFT) $(READLINE)
 
-.PHONY: all $(NAME) $(OBJ_PATH) libmake clean fclean re
+.PHONY: all clean fclean re
 
-all: libmake $(NAME)
+all: $(LIBFT_PATH) $(NAME)
 
-$(NAME): $(OBJ_PATH) $(OBJS)
-	$(CC) $(CFLAGS) $(LIBFT) $(READLINE) $(OBJS) -o $(NAME)
+$(NAME): $(PREP) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LIBFT) $(READLINE)
 
-$(OBJ_PATH)%.o: $(SRC_PATH)%.c $(INC) $(L_INC)
-	$(CC) $(CFLAGS) $(LIBFT) -c $< -o $@
+$(OBJ_PATH)%.o: $(SRC_PATH)%.c $(DEP)
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-$(OBJ_PATH):
+$(PREP):
 	mkdir -p $(OBJ_PATH)
 
-libmake:
+$(LIBFT_PATH):
 	make -C libs/libft/
 
 clean:

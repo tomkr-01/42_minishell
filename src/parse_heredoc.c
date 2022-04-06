@@ -55,7 +55,6 @@ void	heredoc(char **token_content)
 {
 	int		fd;
 	bool	expansion;
-	char	*delimiter_copy;
 	char	*limiter;
 
 	change_attributes(false);

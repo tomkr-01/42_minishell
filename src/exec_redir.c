@@ -78,7 +78,7 @@ static int	open_files(t_redirection *redir, int *status)
 	int		fd;
 	char	*file;
 
-	file = NULL;
+	fd = 0;
 	if (is_ambiguous_redirect(redir, &file, status) == -1)
 		return (-1);
 	if (redir->type == IN)
@@ -105,8 +105,10 @@ static int	open_files(t_redirection *redir, int *status)
 void	execute_redirections(t_redirection **redirections, int **pipe_ends,
 			int *status)
 {
+	int				scmd;
 	t_redirection	*redir;
 
+	scmd = *status;
 	redir = *redirections;
 	while (redir != NULL)
 	{
@@ -116,12 +118,13 @@ void	execute_redirections(t_redirection **redirections, int **pipe_ends,
 		{
 			if (open_files(redir, status) == -1)
 			{
-				if (pipe_ends != NULL)
+				if (pipe_ends != NULL && *pipe_ends != NULL)
 				{
-					free(pipe_ends);
-					pipe_ends = NULL;
+					free(*pipe_ends);
+					*pipe_ends = NULL;
 				}
-				ft_atexit(*status);
+				if (scmd != 2)
+					ft_atexit(*status);
 			}
 		}
 		redir = redir->next;

@@ -1,1 +1,3 @@
-/bin/grep 1 < inputfile
+touch test
+chmod 000 test
+echo hallo >test
